@@ -1,10 +1,12 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState } from 'react';
+
+import viteLogo from '/vite.svg';
+import '@/App.css';
+import reactLogo from '@/assets/react.svg';
+import { css } from '@/styled-system/css';
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [count, setCount] = useState(0);
 
   return (
     <>
@@ -28,8 +30,9 @@ function App() {
       <p className="read-the-docs">
         Click on the Vite and React logos to learn more
       </p>
+      <div className={css({ bg: 'blue.100', color: 'red.500' })}>test</div>
     </>
-  )
+  );
 }
 
-export default App
+export default App;
