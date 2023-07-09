@@ -21,14 +21,6 @@
     "noFallthroughCasesInSwitch": true,
     "paths": {
       "@/styled-system/*": ["./styled-system/*"],
-      "@/components/*": ["./src/components/*"],
-      "@/hooks/*": ["./src/hooks/*"],
-      "@/utils/*": ["./src/utils/*"],
-      "@/stores/*": ["./src/stores/*"],
-      "@/assets/*": ["./src/assets/*"],
-      "@/types/*": ["./src/types/*"],
-      "@/constants/*": ["./src/constants/*"],
-      "@/styles/*": ["./src/styles/*"],
       "@/*": ["./src/*"]
     }
   },
