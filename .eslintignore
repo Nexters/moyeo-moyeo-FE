@@ -33,4 +33,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 
-.eslintrc.cjs
+/styled-system
+*.cjs
+*.css
+*.svg
