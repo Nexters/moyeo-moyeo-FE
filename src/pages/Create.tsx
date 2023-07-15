@@ -1,13 +1,17 @@
 import { useState } from 'react';
 
+import { Button } from '@/components/Button';
+import { Input } from '@/components/Input';
 import { css } from '@/styled-system/css';
-import { vstack } from '@/styled-system/patterns';
+import { hstack, vstack } from '@/styled-system/patterns';
 import { Team, User } from '@/types';
 
 const Create = () => {
   const [roomName, setRoomName] = useState('');
   const [users, setUsers] = useState<User[]>([]);
   const [teams, setTeams] = useState<Team[]>([]);
+  const cannotAddUser = !users.length || !teams.length;
+  const cannotSubmit = !roomName || cannotAddUser;
 
   const readFile = (file: File) => {
     const reader = new FileReader();
@@ -30,6 +34,13 @@ const Create = () => {
         }
         return a.position.localeCompare(b.position);
       };
+      const getTeamNumberAndName = (choice: string) => {
+        const [number, name] = choice.split('. ');
+        return {
+          num: parseInt(number),
+          name,
+        };
+      };
 
       content.forEach((line) => {
         const [name, position, ...choices] = line.split('\t');
@@ -47,11 +58,11 @@ const Create = () => {
       users.sort(compareUser);
 
       const teams = [...choiceSet]
-        .sort((a, b) => a.localeCompare(b))
         .map((choice) => ({
-          id: generateId(),
-          name: choice,
-        }));
+          id: choice,
+          ...getTeamNumberAndName(choice),
+        }))
+        .sort((a, b) => a.num - b.num);
       // const positions = [...new Set(users.map((user) => user.position))].sort(
       //   (a, b) => a.localeCompare(b),
       // );
@@ -80,119 +91,142 @@ const Create = () => {
   };
 
   return (
-    <main
+    <section
       className={vstack({
-        width: '100vw',
-        height: '100vh',
-        bg: 'ivory',
-        position: 'relative',
-        alignItems: 'center',
+        alignItems: 'stretch',
+        overflow: 'auto',
+        width: '640px',
+        height: '90%',
+        backdropFilter: 'blur(10px)',
+        backgroundColor: 'rgba(23, 25, 28, 0.6)',
+        color: '#fff',
+        gap: '20px',
+        borderRadius: '20px',
+        padding: '30px',
       })}
     >
-      <section
-        className={vstack({
-          alignItems: 'stretch',
-          position: 'absolute',
-          top: '36px',
-          bottom: '36px',
-          overflow: 'auto',
-          width: '640px',
-          backdropFilter: 'blur(10px)',
-          backgroundColor: 'rgba(23, 25, 28, 0.6)',
-          color: '#fff',
-          gap: '20px',
-          borderRadius: '20px',
-          padding: '30px',
+      <h1
+        className={css({
+          fontSize: '40px',
+          fontWeight: '900',
+          textAlign: 'left',
+          lineHeight: '80px',
         })}
       >
-        <h1
+        새로운 팀 빌딩 시작
+      </h1>
+
+      <section className={vstack({ alignItems: 'flex-start' })}>
+        <h2 className={css({ fontSize: '17px', fontWeight: 800 })}>
+          생성할 방 이름
+        </h2>
+        <Input
+          type="text"
+          value={roomName}
+          placeholder="개최할 이벤트를 간단히 소개해주세요."
+          onChange={(e) => setRoomName(e.target.value)}
+        />
+      </section>
+
+      <section className={vstack({ alignItems: 'flex-start' })}>
+        <h2 className={css({ fontSize: '17px', fontWeight: 800 })}>
+          참여자 목록 생성
+        </h2>
+        <div className={hstack({ width: '100%' })}>
+          <Input
+            type="file"
+            placeholder="파일 업로드"
+            accept=".tsv"
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              file && readFile(file);
+            }}
+          />
+          <Button
+            className={css({ width: '120px !important', flexShrink: '0' })}
+            disabled={cannotAddUser}
+            onClick={addUser}
+          >
+            사용자 추가
+          </Button>
+        </div>
+      </section>
+
+      <section className={vstack({ alignItems: 'flex-start' })}>
+        <h2 className={css({ fontSize: '17px', fontWeight: 800 })}>팀 구성</h2>
+        <table
           className={css({
-            fontSize: '40px',
-            fontWeight: '900',
-            textAlign: 'left',
-            lineHeight: '80px',
+            width: '100%',
+            padding: '10px 0',
+            backgroundColor: '#17191c99',
+            borderRadius: '20px',
+            '& thead': {
+              fontWeight: 'bold',
+              borderBottom: '1px solid #fff9',
+            },
+            '& tr': {
+              height: '50px',
+            },
+            '& th, & td': {
+              textAlign: 'left',
+              paddingLeft: '16px',
+            },
           })}
         >
-          새로운 팀 빌딩 시작
-        </h1>
-
-        <section className={vstack({ alignItems: 'flex-start' })}>
-          <h2>생성할 방 이름</h2>
-          <input
-            type="text"
-            value={roomName}
-            placeholder="방 이름"
-            className={css({ width: '100%' })}
-            onChange={(e) => setRoomName(e.target.value)}
-          />
-        </section>
-
-        <section>
-          <h2>참여자 목록 생성</h2>
-          <div>
-            <input
-              type="file"
-              placeholder="파일 업로드"
-              onChange={(e) => {
-                const file = e.target.files?.[0];
-                file && readFile(file);
-              }}
-            />
-            <button onClick={addUser}>사용자 추가</button>
-          </div>
-        </section>
-
-        <h2>팀 구성</h2>
-        {/* 팀 목록 */}
-        <table>
           <thead>
             <tr>
-              <th>ID (총 {teams.length}팀)</th>
+              <th>팀 번호</th>
               <th>팀 이름</th>
             </tr>
           </thead>
           <tbody>
             {teams.map((team) => (
-              <tr
-                key={team.id}
-                className={css({
-                  '& td': {
-                    padding: '0.5rem',
-                  },
-                })}
-              >
-                <td>{team.id}</td>
+              <tr key={team.id}>
+                <td>{team.num}</td>
                 <td>{team.name}</td>
               </tr>
             ))}
           </tbody>
         </table>
+      </section>
 
-        {/* 유저 목록 */}
-        <h2>참여자 엔트리</h2>
-        <table>
+      <section className={vstack({ alignItems: 'flex-start' })}>
+        <h2 className={css({ fontSize: '17px', fontWeight: 800 })}>
+          참여자 엔트리
+        </h2>
+        <table
+          className={css({
+            width: '100%',
+            padding: '10px 0',
+            backgroundColor: '#17191c99',
+            borderRadius: '20px',
+            fontSize: '15px',
+            '& thead': {
+              fontWeight: 'bold',
+              borderBottom: '1px solid #fff9',
+            },
+            '& tr': {
+              height: '50px',
+            },
+            '& th, & td': {
+              textAlign: 'left',
+              paddingLeft: '16px',
+            },
+          })}
+        >
           <thead>
             <tr>
-              <th>ID (총 {users.length}명)</th>
               <th>이름</th>
               <th>포지션</th>
-              <th>1순위</th>
-              <th>2순위</th>
-              <th>3순위</th>
-              <th>4순위</th>
+              <th>1지망</th>
+              <th>2지망</th>
+              <th>3지망</th>
+              <th>4지망</th>
             </tr>
           </thead>
           <tbody>
             {users.map((user) => (
-              <tr
-                key={user.id}
-                className={css({
-                  '& td': {
-                    padding: '0.5rem',
-                  },
-                })}
-              >
-                <td>{user.id}</td>
+              <tr key={user.id}>
                 <td>{user.name}</td>
                 <td>{user.position}</td>
                 <td>{showPmName(user.choices[0])}</td>
@@ -203,12 +237,14 @@ const Create = () => {
             ))}
           </tbody>
         </table>
-
-        <section>
-          <button onClick={submit}>전략적 팀 빌딩 시작</button>
-        </section>
       </section>
-    </main>
+
+      <section>
+        <Button size="large" disabled={cannotSubmit} onClick={submit}>
+          전략적 팀 빌딩 시작
+        </Button>
+      </section>
+    </section>
   );
 };
 
