@@ -18,15 +18,7 @@ export default defineConfig({
   exclude: [],
 
   // Useful for theme customization
-  theme: {
-    extend: {
-      tokens: {
-        fonts: {
-          pretendard: { value: 'var(--font-pretandard)' },
-        },
-      },
-    },
-  },
+  theme: {},
 
   // The output directory for your css system
   outdir: 'styled-system',
