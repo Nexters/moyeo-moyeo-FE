@@ -1,0 +1,6 @@
+/* @ref: https://panda-css.com/docs/guides/fonts#vanilla-css */
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.8/dist/web/static/pretendard-dynamic-subset.css');
+
+:root {
+  --font-pretendard: 'Pretendard', sans-serif;
+}

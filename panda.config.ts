@@ -18,7 +18,16 @@ export default defineConfig({
   exclude: [],
 
   // Useful for theme customization
-  theme: {},
+  theme: {
+    extend: {
+      tokens: {
+        // @ref: https://panda-css.com/docs/guides/fonts#update-panda-config
+        fonts: {
+          pretendard: { value: 'var(--font-pretendard)' },
+        },
+      },
+    },
+  },
 
   // The output directory for your css system
   outdir: 'styled-system',
