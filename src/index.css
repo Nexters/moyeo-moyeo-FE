@@ -71,3 +71,7 @@
   font-style: normal;
   font-display: swap;
 }
+
+:root {
+  --font-pretandard: 'Pretendard', sans-serif;
+}

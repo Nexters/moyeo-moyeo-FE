@@ -1,13 +1,6 @@
 import { defineConfig, defineGlobalStyles } from '@pandacss/dev';
 
-const globalCss = defineGlobalStyles({
-  html: {
-    fontFamily: 'Pretendard',
-  },
-});
-
 export default defineConfig({
-  globalCss,
   // Whether to use css reset
   preflight: true,
 
@@ -22,7 +15,7 @@ export default defineConfig({
     extend: {
       tokens: {
         fonts: {
-          pretendard: { value: 'var(--font-pretandard), sans-serif' },
+          pretendard: { value: 'var(--font-pretandard)' },
         },
       },
     },
