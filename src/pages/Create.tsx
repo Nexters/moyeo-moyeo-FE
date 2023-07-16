@@ -81,10 +81,10 @@ const Create = () => {
     reader.readAsText(file);
   };
 
-  const showPmName = (teamName: Team['name']) => {
+  const showPmName = (teamId: Team['id']) => {
     // 번호. 이름 - 설명
     // 위와 같은 형식의 문자열에서 이름만 추출
-    return teamName?.split('.')[1]?.split('-')[0]?.trim();
+    return teamId?.split('.')[1]?.split('-')[0]?.trim();
   };
 
   const onAddUser = ({
