@@ -55,7 +55,7 @@ const Create = () => {
           name,
           position: sanitize(position),
           choices: trimmedChoices,
-          joined_team_id: null,
+          joinedTeamId: null,
         });
         trimmedChoices.forEach((choice) => choiceSet.add(choice));
       });
@@ -98,7 +98,7 @@ const Create = () => {
         name,
         choices,
         position,
-        joined_team_id: null,
+        joinedTeamId: null,
       },
       ...prev,
     ]);

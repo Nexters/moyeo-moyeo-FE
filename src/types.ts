@@ -3,7 +3,7 @@ export type User = {
   name: string;
   position: string;
   choices: Team['id'][];
-  joined_team_id?: string | null;
+  joinedTeamId?: Team['id'] | null;
 };
 
 export type Team = {
