@@ -1,5 +1,9 @@
 @layer reset, base, tokens, recipes, utilities;
 
 :root {
-  font-family: 'Pretendard';
+  /* 
+  @note: panda-css에서 reset.css의 --global-font-body를 사용하고 있어 이를 그대로 활용
+  https://github.com/chakra-ui/panda/blob/main/packages/generator/src/artifacts/css/reset-css.ts#L34
+   */
+  --global-font-body: 'Pretendard';
 }
