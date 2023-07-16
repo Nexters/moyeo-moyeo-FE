@@ -1,5 +1,6 @@
 import { BrowserRouter, Outlet, Route, Routes } from 'react-router-dom';
 
+import '@/index.css';
 import Create from '@/pages/Create';
 import Home from '@/pages/Home';
 import Room from '@/pages/Room';
