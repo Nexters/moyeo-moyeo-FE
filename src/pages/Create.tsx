@@ -1,5 +1,7 @@
 import { useState } from 'react';
 
+import { useNavigate } from 'react-router-dom';
+
 import { Button } from '@/components/Button';
 import { Input } from '@/components/Input';
 import { Table } from '@/components/Table';
@@ -16,6 +18,8 @@ const Create = () => {
   const [teams, setTeams] = useState<Team[]>([]);
   const [positions, setPositions] = useState<string[]>([]);
   const { isOpen, onClose, onOpen } = useDisclosure();
+  const navigate = useNavigate();
+
   const cannotOpenAddUserModal = !users.length || !teams.length;
   const cannotSubmit = !roomName || cannotOpenAddUserModal;
 
@@ -101,7 +105,8 @@ const Create = () => {
   };
 
   const submit = () => {
-    // @todo: 서버 호출
+    // @todo: 서버 호출 후 /room-id 로 이동
+    navigate('/fake-room-id');
   };
 
   return (
