@@ -2,6 +2,7 @@ import { useState } from 'react';
 
 import { useNavigate } from 'react-router-dom';
 
+import closeIcon from '@/assets/close.svg';
 import { Button } from '@/components/Button';
 import { Input } from '@/components/Input';
 import { Table } from '@/components/Table';
@@ -126,14 +127,25 @@ const Create = () => {
         })}
       >
         <h1
-          className={css({
+          className={hstack({
+            justifyContent: 'space-between',
             fontSize: '40px',
             fontWeight: '900',
             textAlign: 'left',
             lineHeight: '80px',
           })}
         >
-          새로운 팀 빌딩 시작
+          <span>새로운 팀 빌딩 시작</span>
+
+          <button
+            className={css({ cursor: 'pointer' })}
+            onClick={() => navigate('/')}
+          >
+            <img
+              className={css({ width: '40px', height: '40px' })}
+              src={closeIcon}
+            />
+          </button>
         </h1>
 
         <section className={vstack({ alignItems: 'flex-start' })}>
