@@ -43,10 +43,12 @@ export const AddUserModal = ({
   const handleClickAddUser = () => {
     const choices = [team1, team2, team3, team4];
     const isAllEmpty = choices.every((c) => c === '');
+    const isAllFull = choices.every((c) => c !== '');
 
     if (!name) return alert('이름을 입력해주세요.');
     if (!position) return alert('포지션을 선택해주세요.');
-    if (!isAllEmpty) return alert('팀을 모두 선택하거나 모두 선택 해제하세요.');
+    if (!isAllEmpty && !isAllFull)
+      return alert('팀을 모두 선택하거나 모두 선택 해제하세요.');
 
     onAddUser({
       name,
