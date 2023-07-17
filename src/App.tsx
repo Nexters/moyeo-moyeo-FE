@@ -26,8 +26,7 @@ const Background = () => {
       className={vstack({
         width: '100vw',
         height: '100vh',
-        backgroundImage:
-          'url(https://framerusercontent.com/images/liA5ttAIx68WSEit1ECid8di30.jpg)',
+        backgroundImage: 'url(/images/temporal-bg.jpg)',
         backgroundSize: 'cover',
         position: 'relative',
         justifyContent: 'center',

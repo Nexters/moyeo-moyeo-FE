@@ -43,7 +43,22 @@ const button = cva({
             'linear-gradient(180deg, rgba(254, 177, 0, 0.5) 0%, rgba(255, 122, 1, 0.5) 100%)',
         },
       },
-      secondary: {},
+      secondary: {
+        background: 'rgba(23, 25, 28, 0.8)',
+        color: '#fff',
+      },
+      green: {
+        background: '#27af49',
+        color: '#fff',
+      },
+      red: {
+        background: '#e41530',
+        color: '#fff',
+      },
+      blue: {
+        background: '#0099ff',
+        color: '#fff',
+      },
     },
     size: {
       medium: {
