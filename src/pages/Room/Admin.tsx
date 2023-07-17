@@ -5,7 +5,7 @@ import { Card } from '@/components/Card';
 import { mockTeams, mockUsers } from '@/mocks/data';
 import { css } from '@/styled-system/css';
 import { hstack, vstack } from '@/styled-system/patterns';
-import { Team } from '@/types';
+import { Team, User } from '@/types';
 
 type Round = '1지망' | '2지망' | '3지망' | '4지망' | '자유' | '종료';
 const rounds: Round[] = ['1지망', '2지망', '3지망', '4지망', '자유', '종료'];
@@ -42,22 +42,24 @@ export const Admin = () => {
     });
   }, [users, selectedRound, selectedTeamId]);
 
-  const toggleSelect = (userId: string) => {
+  const toggleSelect = (selectUser: User) => {
     if (selectedTeamId === null)
       return alert('팀 지정 되지 않은 상태에선 선택할 수 없습니다.');
     if (selectedRound === '종료')
       return alert('종료된 라운드에선 선택할 수 없습니다.');
 
-    setUsers((prev) => {
-      return prev.map((user) => {
-        if (user.id !== userId) return user;
-        return {
-          ...user,
-          joinedTeamId:
-            user.joinedTeamId === selectedTeamId ? null : selectedTeamId,
-        };
+    const isSelected = selectUser.joinedTeamId === selectedTeamId;
+    if (confirm(isSelected ? '선택해제 하시겠습니까?' : '선택 하시겠습니까?')) {
+      setUsers((prev) => {
+        return prev.map((user) => {
+          if (user.id !== selectUser.id) return user;
+          return {
+            ...user,
+            joinedTeamId: isSelected ? null : selectedTeamId,
+          };
+        });
       });
-    });
+    }
   };
 
   return (
@@ -172,7 +174,7 @@ export const Admin = () => {
                     ? user.joinedTeamId === selectedTeamId
                     : user.joinedTeamId !== null
                 }
-                onClick={() => toggleSelect(user.id)}
+                onClick={() => toggleSelect(user)}
               />
             ))}
           </section>
