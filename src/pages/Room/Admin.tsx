@@ -1,4 +1,5 @@
 import { Button } from '@/components/Button';
+import { mockUsers } from '@/mocks/data';
 import { css } from '@/styled-system/css';
 import { hstack, vstack } from '@/styled-system/patterns';
 
@@ -31,6 +32,7 @@ export const Admin = () => {
         >
           <section>
             <img
+              aria-label="서비스 로고"
               className={css({
                 width: '50px',
                 height: '50px',
@@ -77,8 +79,8 @@ export const Admin = () => {
               overflow: 'auto',
             })}
           >
-            {new Array(80).fill(0).map((_, i) => (
-              <Card key={i} />
+            {mockUsers.map((user) => (
+              <Card key={user.id} name={user.name} position={user.position} />
             ))}
           </section>
         </section>
@@ -97,7 +99,17 @@ export const Admin = () => {
   );
 };
 
-const Card = () => {
+type CardProps = {
+  name: string;
+  position: string;
+  imageUrl?: string;
+};
+
+const Card = ({
+  name,
+  position,
+  imageUrl = 'https://framerusercontent.com/images/Z4glq7zJ6NXvB7eJvuZ8iewrbDs.png',
+}: CardProps) => {
   return (
     <div
       className={vstack({
@@ -115,12 +127,14 @@ const Card = () => {
           objectFit: 'cover',
           borderRadius: '10px',
         })}
-        src="https://framerusercontent.com/images/Z4glq7zJ6NXvB7eJvuZ8iewrbDs.png"
+        src={imageUrl}
       />
 
       <div className={vstack()}>
-        <p className={css({ fontSize: '14px', fontWeight: 'bold' })}>Design</p>
-        <p className={css({ fontSize: '18px', fontWeight: '900' })}>홍길동</p>
+        <p className={css({ fontSize: '14px', fontWeight: 'bold' })}>
+          {position}
+        </p>
+        <p className={css({ fontSize: '18px', fontWeight: '900' })}>{name}</p>
       </div>
     </div>
   );
