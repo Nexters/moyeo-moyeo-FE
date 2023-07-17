@@ -2,6 +2,7 @@ import { useState } from 'react';
 
 import { useNavigate } from 'react-router-dom';
 
+import closeIcon from '@/assets/close.svg';
 import { Button } from '@/components/Button';
 import { Input } from '@/components/Input';
 import { Table } from '@/components/Table';
@@ -125,16 +126,33 @@ const Create = () => {
           padding: '30px',
         })}
       >
-        <h1
-          className={css({
-            fontSize: '40px',
-            fontWeight: '900',
-            textAlign: 'left',
+        <header
+          className={hstack({
+            justifyContent: 'space-between',
             lineHeight: '80px',
           })}
         >
-          새로운 팀 빌딩 시작
-        </h1>
+          <h1
+            className={css({
+              fontSize: '40px',
+              fontWeight: '900',
+              textAlign: 'left',
+            })}
+          >
+            새로운 팀 빌딩 시작
+          </h1>
+
+          <button
+            aria-label="홈으로 돌아가기"
+            className={css({ cursor: 'pointer' })}
+            onClick={() => navigate('/')}
+          >
+            <img
+              className={css({ width: '40px', height: '40px' })}
+              src={closeIcon}
+            />
+          </button>
+        </header>
 
         <section className={vstack({ alignItems: 'flex-start' })}>
           <h2 className={css({ fontSize: '17px', fontWeight: 800 })}>
