@@ -7,8 +7,8 @@ import { css } from '@/styled-system/css';
 import { hstack, vstack } from '@/styled-system/patterns';
 import { Team } from '@/types';
 
-type Round = '1지망' | '2지망' | '3지망' | '4지망' | '자유';
-const rounds: Round[] = ['1지망', '2지망', '3지망', '4지망', '자유'];
+type Round = '1지망' | '2지망' | '3지망' | '4지망' | '자유' | '종료';
+const rounds: Round[] = ['1지망', '2지망', '3지망', '4지망', '자유', '종료'];
 const roundIndexMap = {
   '1지망': 0,
   '2지망': 1,
@@ -24,8 +24,9 @@ export const Admin = () => {
 
   const selectedTeamMembers = useMemo(() => {
     return users.filter((user) => {
-      // 아무 팀도 선택하지 않으면 모두 보여준다.
+      // 아무 팀도 선택하지 않거나, 라운드가 종료면 모두 보여준다.
       if (selectedTeamId === null) return true;
+      if (selectedRound === '종료') return true;
 
       // 멤버 = 해당 팀에 배정된 유저
       const isSelectedTeamMember = user.joinedTeamId === selectedTeamId;
@@ -44,6 +45,8 @@ export const Admin = () => {
   const toggleSelect = (userId: string) => {
     if (selectedTeamId === null)
       return alert('팀 지정 되지 않은 상태에선 선택할 수 없습니다.');
+    if (selectedRound === '종료')
+      return alert('종료된 라운드에선 선택할 수 없습니다.');
 
     setUsers((prev) => {
       return prev.map((user) => {
