@@ -38,12 +38,18 @@ const Create = () => {
         return str.trim().replace(/\s+/g, ' ').replace(/"/g, '');
       };
 
-      // @note: `{팀 번호}. {팀 이름 = PM 이름 - 아이디어 제목}` 형식에서 팀 번호와 이름을 추출합니다.
-      const getTeamNumberAndName = (choice: string) => {
-        const [number, name] = choice.split('. ');
+      // @note: `{팀 번호}. {팀 이름 = PM 이름 - 아이디어 이름}` 형식에서 팀 번호와 PM 및 아이디어 이름을 추출합니다.
+      const getTeamNumberAndNames = (choice: string) => {
+        const dotIndex = choice.indexOf('.');
+        const num = choice.slice(0, dotIndex);
+        const name = choice.slice(dotIndex + 1).trim();
+        const dashIndex = name.indexOf('-');
+        const pmName = name.slice(0, dashIndex).trim();
+        const ideaName = name.slice(dashIndex + 1).trim();
         return {
-          num: parseInt(number),
-          name,
+          num: parseInt(num),
+          pmName,
+          ideaName,
         };
       };
 
@@ -65,7 +71,7 @@ const Create = () => {
       const teams = [...choiceSet]
         .map((choice) => ({
           id: choice,
-          ...getTeamNumberAndName(choice),
+          ...getTeamNumberAndNames(choice),
         }))
         .sort((a, b) => a.num - b.num);
       const positions = [...new Set(users.map((user) => user.position))].sort(
@@ -85,7 +91,7 @@ const Create = () => {
   const showPmName = (teamId: Team['id']) => {
     // 번호. 이름 - 설명
     // 위와 같은 형식의 문자열에서 이름만 추출
-    return teamId?.split('.')[1]?.split('-')[0]?.trim();
+    return teams.find((team) => team.id === teamId)?.pmName;
   };
 
   const onAddUser = ({
@@ -121,7 +127,7 @@ const Create = () => {
           backdropFilter: 'blur(10px)',
           backgroundColor: 'rgba(23, 25, 28, 0.6)',
           color: '#fff',
-          gap: '20px',
+          gap: '60px',
           borderRadius: '20px',
           padding: '30px',
         })}
@@ -130,6 +136,7 @@ const Create = () => {
           className={hstack({
             justifyContent: 'space-between',
             lineHeight: '80px',
+            gap: '20px',
           })}
         >
           <h1
@@ -154,7 +161,7 @@ const Create = () => {
           </button>
         </header>
 
-        <section className={vstack({ alignItems: 'flex-start' })}>
+        <section className={vstack({ alignItems: 'flex-start', gap: '20px' })}>
           <h2 className={css({ fontSize: '17px', fontWeight: 800 })}>
             생성할 방 이름
           </h2>
@@ -166,7 +173,7 @@ const Create = () => {
           />
         </section>
 
-        <section className={vstack({ alignItems: 'flex-start' })}>
+        <section className={vstack({ alignItems: 'flex-start', gap: '20px' })}>
           <h2 className={css({ fontSize: '17px', fontWeight: 800 })}>
             참여자 목록 생성
           </h2>
@@ -190,29 +197,29 @@ const Create = () => {
           </div>
         </section>
 
-        <section className={vstack({ alignItems: 'flex-start' })}>
+        <section className={vstack({ alignItems: 'flex-start', gap: '20px' })}>
           <h2 className={css({ fontSize: '17px', fontWeight: 800 })}>
             팀 구성
           </h2>
           <Table>
             <thead>
               <tr>
-                <th>팀 번호</th>
-                <th>팀 이름</th>
+                <th>PM</th>
+                <th>아이디어</th>
               </tr>
             </thead>
             <tbody>
               {teams.map((team) => (
                 <tr key={team.id}>
-                  <td>{team.num}</td>
-                  <td>{team.name}</td>
+                  <td>{team.pmName}</td>
+                  <td>{team.ideaName}</td>
                 </tr>
               ))}
             </tbody>
           </Table>
         </section>
 
-        <section className={vstack({ alignItems: 'flex-start' })}>
+        <section className={vstack({ alignItems: 'flex-start', gap: '20px' })}>
           <h2 className={css({ fontSize: '17px', fontWeight: 800 })}>
             참여자 엔트리
           </h2>
