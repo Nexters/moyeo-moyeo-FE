@@ -18,8 +18,13 @@ export type Team = {
    */
   num: number;
   /**
-   * id에서 팀 이름을 가져옴.
-   * ex) if id = "1. 홍길동 - 팀 빌딩 서비스", then name = "홍길동 - 팀 빌딩 서비스"
+   * id에서 PM 이름을 가져옴.
+   * ex) if id = "1. 홍길동 - 팀 빌딩 서비스", then pmName = "홍길동"
    */
-  name: string;
+  pmName: string;
+  /**
+   * id에서 아이디어 이름을 가져옴.
+   * ex) if id = "1. 홍길동 - 팀 빌딩 서비스", then ideaName = "팀 빌딩 서비스"
+   */
+  ideaName: string;
 };
