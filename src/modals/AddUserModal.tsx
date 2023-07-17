@@ -121,7 +121,7 @@ export const AddUserModal = ({
                   <option value="">팀 선택</option>
                   {teams.map((team) => (
                     <option key={team.id} value={team.id}>
-                      {team.name}
+                      {team.pmName}
                     </option>
                   ))}
                 </select>
@@ -136,7 +136,7 @@ export const AddUserModal = ({
                   <option value="">팀 선택</option>
                   {teams.map((team) => (
                     <option key={team.id} value={team.id}>
-                      {team.name}
+                      {team.pmName}
                     </option>
                   ))}
                 </select>
@@ -151,7 +151,7 @@ export const AddUserModal = ({
                   <option value="">팀 선택</option>
                   {teams.map((team) => (
                     <option key={team.id} value={team.id}>
-                      {team.name}
+                      {team.pmName}
                     </option>
                   ))}
                 </select>
@@ -166,7 +166,7 @@ export const AddUserModal = ({
                   <option value="">팀 선택</option>
                   {teams.map((team) => (
                     <option key={team.id} value={team.id}>
-                      {team.name}
+                      {team.pmName}
                     </option>
                   ))}
                 </select>
