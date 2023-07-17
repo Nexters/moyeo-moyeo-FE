@@ -40,9 +40,11 @@ const Create = () => {
 
       // @note: `{팀 번호}. {팀 이름 = PM 이름 - 아이디어 제목}` 형식에서 팀 번호와 이름을 추출합니다.
       const getTeamNumberAndName = (choice: string) => {
-        const [number, name] = choice.split('. ');
+        const dotIndex = choice.indexOf('.');
+        const num = choice.slice(0, dotIndex);
+        const name = choice.slice(dotIndex + 1).trim();
         return {
-          num: parseInt(number),
+          num: parseInt(num),
           name,
         };
       };
