@@ -11,11 +11,9 @@ import { isValidRoomId } from '@/utils/room';
 const Home = () => {
   const navigate = useNavigate();
   const [roomId, setRoomId] = useState('');
-  const [isRoomIdValid, setIsRoomIdValid] = useState(false);
 
   const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     setRoomId(e.target.value);
-    setIsRoomIdValid(isValidRoomId(e.target.value));
   };
 
   const handleEntranceButton = () => {
@@ -61,7 +59,10 @@ const Home = () => {
           onChange={handleInput}
           value={roomId}
         />
-        <Button disabled={!isRoomIdValid} onClick={handleEntranceButton}>
+        <Button
+          disabled={!isValidRoomId(roomId)}
+          onClick={handleEntranceButton}
+        >
           입장하기
         </Button>
       </div>
