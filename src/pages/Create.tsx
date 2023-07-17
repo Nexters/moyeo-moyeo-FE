@@ -127,7 +127,7 @@ const Create = () => {
           backdropFilter: 'blur(10px)',
           backgroundColor: 'rgba(23, 25, 28, 0.6)',
           color: '#fff',
-          gap: '20px',
+          gap: '60px',
           borderRadius: '20px',
           padding: '30px',
         })}
@@ -136,6 +136,7 @@ const Create = () => {
           className={hstack({
             justifyContent: 'space-between',
             lineHeight: '80px',
+            gap: '20px',
           })}
         >
           <h1
@@ -160,7 +161,7 @@ const Create = () => {
           </button>
         </header>
 
-        <section className={vstack({ alignItems: 'flex-start' })}>
+        <section className={vstack({ alignItems: 'flex-start', gap: '20px' })}>
           <h2 className={css({ fontSize: '17px', fontWeight: 800 })}>
             생성할 방 이름
           </h2>
@@ -172,7 +173,7 @@ const Create = () => {
           />
         </section>
 
-        <section className={vstack({ alignItems: 'flex-start' })}>
+        <section className={vstack({ alignItems: 'flex-start', gap: '20px' })}>
           <h2 className={css({ fontSize: '17px', fontWeight: 800 })}>
             참여자 목록 생성
           </h2>
@@ -196,7 +197,7 @@ const Create = () => {
           </div>
         </section>
 
-        <section className={vstack({ alignItems: 'flex-start' })}>
+        <section className={vstack({ alignItems: 'flex-start', gap: '20px' })}>
           <h2 className={css({ fontSize: '17px', fontWeight: 800 })}>
             팀 구성
           </h2>
@@ -218,7 +219,7 @@ const Create = () => {
           </Table>
         </section>
 
-        <section className={vstack({ alignItems: 'flex-start' })}>
+        <section className={vstack({ alignItems: 'flex-start', gap: '20px' })}>
           <h2 className={css({ fontSize: '17px', fontWeight: 800 })}>
             참여자 엔트리
           </h2>
