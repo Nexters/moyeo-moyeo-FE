@@ -126,18 +126,24 @@ const Create = () => {
           padding: '30px',
         })}
       >
-        <h1
+        <header
           className={hstack({
             justifyContent: 'space-between',
-            fontSize: '40px',
-            fontWeight: '900',
-            textAlign: 'left',
             lineHeight: '80px',
           })}
         >
-          <span>새로운 팀 빌딩 시작</span>
+          <h1
+            className={css({
+              fontSize: '40px',
+              fontWeight: '900',
+              textAlign: 'left',
+            })}
+          >
+            새로운 팀 빌딩 시작
+          </h1>
 
           <button
+            aria-label="홈으로 돌아가기"
             className={css({ cursor: 'pointer' })}
             onClick={() => navigate('/')}
           >
@@ -146,7 +152,7 @@ const Create = () => {
               src={closeIcon}
             />
           </button>
-        </h1>
+        </header>
 
         <section className={vstack({ alignItems: 'flex-start' })}>
           <h2 className={css({ fontSize: '17px', fontWeight: 800 })}>
