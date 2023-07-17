@@ -41,6 +41,16 @@ export const Admin = () => {
       }
     });
   }, [users, selectedRound, selectedTeamId]);
+  const helperText = useMemo(() => {
+    const team = mockTeams.find((team) => team.id === selectedTeamId);
+    if (selectedTeamId === null)
+      return '오른쪽에서 팀을 선택하면 현황과 배정할 수 있는 인원이 보여집니다.';
+    if (selectedRound === '종료')
+      return '종료된 라운드에선 선택할 수 없습니다.';
+    if (selectedRound === '자유')
+      return '자유 라운드에선 아직 선택되지 않은 유저와 해당 팀 멤버만 보여집니다.';
+    return `팀 "${team?.name}"에 ${selectedRound}으로 지원한 사용자와 팀원이 보여집니다.\n관리자 권한으로 팀원을 임의로 배정하거나 해제 할 수 있습니다.`;
+  }, [selectedTeamId, selectedRound]);
 
   const toggleSelect = (selectUser: User) => {
     if (selectedTeamId === null)
@@ -127,7 +137,7 @@ export const Admin = () => {
               })}
               onChange={(e) => setSelectedRound(e.target.value as Round)}
             >
-              <option value="">라운드 선택</option>
+              {/* <option value="">라운드 선택</option> */}
               {rounds.map((round) => (
                 <option key={round} value={round}>
                   {round}
@@ -147,6 +157,19 @@ export const Admin = () => {
           >
             NEXTERS 23기 팀 빌딩
           </h1>
+          {/* @note: 임의로 추가 */}
+          <p
+            className={css({
+              padding: '10px 30px',
+              fontWeight: 'bold',
+              whiteSpace: 'pre-line',
+              backgroundColor: '#0c0d0e99',
+              backdropFilter: 'blur(10px)',
+              borderRadius: '20px',
+            })}
+          >
+            {helperText}
+          </p>
           <section
             className={css({
               flex: 1,
