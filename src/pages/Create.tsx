@@ -2,7 +2,7 @@ import { useState } from 'react';
 
 import { useNavigate } from 'react-router-dom';
 
-import closeIcon from '@/assets/close.svg';
+import closeIcon from '@/assets/icons/close.svg';
 import { Button } from '@/components/Button';
 import { Input } from '@/components/Input';
 import { Table } from '@/components/Table';
