@@ -1,4 +1,4 @@
-import checkIcon from '@/assets/check.svg';
+import checkIcon from '@/assets/icons/check.svg';
 import { css } from '@/styled-system/css';
 import { center, vstack } from '@/styled-system/patterns';
 

@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 
-import warningIcon from '@/assets/warning.svg';
+import warningIcon from '@/assets/icons/warning.svg';
 import { Button } from '@/components/Button';
 import { useDisclosure } from '@/hooks/useDisclosure';
 import { mockTeams, mockUsers } from '@/mock/data';
