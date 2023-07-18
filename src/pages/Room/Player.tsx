@@ -36,8 +36,6 @@ const POSITION_LIST = [
   '백엔드',
 ];
 
-// const POSITION_LIST = ['전체', 'Design', 'iOS', 'Android', 'FE', 'BE'];
-
 type filteredUsersType = {
   users: User[];
   selectedTeamId: Team['id'] | null;
@@ -217,7 +215,7 @@ export const Player = ({ teamId }: PlayerProps) => {
           </div>
         </nav>
 
-        <section className={vstack({ flex: 1, alignItems: 'flex-start' })}>
+        <section className={stack({ alignItems: 'flex-start' })}>
           <h1
             className={css({
               padding: '20px',
@@ -227,9 +225,8 @@ export const Player = ({ teamId }: PlayerProps) => {
           >
             NEXTERS 23기 팀 빌딩
           </h1>
-
           <div
-            className={css({
+            className={vstack({
               flex: 1,
               width: '880px',
               alignItems: 'flex-start',
@@ -261,6 +258,10 @@ export const Player = ({ teamId }: PlayerProps) => {
                 gridTemplateColumns: 'repeat(5, 1fr)',
                 gridGap: '25px',
                 marginTop: '30px',
+                overflow: 'auto',
+                '&::-webkit-scrollbar': {
+                  display: 'none',
+                },
               })}
             >
               {filteredUsers({
