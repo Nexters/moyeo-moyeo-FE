@@ -40,6 +40,14 @@ export const Admin = () => {
     return Object.entries(allMemberByTeam);
   }, [users]);
 
+  const helperText = useMemo(() => {
+    if (selectedRound === '종료')
+      return '최종확정 라운드가 끝나면 \n"전략적 팀 빌딩 종료" \n버튼을 눌러주세요.';
+    if (selectedRound === '자유')
+      return '자유배정 라운드에서는 \n아직 선택받지 못한 인원을 \n적절하게 분배해주세요.';
+    return '관리자 권한으로 팀원을 \n임의 배정할 수 있습니다.';
+  }, [selectedRound]);
+
   const select = () => {
     // @note: UT를 위해 라운드에 맞게 임의 배정
 
@@ -237,10 +245,10 @@ export const Admin = () => {
                 fontSize: '15px',
                 lineHeight: '1.2',
                 fontWeight: 900,
+                whiteSpace: 'pre-line',
               })}
             >
-              관리자 권한으로 팀원을 <br />
-              임의 배정할 수 있습니다.
+              {helperText}
             </p>
           </section>
         </section>
