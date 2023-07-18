@@ -1,76 +1,34 @@
 import { useMemo, useState } from 'react';
 
+import warningIcon from '@/assets/warning.svg';
 import { Button } from '@/components/Button';
-import { Card } from '@/components/Card';
-import { mockTeams, mockUsers } from '@/mocks/data';
+import { mockTeams, mockUsers } from '@/mock/data';
 import { css } from '@/styled-system/css';
 import { hstack, vstack } from '@/styled-system/patterns';
 import { Team, User } from '@/types';
 
 type Round = '1지망' | '2지망' | '3지망' | '4지망' | '자유' | '종료';
 const rounds: Round[] = ['1지망', '2지망', '3지망', '4지망', '자유', '종료'];
-const roundIndexMap = {
-  '1지망': 0,
-  '2지망': 1,
-  '3지망': 2,
-  '4지망': 3,
-};
 
 export const Admin = () => {
   // @note: 유저 목록을 복사한 이유는 선택된 팀에 대한 정보를 반영하기 위함
   const [users, setUsers] = useState(mockUsers);
-  const [selectedTeamId, setSelectedTeamId] = useState<Team['id'] | null>(null);
   const [selectedRound, setSelectedRound] = useState<Round>('1지망');
 
-  const selectedTeamMembers = useMemo(() => {
-    return users.filter((user) => {
-      // 아무 팀도 선택하지 않거나, 라운드가 종료면 모두 보여준다.
-      if (selectedTeamId === null) return true;
-      if (selectedRound === '종료') return true;
+  const allMemberByTeam = useMemo(() => {
+    const allMemberByTeam: Record<Team['id'], User[]> = {};
 
-      // 멤버 = 해당 팀에 배정된 유저
-      const isSelectedTeamMember = user.joinedTeamId === selectedTeamId;
-      if (selectedRound === '자유') {
-        // 자유: 아직 선택되지 않은 유저와 해당 팀 멤버만 보여준다.
-
-        return user.joinedTeamId === null || isSelectedTeamMember;
-      } else {
-        // 1순위 ~ 4순위 라운드: 팀에 선택된 유저와 아직 배정되지 않은 유저만 보여준다.
-        if (user.joinedTeamId !== null) return isSelectedTeamMember;
-        return user.choices[roundIndexMap[selectedRound]] === selectedTeamId;
-      }
+    mockTeams.forEach((team) => {
+      allMemberByTeam[team.pmName] = users.filter(
+        (user) => user.joinedTeamId === team.id,
+      );
     });
-  }, [users, selectedRound, selectedTeamId]);
-  const helperText = useMemo(() => {
-    const team = mockTeams.find((team) => team.id === selectedTeamId);
-    if (selectedTeamId === null)
-      return '오른쪽에서 팀을 선택하면 현황과 배정할 수 있는 인원이 보여집니다.';
-    if (selectedRound === '종료')
-      return '종료된 라운드에선 선택할 수 없습니다.';
-    if (selectedRound === '자유')
-      return '자유 라운드에선 아직 선택되지 않은 유저와 해당 팀 멤버만 보여집니다.';
-    return `팀 "${team?.name}"에 ${selectedRound}으로 지원한 사용자와 팀원이 보여집니다.\n관리자 권한으로 팀원을 임의로 배정하거나 해제 할 수 있습니다.`;
-  }, [selectedTeamId, selectedRound]);
+    allMemberByTeam['남은 인원'] = users.filter(
+      (user) => user.joinedTeamId === null,
+    );
 
-  const toggleSelect = (selectUser: User) => {
-    if (selectedTeamId === null)
-      return alert('팀 지정 되지 않은 상태에선 선택할 수 없습니다.');
-    if (selectedRound === '종료')
-      return alert('종료된 라운드에선 선택할 수 없습니다.');
-
-    const isSelected = selectUser.joinedTeamId === selectedTeamId;
-    if (confirm(isSelected ? '선택해제 하시겠습니까?' : '선택 하시겠습니까?')) {
-      setUsers((prev) => {
-        return prev.map((user) => {
-          if (user.id !== selectUser.id) return user;
-          return {
-            ...user,
-            joinedTeamId: isSelected ? null : selectedTeamId,
-          };
-        });
-      });
-    }
-  };
+    return Object.entries(allMemberByTeam);
+  }, [users]);
 
   return (
     <>
@@ -80,74 +38,132 @@ export const Admin = () => {
           height: '100%',
           overflow: 'auto',
           alignItems: 'stretch',
-          padding: '36px 40px',
+          padding: '36px 40px 0',
           gap: '20px',
           color: '#fff',
         })}
       >
-        <nav
+        <section
           className={vstack({
             flexShrink: 0,
             width: '200px',
-            alignItems: 'flex-start',
-            backgroundColor: '#0c0d0e99',
-            backdropFilter: 'blur(10px)',
-            border: '1px solid #17191c',
-            padding: '20px',
-            borderRadius: '20px',
-            gap: '40px',
+            gap: '20px',
           })}
         >
-          <section>
-            <img
-              aria-label="서비스 로고"
-              className={css({
-                width: '50px',
-                height: '50px',
-                objectFit: 'cover',
-                borderRadius: '10px',
-              })}
-              src="https://framerusercontent.com/images/TeoNhQyEXaPnI8mt5Zquak7mZI0.jpg"
-            />
-          </section>
+          <nav
+            className={vstack({
+              width: '100%',
+              alignItems: 'flex-start',
+              backgroundColor: '#0c0d0e99',
+              backdropFilter: 'blur(10px)',
+              border: '1px solid #17191c',
+              padding: '20px',
+              borderRadius: '20px',
+              gap: '40px',
+              overflow: 'auto',
+            })}
+          >
+            <section>
+              <img
+                aria-label="서비스 로고"
+                className={css({
+                  width: '50px',
+                  height: '50px',
+                  objectFit: 'cover',
+                  borderRadius: '10px',
+                })}
+                src="https://framerusercontent.com/images/TeoNhQyEXaPnI8mt5Zquak7mZI0.jpg"
+              />
+            </section>
 
-          <section className={vstack({ width: '100%', gap: '15px' })}>
-            <Button visual="secondary">전체 현황 보기</Button>
-            <Button visual="secondary">결과 이미지 저장</Button>
-            <Button visual="secondary">참여자 추가</Button>
-            <Button visual="secondary">초대코드 공유</Button>
-            <Button visual="red">전략적 팀 빌딩 종료</Button>
-          </section>
+            <section className={vstack({ width: '100%', gap: '15px' })}>
+              <Button visual="secondary" className={css({ textAlign: 'left' })}>
+                현황 한눈에 보기
+              </Button>
+              <Button visual="secondary" className={css({ textAlign: 'left' })}>
+                결과 이미지 저장
+              </Button>
+              <Button visual="secondary" className={css({ textAlign: 'left' })}>
+                참여자 추가
+              </Button>
+              <Button visual="secondary" className={css({ textAlign: 'left' })}>
+                초대 링크 공유
+              </Button>
+              <Button visual="red" className={css({ textAlign: 'left' })}>
+                전략적 팀 빌딩 종료
+              </Button>
+            </section>
 
-          <section className={css({ width: '100%' })}>
-            <h2>
-              현재 라운드는 <b>{selectedRound}</b>
-            </h2>
-
-            <select
-              name="round"
-              value={selectedRound}
-              className={css({
+            <section
+              className={vstack({
                 width: '100%',
-                padding: '10px',
-                border: 'none',
-                backgroundColor: '#fff',
-                borderRadius: '10px',
-                color: '#222',
+                gap: '15px',
+                alignItems: 'flex-start',
               })}
-              onChange={(e) => setSelectedRound(e.target.value as Round)}
             >
-              {/* <option value="">라운드 선택</option> */}
-              {rounds.map((round) => (
-                <option key={round} value={round}>
-                  {round}
-                </option>
-              ))}
-            </select>
-          </section>
-        </nav>
+              <h2 className={css({ fontSize: '15px', fontWeight: 900 })}>
+                진행중인 라운드
+              </h2>
 
-        <section className={vstack({ flex: 1, alignItems: 'flex-start' })}>
+              <select
+                name="round"
+                value={selectedRound}
+                className={css({
+                  width: '100%',
+                  height: '50px',
+                  fontSize: '15px',
+                  fontWeight: 600,
+                  padding: '0 20px',
+                  border: 'none',
+                  backgroundColor: 'rgba(23, 25, 28, 0.8)',
+                  borderRadius: '10px',
+                  color: '#fff',
+                })}
+                onChange={(e) => setSelectedRound(e.target.value as Round)}
+              >
+                {/* <option value="">라운드 선택</option> */}
+                {rounds.map((round) => (
+                  <option key={round} value={round}>
+                    {round}
+                  </option>
+                ))}
+              </select>
+            </section>
+          </nav>
+
+          <section
+            className={vstack({
+              width: '100%',
+              alignItems: 'flex-start',
+              backgroundColor: '#0c0d0e99',
+              backdropFilter: 'blur(10px)',
+              border: '1px solid #17191c',
+              padding: '20px',
+              borderRadius: '20px',
+              gap: '15px',
+            })}
+          >
+            <img width="30px" height="30px" src={warningIcon} />
+            <p
+              className={css({
+                fontSize: '15px',
+                lineHeight: '1.2',
+                fontWeight: 900,
+              })}
+            >
+              관리자 권한으로 팀원을 <br />
+              임의 배정할 수 있습니다.
+            </p>
+          </section>
+        </section>
+
+        <section
+          className={vstack({
+            flex: 1,
+            alignItems: 'flex-start',
+            paddingBottom: '36px',
+          })}
+        >
           <h1
             className={css({
               padding: '20px',
@@ -157,28 +173,11 @@ export const Admin = () => {
           >
             NEXTERS 23기 팀 빌딩
           </h1>
-          {/* @note: 임의로 추가 */}
-          <p
-            className={css({
-              padding: '10px 30px',
-              fontWeight: 'bold',
-              whiteSpace: 'pre-line',
-              backgroundColor: '#0c0d0e99',
-              backdropFilter: 'blur(10px)',
-              borderRadius: '20px',
-            })}
-          >
-            {helperText}
-          </p>
+
           <section
             className={css({
               flex: 1,
-              display: 'grid',
-              gridTemplateRows: 'auto 1fr',
-              gridTemplateColumns: 'repeat(5, 1fr)',
-              gridGap: '25px',
-              width: '880px',
-              alignItems: 'flex-start',
+              // width: '980px',
               backgroundColor: '#0c0d0e99',
               backdropFilter: 'blur(10px)',
               border: '1px solid #17191c',
@@ -187,57 +186,153 @@ export const Admin = () => {
               overflow: 'auto',
             })}
           >
-            {selectedTeamMembers.map((user) => (
-              <Card
-                key={user.id}
-                name={user.name}
-                position={user.position}
-                selected={
-                  selectedTeamId !== null
-                    ? user.joinedTeamId === selectedTeamId
-                    : user.joinedTeamId !== null
-                }
-                onClick={() => toggleSelect(user)}
-              />
-            ))}
+            <table
+              className={css({
+                width: '100%',
+                '& thead': {
+                  fontSize: '25px',
+                  fontWeight: 800,
+                  textAlign: 'left',
+                },
+                '& tbody': {
+                  fontSize: '18px',
+                  fontWeight: 600,
+                  textAlign: 'left',
+                },
+                '& tbody tr': {
+                  borderTop: '1px solid #fff',
+                },
+                '& thead th:first-child': {
+                  width: '140px',
+                },
+                '& thead th:last-child': {
+                  width: '200px',
+                },
+                '& th, & td': {
+                  paddingLeft: '20px',
+                  lineHeight: '55px',
+                  verticalAlign: 'baseline',
+                },
+              })}
+            >
+              <thead>
+                <tr>
+                  <th>PM</th>
+                  <th>멤버</th>
+                  <th>인원 (총 {users.length}명)</th>
+                </tr>
+              </thead>
+              <tbody>
+                {allMemberByTeam.map(([pmName, members]) => (
+                  <tr key={pmName}>
+                    <td>{pmName}</td>
+                    <td
+                      className={hstack({
+                        flexWrap: 'wrap',
+                        padding: '10px',
+                        gap: '10px',
+                      })}
+                    >
+                      {members.map((m) => (
+                        <MemberCard
+                          key={m.id}
+                          name={m.name}
+                          position={m.position}
+                          selectedRound={m.choices.findIndex((c) =>
+                            c.includes(pmName),
+                          )}
+                          isSelected={m.joinedTeamId !== null}
+                        />
+                      ))}
+                    </td>
+                    <td>{members.length}명</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </section>
         </section>
       </section>
-
-      <aside
-        className={css({
-          position: 'fixed',
-          top: '36px',
-          right: '-20px',
-          bottom: '36px',
-        })}
-      >
-        <ul className={vstack({ gap: '15px', alignItems: 'flex-end' })}>
-          {mockTeams.map((team) => (
-            <li
-              key={team.id}
-              className={css({
-                paddingLeft: '20px',
-                borderTopLeftRadius: '20px',
-                borderBottomLeftRadius: '20px',
-                lineHeight: '50px',
-                backgroundColor: '#0c0d0e99',
-                color: '#fff',
-                fontSize: '20px',
-                fontWeight: 'bold',
-                cursor: 'pointer',
-                transition: 'all 0.3s',
-                paddingRight: selectedTeamId === team.id ? '40px' : '',
-              })}
-              onClick={() =>
-                setSelectedTeamId((prev) => (prev === team.id ? null : team.id))
-              }
-            >
-              {team.name}
-            </li>
-          ))}
-        </ul>
-      </aside>
     </>
+  );
+};
+
+type MemberCardProps = {
+  name: string;
+  position: string;
+  selectedRound: number;
+  isSelected?: boolean;
+  onClick?: () => void;
+};
+
+const roundColors: Record<number, string> = {
+  0: 'rgb(34, 102, 255)',
+  1: '#28af4a',
+  2: '#feb100',
+  3: '#441fe2',
+};
+
+const MemberCard = ({
+  name,
+  position,
+  selectedRound,
+  isSelected = true,
+  onClick,
+}: MemberCardProps) => {
+  return (
+    <div
+      className={hstack({
+        position: 'relative',
+        gap: '15px',
+        height: '55px',
+        padding: '10px 20px',
+        backgroundColor: 'rgba(12, 13, 14, 0.6)',
+        borderRadius: '10px',
+        lineHeight: 1,
+      })}
+    >
+      <span className={css({ fontSize: '18px', fontWeight: 600 })}>{name}</span>
+      <span className={css({ fontSize: '12px', fontWeight: 700 })}>
+        {position}
+      </span>
+      {selectedRound >= 0 && (
+        <span
+          className={css({
+            padding: '10px',
+            borderRadius: '5px',
+            backgroundColor: roundColors[selectedRound],
+            fontSize: '12px',
+          })}
+        >
+          {selectedRound + 1} 지망
+        </span>
+      )}
+
+      <button
+        className={css({
+          position: 'absolute',
+          top: '10px',
+          bottom: '10px',
+          left: '20px',
+          right: '20px',
+          backgroundColor: isSelected
+            ? 'rgb(228, 21, 48)'
+            : 'rgb(34, 102, 255)',
+          borderRadius: '10px',
+          fontSize: '15px',
+          fontWeight: 800,
+          color: '#fff',
+          opacity: 0,
+          transition: '0.3s',
+          _hover: {
+            opacity: 1,
+            cursor: 'pointer',
+          },
+        })}
+        onClick={onClick}
+      >
+        {isSelected ? '배정 해제' : '팀 배정'}
+      </button>
+    </div>
   );
 };
