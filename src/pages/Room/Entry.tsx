@@ -13,10 +13,7 @@ const ROOM_NAME = 'NEXTERS 23기 팀 빌딩 - 방 제목';
 
 export const Entry = ({ handleRole }: EntryProps) => {
   const [selectedTeam, setSelectedTeam] = useState<string | undefined>();
-  const teams = mockTeams.reduce((acc, cur) => {
-    acc.push(cur.pmName);
-    return acc;
-  }, [] as string[]);
+  const teams = mockTeams.map((team) => team.pmName);
 
   const handleChangeSelect = (e: ChangeEvent<HTMLSelectElement>) => {
     e.preventDefault();
@@ -76,7 +73,8 @@ export const Entry = ({ handleRole }: EntryProps) => {
           marginTop: '60px',
         })}
       >
-        <span
+        <button
+          type="button"
           onClick={() => handleRole('admin')}
           className={css({
             fontSize: '16px',
@@ -86,7 +84,7 @@ export const Entry = ({ handleRole }: EntryProps) => {
           })}
         >
           관리자로 참여
-        </span>
+        </button>
         <Button
           disabled={!selectedTeam}
           size="large"
