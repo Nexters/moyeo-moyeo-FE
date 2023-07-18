@@ -8,13 +8,14 @@ export type ButtonProps = RecipeVariantProps<typeof button> &
 export const Button = ({
   visual,
   size,
+  color,
   className,
   ...restProps
 }: ButtonProps) => {
   return (
     <button
       {...restProps}
-      className={cx(className, button({ visual, size }))}
+      className={cx(className, button({ visual, size, color }))}
     />
   );
 };
@@ -46,18 +47,14 @@ const button = cva({
       secondary: {
         background: 'rgba(23, 25, 28, 0.8)',
         color: '#fff',
-      },
-      green: {
-        background: '#27af49',
-        color: '#fff',
-      },
-      red: {
-        background: '#e41530',
-        color: '#fff',
-      },
-      blue: {
-        background: '#0099ff',
-        color: '#fff',
+        display: 'flex',
+        alignItems: 'center',
+        paddingLeft: '20px',
+        border: '1px solid transparent',
+        transition: 'border 0.3s ease-in-out',
+        _hover: {
+          border: '1px solid #0F83F7',
+        },
       },
     },
     size: {
@@ -72,6 +69,20 @@ const button = cva({
         borderRadius: '20px',
         fontSize: '23px',
         fontWeight: 900,
+      },
+    },
+    color: {
+      green: {
+        background: '#27af49',
+        color: '#fff',
+      },
+      red: {
+        background: '#e41530',
+        color: '#fff',
+      },
+      blue: {
+        background: '#0099ff',
+        color: '#fff',
       },
     },
   },
