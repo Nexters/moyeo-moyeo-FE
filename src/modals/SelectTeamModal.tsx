@@ -43,7 +43,9 @@ export const SelectTeamModal = ({
         >
           <option value="">팀 선택</option>
           {teams.map((team) => (
-            <option value={team.id}>{team.pmName} 팀</option>
+            <option key={team.id} value={team.id}>
+              {team.pmName} 팀
+            </option>
           ))}
         </select>
       </section>
