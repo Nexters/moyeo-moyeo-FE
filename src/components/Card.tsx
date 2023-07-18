@@ -44,7 +44,7 @@ export const Card = ({
       >
         <img
           className={css({
-            width: '100%',
+            width: '112px',
             aspectRatio: '1',
             objectFit: 'cover',
             borderRadius: '10px',
