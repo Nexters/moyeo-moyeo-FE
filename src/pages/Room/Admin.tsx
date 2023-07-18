@@ -8,6 +8,8 @@ import { SelectTeamModal } from '@/modals/SelectTeamModal';
 import { css, cva } from '@/styled-system/css';
 import { hstack, vstack } from '@/styled-system/patterns';
 import { Team, User } from '@/types';
+import { shakeArray } from '@/utils/array';
+import { delay } from '@/utils/time';
 
 type Round = '1지망' | '2지망' | '3지망' | '4지망' | '자유' | '종료';
 const rounds: Round[] = ['1지망', '2지망', '3지망', '4지망', '자유', '종료'];
@@ -24,6 +26,7 @@ export const Admin = () => {
   const [selectedRound, setSelectedRound] = useState<Round>('1지망');
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const { isOpen, onClose, onOpen } = useDisclosure();
+  const [isRunning, setIsRunning] = useState(false);
 
   const allMemberByTeam = useMemo(() => {
     const allMemberByTeam: Record<Team['pmName'], User[]> = {};
@@ -48,8 +51,9 @@ export const Admin = () => {
     return '관리자 권한으로 팀원을 \n임의 배정할 수 있습니다.';
   }, [selectedRound]);
 
-  const select = () => {
-    // @note: UT를 위해 라운드에 맞게 임의 배정
+  // @note: UT를 위해 라운드에 맞게 임의 배정
+  const select = async () => {
+    setIsRunning(true);
 
     // 현재 팀 + 포지션별 인원수를 체크한다
     const countByTeamPosition: Record<string, number> = {};
@@ -60,21 +64,26 @@ export const Admin = () => {
       countByTeamPosition[key] = (countByTeamPosition[key] ?? 0) + 1;
     });
 
-    const nextUsers = users.slice();
-    nextUsers.forEach((user) => {
-      if (user.joinedTeamId !== null) return;
+    for (const team of shakeArray(mockTeams)) {
+      // 특정 팀마다 임의 인원 배정
+      users.forEach((user) => {
+        if (user.joinedTeamId !== null) return;
+        if (user.choices[roundIndexMap[selectedRound]] !== team.id) return;
 
-      const wantTeamId = user.choices[roundIndexMap[selectedRound]];
-      const key = `${wantTeamId}-${user.position}`;
-      const currentPositionCount = countByTeamPosition[key] ?? 0;
+        const key = `${team.id}-${user.position}`;
+        const currentPositionCount = countByTeamPosition[key] ?? 0;
 
-      if (currentPositionCount >= 2) return;
+        if (currentPositionCount >= 2) return;
+        countByTeamPosition[key] = (countByTeamPosition[key] ?? 0) + 1;
+        user.joinedTeamId = team.id;
+      });
 
-      countByTeamPosition[key] = (countByTeamPosition[key] ?? 0) + 1;
-      user.joinedTeamId = wantTeamId;
-    });
+      setUsers(users.slice());
 
-    setUsers(nextUsers);
+      await delay(1000);
+    }
+
+    setIsRunning(false);
   };
 
   const handleCloseModal = () => {
@@ -125,7 +134,9 @@ export const Admin = () => {
           right: 0,
         })}
       >
-        <Button onClick={select}>임의 배정하기</Button>
+        <Button disabled={isRunning} onClick={select}>
+          (임)배치 로직 실행(시)
+        </Button>
       </section>
 
       <section
