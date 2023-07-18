@@ -27,6 +27,7 @@ export const Modal = ({ isOpen, onClose, children }: ModalProps) => {
           border: 'none',
           borderRadius: '20px',
           padding: '0',
+          backgroundColor: 'transparent',
         },
       }}
     >

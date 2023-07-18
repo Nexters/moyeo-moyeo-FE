@@ -2,7 +2,9 @@ import { useMemo, useState } from 'react';
 
 import warningIcon from '@/assets/warning.svg';
 import { Button } from '@/components/Button';
+import { useDisclosure } from '@/hooks/useDisclosure';
 import { mockTeams, mockUsers } from '@/mock/data';
+import { SelectTeamModal } from '@/modals/SelectTeamModal';
 import { css } from '@/styled-system/css';
 import { hstack, vstack } from '@/styled-system/patterns';
 import { Team, User } from '@/types';
@@ -14,6 +16,8 @@ export const Admin = () => {
   // @note: 유저 목록을 복사한 이유는 선택된 팀에 대한 정보를 반영하기 위함
   const [users, setUsers] = useState(mockUsers);
   const [selectedRound, setSelectedRound] = useState<Round>('1지망');
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const { isOpen, onClose, onOpen } = useDisclosure();
 
   const allMemberByTeam = useMemo(() => {
     const allMemberByTeam: Record<Team['id'], User[]> = {};
@@ -29,6 +33,45 @@ export const Admin = () => {
 
     return Object.entries(allMemberByTeam);
   }, [users]);
+
+  const handleCloseModal = () => {
+    setSelectedUser(null);
+    onClose();
+  };
+
+  const handleClickMember = (selectUser: User) => () => {
+    const isNotSelected = selectUser.joinedTeamId === null;
+    if (isNotSelected) {
+      setSelectedUser(selectUser);
+      return onOpen();
+    }
+
+    if (confirm('배정 해제하겠습니까?')) {
+      setUsers((prev) =>
+        prev.map((user) => {
+          if (user.id !== selectUser.id) return user;
+          return {
+            ...user,
+            joinedTeamId: null,
+          };
+        }),
+      );
+    }
+  };
+
+  const handleSelectTeam = (teamId: Team['id']) => {
+    if (!selectedUser) return;
+
+    setUsers((prev) =>
+      prev.map((user) => {
+        if (user.id !== selectedUser.id) return user;
+        return {
+          ...user,
+          joinedTeamId: teamId,
+        };
+      }),
+    );
+  };
 
   return (
     <>
@@ -242,6 +285,7 @@ export const Admin = () => {
                             c.includes(pmName),
                           )}
                           isSelected={m.joinedTeamId !== null}
+                          onClick={handleClickMember(m)}
                         />
                       ))}
                     </td>
@@ -253,6 +297,13 @@ export const Admin = () => {
           </section>
         </section>
       </section>
+
+      <SelectTeamModal
+        isOpen={isOpen}
+        teams={mockTeams}
+        onClose={handleCloseModal}
+        onSelect={handleSelectTeam}
+      />
     </>
   );
 };
