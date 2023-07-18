@@ -196,7 +196,16 @@ export const Admin = () => {
               <Button visual="secondary" className={css({ textAlign: 'left' })}>
                 초대 링크 공유
               </Button>
-              <Button visual="red" className={css({ textAlign: 'left' })}>
+              <Button
+                visual="red"
+                className={css({ textAlign: 'left' })}
+                disabled={users.some((user) => user.joinedTeamId === null)}
+                onClick={() =>
+                  alert(
+                    '팀 빌딩이 종료되었습니다. (이후 뭐가 나오면 좋을지 고민 중)',
+                  )
+                }
+              >
                 전략적 팀 빌딩 종료
               </Button>
             </section>
