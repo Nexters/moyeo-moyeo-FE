@@ -5,12 +5,18 @@ import { Button } from '@/components/Button';
 import { useDisclosure } from '@/hooks/useDisclosure';
 import { mockTeams, mockUsers } from '@/mock/data';
 import { SelectTeamModal } from '@/modals/SelectTeamModal';
-import { css } from '@/styled-system/css';
+import { css, cva } from '@/styled-system/css';
 import { hstack, vstack } from '@/styled-system/patterns';
 import { Team, User } from '@/types';
 
 type Round = '1지망' | '2지망' | '3지망' | '4지망' | '자유' | '종료';
 const rounds: Round[] = ['1지망', '2지망', '3지망', '4지망', '자유', '종료'];
+const roundIndexMap: Record<string, number> = {
+  '1지망': 0,
+  '2지망': 1,
+  '3지망': 2,
+  '4지망': 3,
+};
 
 export const Admin = () => {
   // @note: 유저 목록을 복사한 이유는 선택된 팀에 대한 정보를 반영하기 위함
@@ -20,7 +26,7 @@ export const Admin = () => {
   const { isOpen, onClose, onOpen } = useDisclosure();
 
   const allMemberByTeam = useMemo(() => {
-    const allMemberByTeam: Record<Team['id'], User[]> = {};
+    const allMemberByTeam: Record<Team['pmName'], User[]> = {};
 
     mockTeams.forEach((team) => {
       allMemberByTeam[team.pmName] = users.filter(
@@ -33,6 +39,35 @@ export const Admin = () => {
 
     return Object.entries(allMemberByTeam);
   }, [users]);
+
+  const select = () => {
+    // @note: UT를 위해 라운드에 맞게 임의 배정
+
+    // 현재 팀 + 포지션별 인원수를 체크한다
+    const countByTeamPosition: Record<string, number> = {};
+    users.forEach((user) => {
+      if (user.joinedTeamId === null) return;
+
+      const key = `${user.joinedTeamId}-${user.position}`;
+      countByTeamPosition[key] = (countByTeamPosition[key] ?? 0) + 1;
+    });
+
+    const nextUsers = users.slice();
+    nextUsers.forEach((user) => {
+      if (user.joinedTeamId !== null) return;
+
+      const wantTeamId = user.choices[roundIndexMap[selectedRound]];
+      const key = `${wantTeamId}-${user.position}`;
+      const currentPositionCount = countByTeamPosition[key] ?? 0;
+
+      if (currentPositionCount >= 2) return;
+
+      countByTeamPosition[key] = (countByTeamPosition[key] ?? 0) + 1;
+      user.joinedTeamId = wantTeamId;
+    });
+
+    setUsers(nextUsers);
+  };
 
   const handleCloseModal = () => {
     setSelectedUser(null);
@@ -75,6 +110,16 @@ export const Admin = () => {
 
   return (
     <>
+      <section
+        className={css({
+          position: 'fixed',
+          top: 0,
+          right: 0,
+        })}
+      >
+        <Button onClick={select}>임의 배정하기</Button>
+      </section>
+
       <section
         className={hstack({
           width: '100%',
@@ -316,13 +361,6 @@ type MemberCardProps = {
   onClick?: () => void;
 };
 
-const roundColors: Record<number, string> = {
-  0: 'rgb(34, 102, 255)',
-  1: '#28af4a',
-  2: '#feb100',
-  3: '#441fe2',
-};
-
 const MemberCard = ({
   name,
   position,
@@ -347,14 +385,7 @@ const MemberCard = ({
         {position}
       </span>
       {selectedRound >= 0 && (
-        <span
-          className={css({
-            padding: '10px',
-            borderRadius: '5px',
-            backgroundColor: roundColors[selectedRound],
-            fontSize: '12px',
-          })}
-        >
+        <span className={badge({ visual: selectedRound as any })}>
           {selectedRound + 1} 지망
         </span>
       )}
@@ -364,8 +395,8 @@ const MemberCard = ({
           position: 'absolute',
           top: '10px',
           bottom: '10px',
-          left: '20px',
-          right: '20px',
+          left: '15px',
+          right: '15px',
           backgroundColor: isSelected
             ? 'rgb(228, 21, 48)'
             : 'rgb(34, 102, 255)',
@@ -387,3 +418,29 @@ const MemberCard = ({
     </div>
   );
 };
+
+const badge = cva({
+  base: {
+    padding: '10px',
+    borderRadius: '5px',
+    fontSize: '12px',
+    fontWeight: 700,
+    background: 'transparent',
+  },
+  variants: {
+    visual: {
+      0: {
+        background: 'rgb(34, 102, 255)',
+      },
+      1: {
+        background: '#28af4a',
+      },
+      2: {
+        background: '#feb100',
+      },
+      3: {
+        background: '#441fe2',
+      },
+    },
+  },
+});
