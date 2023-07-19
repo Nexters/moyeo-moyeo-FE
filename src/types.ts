@@ -28,3 +28,5 @@ export type Team = {
    */
   ideaName: string;
 };
+
+export type Round = '1지망' | '2지망' | '3지망' | '4지망' | '자유' | '종료';

@@ -63,6 +63,7 @@ const button = cva({
     size: {
       medium: {
         height: '50px',
+        padding: '0 20px',
         borderRadius: '10px',
         fontSize: '15px',
         fontWeight: 900,
