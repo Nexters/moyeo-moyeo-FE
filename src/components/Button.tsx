@@ -47,9 +47,6 @@ const button = cva({
       secondary: {
         background: 'rgba(23, 25, 28, 0.8)',
         color: '#fff',
-        display: 'flex',
-        alignItems: 'center',
-        paddingLeft: '20px',
         border: '1px solid transparent',
         transition: 'border 0.3s ease-in-out',
         _hover: {
@@ -60,6 +57,7 @@ const button = cva({
     size: {
       medium: {
         height: '50px',
+        padding: '0 20px',
         borderRadius: '10px',
         fontSize: '15px',
         fontWeight: 900,

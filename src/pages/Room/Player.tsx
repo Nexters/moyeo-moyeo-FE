@@ -183,11 +183,16 @@ export const Player = ({ teamId }: PlayerProps) => {
               src="https://framerusercontent.com/images/TeoNhQyEXaPnI8mt5Zquak7mZI0.jpg"
             />
             <div className={stack({ width: '100%', gap: '15px' })}>
-              <Button visual="secondary">현황 한눈에 보기</Button>
-              <Button visual="secondary">결과 이미지 저장</Button>
+              <Button visual="secondary" className={css({ textAlign: 'left' })}>
+                현황 한눈에 보기
+              </Button>
+              <Button visual="secondary" className={css({ textAlign: 'left' })}>
+                결과 이미지 저장
+              </Button>
               <Button
                 visual="secondary"
                 color="green"
+                className={css({ textAlign: 'left' })}
                 disabled={currentRound !== '종료'}
                 onClick={handleCompleteButton}
               >
