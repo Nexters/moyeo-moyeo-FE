@@ -68,13 +68,19 @@ export const Admin = () => {
       // 특정 팀마다 임의 인원 배정
       users.forEach((user) => {
         if (user.joinedTeamId !== null) return;
-        if (user.choices[roundIndexMap[selectedRound]] !== team.id) return;
+        // 현재 라운드가 1지망~4지망이면, 희망하는 팀인지 확인
+        // 현재 라운드가 자유면, 배정되지 않았는지만 확인
+        if (
+          selectedRound !== '자유' &&
+          user.choices[roundIndexMap[selectedRound]] !== team.id
+        )
+          return;
 
         const key = `${team.id}-${user.position}`;
         const currentPositionCount = countByTeamPosition[key] ?? 0;
 
         if (currentPositionCount >= 2) return;
-        countByTeamPosition[key] = (countByTeamPosition[key] ?? 0) + 1;
+        countByTeamPosition[key] = currentPositionCount + 1;
         user.joinedTeamId = team.id;
       });
 
