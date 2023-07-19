@@ -2,16 +2,16 @@ import { useMemo, useState } from 'react';
 
 import warningIcon from '@/assets/icons/warning.svg';
 import { Button } from '@/components/Button';
+import { CardInAdmin } from '@/components/CardInAdmin';
 import { useDisclosure } from '@/hooks/useDisclosure';
 import { mockTeams, mockUsers } from '@/mock/data';
 import { SelectTeamModal } from '@/modals/SelectTeamModal';
-import { css, cva } from '@/styled-system/css';
+import { css } from '@/styled-system/css';
 import { hstack, vstack } from '@/styled-system/patterns';
-import { Team, User } from '@/types';
+import { Round, Team, User } from '@/types';
 import { shakeArray } from '@/utils/array';
 import { delay } from '@/utils/time';
 
-type Round = '1지망' | '2지망' | '3지망' | '4지망' | '자유' | '종료';
 const rounds: Round[] = ['1지망', '2지망', '3지망', '4지망', '자유', '종료'];
 const roundIndexMap: Record<string, number> = {
   '1지망': 0,
@@ -356,14 +356,14 @@ export const Admin = () => {
                       })}
                     >
                       {members.map((m) => (
-                        <MemberCard
+                        <CardInAdmin
                           key={m.id}
                           name={m.name}
                           position={m.position}
                           selectedRound={m.choices.findIndex((c) =>
                             c.includes(pmName),
                           )}
-                          isSelected={m.joinedTeamId !== null}
+                          selected={m.joinedTeamId !== null}
                           onClick={handleClickMember(m)}
                         />
                       ))}
@@ -386,95 +386,3 @@ export const Admin = () => {
     </>
   );
 };
-
-type MemberCardProps = {
-  name: string;
-  position: string;
-  selectedRound: number;
-  isSelected?: boolean;
-  onClick?: () => void;
-};
-
-const MemberCard = ({
-  name,
-  position,
-  selectedRound,
-  isSelected = true,
-  onClick,
-}: MemberCardProps) => {
-  return (
-    <div
-      className={hstack({
-        position: 'relative',
-        gap: '15px',
-        height: '55px',
-        padding: '10px 20px',
-        backgroundColor: 'rgba(12, 13, 14, 0.6)',
-        borderRadius: '10px',
-        lineHeight: 1,
-      })}
-    >
-      <span className={css({ fontSize: '18px', fontWeight: 600 })}>{name}</span>
-      <span className={css({ fontSize: '12px', fontWeight: 700 })}>
-        {position}
-      </span>
-      {selectedRound >= 0 && (
-        <span className={badge({ visual: selectedRound as any })}>
-          {selectedRound + 1} 지망
-        </span>
-      )}
-
-      <button
-        className={css({
-          position: 'absolute',
-          top: '10px',
-          bottom: '10px',
-          left: '15px',
-          right: '15px',
-          backgroundColor: isSelected
-            ? 'rgb(228, 21, 48)'
-            : 'rgb(34, 102, 255)',
-          borderRadius: '10px',
-          fontSize: '15px',
-          fontWeight: 800,
-          color: '#fff',
-          opacity: 0,
-          transition: '0.3s',
-          _hover: {
-            opacity: 1,
-            cursor: 'pointer',
-          },
-        })}
-        onClick={onClick}
-      >
-        {isSelected ? '배정 해제' : '팀 배정'}
-      </button>
-    </div>
-  );
-};
-
-const badge = cva({
-  base: {
-    padding: '10px',
-    borderRadius: '5px',
-    fontSize: '12px',
-    fontWeight: 700,
-    background: 'transparent',
-  },
-  variants: {
-    visual: {
-      0: {
-        background: 'rgb(34, 102, 255)',
-      },
-      1: {
-        background: '#28af4a',
-      },
-      2: {
-        background: '#feb100',
-      },
-      3: {
-        background: '#441fe2',
-      },
-    },
-  },
-});
