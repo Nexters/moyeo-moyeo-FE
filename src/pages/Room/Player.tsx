@@ -8,17 +8,7 @@ import { Card } from '@/components/Card';
 import { mockTeams, mockUsers } from '@/mock/data';
 import { css } from '@/styled-system/css';
 import { hstack, stack, vstack } from '@/styled-system/patterns';
-import { Team, User } from '@/types';
-
-enum Round {
-  '1지망',
-  '2지망',
-  '3지망',
-  '4지망',
-  '종료',
-}
-
-const MAX_ROUND = Object.keys(Round).length / 2 - 1;
+import { Round, Team, User } from '@/types';
 
 type PlayerState = 'selecting' | 'selected' | 'finish';
 
@@ -31,32 +21,62 @@ const POSITION_LIST = [
   '백엔드',
 ];
 
-type filteredUsersType = {
+const roundIndexMap: Record<string, number> = {
+  '1지망': 0,
+  '2지망': 1,
+  '3지망': 2,
+  '4지망': 3,
+};
+
+const nextRoundMap: Record<Round, Round> = {
+  '1지망': '2지망',
+  '2지망': '3지망',
+  '3지망': '4지망',
+  '4지망': '자유',
+  자유: '종료',
+  종료: '종료',
+};
+
+type filteredUserMapType = {
   users: User[];
   selectedTeamId: Team['id'];
-  currentRound: Round;
   selectedPosition: string;
 };
 
-const filteredUsers = ({
-  users,
-  selectedTeamId,
-  currentRound,
-  selectedPosition,
-}: filteredUsersType) => {
-  return users.filter((user) => {
-    if (user.choices[currentRound] !== selectedTeamId) return false;
-    if (selectedPosition !== '전체' && user.position !== selectedPosition)
-      return false;
-    return true;
-  });
+const filteredByRound = (roundIndex: number) => {
+  return ({ users, selectedTeamId, selectedPosition }: filteredUserMapType) => {
+    return users.filter((user) => {
+      if (user.choices[roundIndex] !== selectedTeamId) return false;
+      if (selectedPosition !== '전체' && user.position !== selectedPosition)
+        return false;
+      return true;
+    });
+  };
+};
+
+const filteredUsers: Record<
+  Round,
+  ({ users, selectedTeamId, selectedPosition }: filteredUserMapType) => User[]
+> = {
+  '1지망': filteredByRound(roundIndexMap['1지망']),
+  '2지망': filteredByRound(roundIndexMap['2지망']),
+  '3지망': filteredByRound(roundIndexMap['3지망']),
+  '4지망': filteredByRound(roundIndexMap['4지망']),
+  자유: ({ users, selectedPosition }) =>
+    users.filter((user) => {
+      if (user.joinedTeamId !== null) return false;
+      if (selectedPosition !== '전체' && user.position !== selectedPosition)
+        return false;
+      return true;
+    }),
+  종료: () => [],
 };
 
 const filteredSelectedUsers = ({
   users,
   selectedTeamId,
   selectedPosition,
-}: Omit<filteredUsersType, 'currentRound'>) => {
+}: filteredUserMapType) => {
   return users.filter((user) => {
     if (user.joinedTeamId !== selectedTeamId) return false;
     if (selectedPosition !== '전체' && user.position !== selectedPosition)
@@ -74,7 +94,7 @@ export const Player = ({ teamId }: PlayerProps) => {
   const [users, setUsers] = useState(mockUsers);
   const [playerState, setPlayerState] = useState<PlayerState>('selecting');
   const [selectedTeamId, setSelectedTeamId] = useState<Team['id']>(teamId);
-  const [currentRound, setCurrentRound] = useState<Round>(0);
+  const [currentRound, setCurrentRound] = useState<Round>('1지망');
   const [selectedPosition, setSelectedPosition] = useState<string>('전체');
   const [isOpenApplicantModal, setIsOpenApplicantModal] = useState(false);
   const [selectedUsers, setSelectedUsers] = useState<User['id'][]>([]);
@@ -96,13 +116,10 @@ export const Player = ({ teamId }: PlayerProps) => {
   };
 
   const handleTeamSelectionComplete = () => {
-    if (currentRound === MAX_ROUND) return;
-
     setPlayerState('selected');
-    // FIXME: 해당 라운드 종료가 됐다는것 서버에 알려야 함. 해당 콜백으로 setCurrentRound 호출
     setTimeout(() => {
-      setCurrentRound((prev) => prev + 1);
-      if (currentRound + 1 !== MAX_ROUND) setPlayerState('selecting');
+      setCurrentRound(nextRoundMap[currentRound]);
+      if (nextRoundMap[currentRound] !== '종료') setPlayerState('selecting');
 
       // users에서 해당 라운드에 선택된 유저들 currentTeamId를 selectedTeamId로 변경
       setUsers((prev) =>
@@ -165,13 +182,13 @@ export const Player = ({ teamId }: PlayerProps) => {
               })}
               src="https://framerusercontent.com/images/TeoNhQyEXaPnI8mt5Zquak7mZI0.jpg"
             />
-
             <div className={stack({ width: '100%', gap: '15px' })}>
               <Button visual="secondary">현황 한눈에 보기</Button>
               <Button visual="secondary">결과 이미지 저장</Button>
               <Button
                 visual="secondary"
                 color="green"
+                disabled={currentRound !== '종료'}
                 onClick={handleCompleteButton}
               >
                 팀 빌딩 완료
@@ -188,7 +205,7 @@ export const Player = ({ teamId }: PlayerProps) => {
                 현재 라운드
               </span>
               <b className={css({ fontWeight: '900', fontSize: '15px' })}>
-                {Round[currentRound]}
+                {currentRound}
               </b>
             </div>
           </div>
@@ -263,12 +280,23 @@ export const Player = ({ teamId }: PlayerProps) => {
           >
             <div className={hstack()}>
               {POSITION_LIST.map((position) => (
-                <PositionButton
-                  key={position}
-                  position={position}
-                  selected={selectedPosition === position}
+                <button
                   onClick={() => setSelectedPosition(position)}
-                />
+                  type="button"
+                  className={css({
+                    background:
+                      selectedPosition === position ? '#0F83F7' : '#17191C',
+                    padding: '9px 20px',
+                    color: 'white',
+                    fontSize: '18px',
+                    fontWeight: '900',
+                    borderRadius: '10px',
+                    cursor: 'pointer',
+                    transition: 'all 0.3s',
+                  })}
+                >
+                  {position}
+                </button>
               ))}
             </div>
             <div
@@ -324,9 +352,7 @@ export const Player = ({ teamId }: PlayerProps) => {
             >
               {isOpenApplicantModal
                 ? '선택된 팀원 리스트 확인'
-                : `${
-                    currentRound + 1 > 4 ? 4 : currentRound + 1
-                  }지망 지원자 확인`}
+                : `${currentRound} 지원자 확인`}
               <img
                 width="60px"
                 height="60px"
@@ -334,13 +360,78 @@ export const Player = ({ teamId }: PlayerProps) => {
               />
             </button>
             {isOpenApplicantModal && (
-              <ApplicantModal
-                users={users}
-                currentRound={currentRound}
-                selectedTeamId={selectedTeamId}
-                selectedUsers={selectedUsers}
-                toggleSelect={toggleSelect}
-              />
+              <div
+                className={vstack({
+                  position: 'absolute',
+                  top: '0',
+                  left: '0',
+                  flex: 1,
+                  height: '100%',
+                  width: '880px',
+                  alignItems: 'flex-start',
+                  backgroundColor: '#0c0d0e',
+                  backdropFilter: 'blur(10px)',
+                  border: '1px solid #17191c',
+                  padding: '30px',
+                  paddingBottom: '0',
+                  borderTopLeftRadius: '20px',
+                  overflow: 'auto',
+                  animation: `moveUp 0.4s`,
+                  maxHeight: 'calc(100% - 80px)',
+                  '&::-webkit-scrollbar': {
+                    display: 'none',
+                  },
+                })}
+              >
+                <div className={hstack()}>
+                  {POSITION_LIST.map((position) => (
+                    <button
+                      onClick={() => setSelectedPosition(position)}
+                      type="button"
+                      className={css({
+                        background:
+                          selectedPosition === position ? '#0F83F7' : '#17191C',
+                        padding: '9px 20px',
+                        color: 'white',
+                        fontSize: '18px',
+                        fontWeight: '900',
+                        borderRadius: '10px',
+                        cursor: 'pointer',
+                        transition: 'all 0.3s',
+                      })}
+                    >
+                      {position}
+                    </button>
+                  ))}
+                </div>
+                <div
+                  className={css({
+                    display: 'grid',
+                    gridTemplateRows: 'auto 1fr',
+                    gridTemplateColumns: 'repeat(5, 1fr)',
+                    gridGap: '25px',
+                    marginTop: '30px',
+                    overflow: 'auto',
+                    '&::-webkit-scrollbar': {
+                      display: 'none',
+                    },
+                  })}
+                >
+                  {filteredUsers[currentRound]({
+                    users,
+                    selectedTeamId,
+                    selectedPosition,
+                  }).map((user) => (
+                    <Card
+                      key={user.id}
+                      name={user.name}
+                      position={user.position}
+                      selected={selectedUsers.includes(user.id)}
+                      onClick={() => toggleSelect(user)}
+                    />
+                  ))}
+                </div>
+              </div>
             )}
           </div>
         </section>
@@ -386,120 +477,5 @@ export const Player = ({ teamId }: PlayerProps) => {
         </ul>
       </aside>
     </>
-  );
-};
-
-type ApplicantModalProps = {
-  users: User[];
-  selectedTeamId: string;
-  currentRound: number;
-  selectedUsers: User['id'][];
-  toggleSelect: (user: User) => void;
-};
-
-const ApplicantModal = ({
-  users,
-  selectedTeamId,
-  currentRound,
-  selectedUsers,
-  toggleSelect,
-}: ApplicantModalProps) => {
-  const [selectedPosition, setSelectedPosition] = useState<string>('전체');
-  return (
-    <div
-      className={vstack({
-        position: 'absolute',
-        top: '0',
-        left: '0',
-        flex: 1,
-        height: '100%',
-        width: '880px',
-        alignItems: 'flex-start',
-        backgroundColor: '#0c0d0e',
-        backdropFilter: 'blur(10px)',
-        border: '1px solid #17191c',
-        padding: '30px',
-        paddingBottom: '0',
-        borderRadius: '20px',
-        borderBottomRadius: '0',
-        overflow: 'auto',
-        animation: `moveUp 0.4s`,
-        maxHeight: 'calc(100% - 80px)',
-        '&::-webkit-scrollbar': {
-          display: 'none',
-        },
-      })}
-    >
-      <div className={hstack()}>
-        {POSITION_LIST.map((position) => (
-          <PositionButton
-            key={position}
-            position={position}
-            selected={selectedPosition === position}
-            onClick={() => setSelectedPosition(position)}
-          />
-        ))}
-      </div>
-      <div
-        className={css({
-          display: 'grid',
-          gridTemplateRows: 'auto 1fr',
-          gridTemplateColumns: 'repeat(5, 1fr)',
-          gridGap: '25px',
-          marginTop: '30px',
-          overflow: 'auto',
-          '&::-webkit-scrollbar': {
-            display: 'none',
-          },
-        })}
-      >
-        {filteredUsers({
-          users,
-          selectedTeamId,
-          currentRound,
-          selectedPosition,
-        }).map((user) => (
-          <Card
-            key={user.id}
-            name={user.name}
-            position={user.position}
-            selected={selectedUsers.includes(user.id)}
-            onClick={() => toggleSelect(user)}
-          />
-        ))}
-      </div>
-    </div>
-  );
-};
-
-//================================= PositionButton ======================================
-type PositionButtonProps = {
-  selected: boolean;
-  onClick: VoidFunction;
-  position: string;
-};
-
-const PositionButton = ({
-  selected,
-  onClick,
-  position,
-}: PositionButtonProps) => {
-  return (
-    <button
-      onClick={onClick}
-      type="button"
-      className={css({
-        background: selected ? '#0F83F7' : '#17191C',
-        padding: '9px 20px',
-        color: 'white',
-        fontSize: '18px',
-        fontWeight: '900',
-        borderRadius: '10px',
-        cursor: 'pointer',
-        transition: 'all 0.3s',
-      })}
-    >
-      {position}
-    </button>
   );
 };
