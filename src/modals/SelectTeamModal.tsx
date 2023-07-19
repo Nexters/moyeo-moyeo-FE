@@ -2,7 +2,7 @@ import { Modal } from '@/components/Modal';
 import { css } from '@/styled-system/css';
 import { Team } from '@/types';
 
-export type AddUserModalProps = {
+export type SelectTeamModalProps = {
   isOpen: boolean;
   teams: Team[];
   onClose: () => void;
@@ -14,7 +14,7 @@ export const SelectTeamModal = ({
   teams,
   onClose,
   onSelect,
-}: AddUserModalProps) => {
+}: SelectTeamModalProps) => {
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <section>
