@@ -41,24 +41,7 @@ export const CardInAdmin = ({
       )}
 
       <button
-        className={css({
-          position: 'absolute',
-          top: '10px',
-          bottom: '10px',
-          left: '15px',
-          right: '15px',
-          backgroundColor: selected ? 'rgb(228, 21, 48)' : 'rgb(34, 102, 255)',
-          borderRadius: '10px',
-          fontSize: '15px',
-          fontWeight: 800,
-          color: '#fff',
-          opacity: 0,
-          transition: '0.3s',
-          _hover: {
-            opacity: 1,
-            cursor: 'pointer',
-          },
-        })}
+        className={button({ visual: selected ? 'selected' : undefined })}
         disabled={disabled}
         onClick={onClick}
       >
@@ -68,7 +51,34 @@ export const CardInAdmin = ({
   );
 };
 
-// @fixme: 아래 색상들을 theme에 선언해서 variation 적용하지 않아도 되도록 수정할 것!
+const button = cva({
+  base: {
+    position: 'absolute',
+    top: '10px',
+    bottom: '10px',
+    left: '15px',
+    right: '15px',
+    backgroundColor: 'rgb(34, 102, 255)',
+    borderRadius: '10px',
+    fontSize: '15px',
+    fontWeight: 800,
+    color: '#fff',
+    opacity: 0,
+    transition: '0.3s',
+    _hover: {
+      opacity: 1,
+      cursor: 'pointer',
+    },
+  },
+  variants: {
+    visual: {
+      selected: {
+        backgroundColor: 'rgb(228, 21, 48)',
+      },
+    },
+  },
+});
+
 const badge = cva({
   base: {
     padding: '10px',
