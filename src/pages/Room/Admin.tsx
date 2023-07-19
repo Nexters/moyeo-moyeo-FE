@@ -175,7 +175,7 @@ export const Admin = () => {
             gap: '20px',
           })}
         >
-          <nav
+          <aside
             className={vstack({
               width: '100%',
               alignItems: 'flex-start',
@@ -263,7 +263,7 @@ export const Admin = () => {
                 ))}
               </select>
             </section>
-          </nav>
+          </aside>
 
           <section
             className={vstack({
