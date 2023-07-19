@@ -19,6 +19,14 @@ const roundIndexMap: Record<string, number> = {
   '3지망': 2,
   '4지망': 3,
 };
+const nextRoundMap: Record<Round, Round> = {
+  '1지망': '2지망',
+  '2지망': '3지망',
+  '3지망': '4지망',
+  '4지망': '자유',
+  자유: '종료',
+  종료: '종료',
+};
 
 export const Admin = () => {
   // @note: 유저 목록을 복사한 이유는 선택된 팀에 대한 정보를 반영하기 위함
@@ -88,6 +96,10 @@ export const Admin = () => {
 
       await delay(1000);
     }
+
+    setSelectedRound(nextRoundMap[selectedRound]);
+
+    await delay(1000);
 
     setIsRunning(false);
   };
