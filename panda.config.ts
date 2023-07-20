@@ -11,7 +11,16 @@ export default defineConfig({
   exclude: [],
 
   // Useful for theme customization
-  theme: {},
+  theme: {
+    extend: {
+      keyframes: {
+        moveUp: {
+          '0%': { transform: 'translateY(30px)' },
+          '100%': { transform: 'translateY(0)' },
+        },
+      },
+    },
+  },
 
   // The output directory for your css system
   outdir: 'styled-system',

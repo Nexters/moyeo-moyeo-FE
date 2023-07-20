@@ -46,6 +46,11 @@ const button = cva({
       secondary: {
         background: 'rgba(23, 25, 28, 0.8)',
         color: '#fff',
+        border: '1px solid transparent',
+        transition: 'border 0.3s ease-in-out',
+        _hover: {
+          border: '1px solid #0F83F7',
+        },
       },
       green: {
         background: '#27af49',
