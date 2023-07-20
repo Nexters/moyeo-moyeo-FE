@@ -30,54 +30,6 @@ const nextRoundMap: Record<Round, Round> = {
   종료: '종료',
 };
 
-type filteredUserMapType = {
-  users: User[];
-  selectedTeamId: Team['id'];
-  selectedPosition: string;
-};
-
-const filteredByRound = (roundIndex: number) => {
-  return ({ users, selectedTeamId, selectedPosition }: filteredUserMapType) => {
-    return users.filter((user) => {
-      if (user.choices[roundIndex] !== selectedTeamId) return false;
-      if (selectedPosition !== '전체' && user.position !== selectedPosition)
-        return false;
-      return true;
-    });
-  };
-};
-
-const filteredUsers: Record<
-  Round,
-  ({ users, selectedTeamId, selectedPosition }: filteredUserMapType) => User[]
-> = {
-  '1지망': filteredByRound(roundIndexMap['1지망']),
-  '2지망': filteredByRound(roundIndexMap['2지망']),
-  '3지망': filteredByRound(roundIndexMap['3지망']),
-  '4지망': filteredByRound(roundIndexMap['4지망']),
-  자유: ({ users, selectedPosition }) =>
-    users.filter((user) => {
-      if (user.joinedTeamId !== null) return false;
-      if (selectedPosition !== '전체' && user.position !== selectedPosition)
-        return false;
-      return true;
-    }),
-  종료: () => [],
-};
-
-const filteredSelectedUsers = ({
-  users,
-  selectedTeamId,
-  selectedPosition,
-}: filteredUserMapType) => {
-  return users.filter((user) => {
-    if (user.joinedTeamId !== selectedTeamId) return false;
-    if (selectedPosition !== '전체' && user.position !== selectedPosition)
-      return false;
-    return true;
-  });
-};
-
 type PlayerProps = {
   teamId: Team['id'];
 };
@@ -98,9 +50,7 @@ export const Player = ({ teamId }: PlayerProps) => {
     if (selectedTeamId !== teamId) return alert('자신의 팀만 선택 가능합니다.');
     if (playerState !== 'selecting') return alert('선택할 수 없는 상태입니다.');
 
-    const isSelected =
-      !!selectedUsers.find((id) => id === selectUser.id) ||
-      selectUser.joinedTeamId !== null;
+    const isSelected = !!selectedUsers.find((id) => id === selectUser.id);
     if (isSelected ? confirm(isSelected && '선택해제 하시겠습니까?') : true) {
       setSelectedUsers((prev) =>
         isSelected
@@ -224,7 +174,6 @@ export const Player = ({ teamId }: PlayerProps) => {
               <Button
                 visual="green"
                 className={css({ textAlign: 'left' })}
-                disabled={currentRound !== '종료'}
                 onClick={handleCompleteButton}
               >
                 팀 빌딩 완료
@@ -282,7 +231,7 @@ export const Player = ({ teamId }: PlayerProps) => {
               })}
               onClick={handleTeamSelectionComplete}
             >
-              {playerState === 'selecting' ? '팀원 선택 완료' : '선택 완료'}
+              팀원 선택 완료
             </Button>
           </div>
         </nav>
@@ -308,9 +257,6 @@ export const Player = ({ teamId }: PlayerProps) => {
               padding: '30px',
               borderRadius: '20px',
               overflow: 'auto',
-              '&::-webkit-scrollbar': {
-                display: 'none',
-              },
             })}
           >
             <div className={hstack()}>
@@ -339,13 +285,10 @@ export const Player = ({ teamId }: PlayerProps) => {
                 display: 'grid',
                 gridTemplateRows: 'auto 1fr',
                 gridTemplateColumns: 'repeat(5, 1fr)',
-                gridGap: '25px',
+                gridGap: '20px',
                 marginTop: '30px',
                 overflow: 'auto',
                 maxHeight: 'calc(100% - 140px)',
-                '&::-webkit-scrollbar': {
-                  display: 'none',
-                },
               })}
             >
               {filteredSelectedUsers.map((user) => (
@@ -398,7 +341,7 @@ export const Player = ({ teamId }: PlayerProps) => {
                   left: '0',
                   flex: 1,
                   height: '100%',
-                  width: '880px',
+                  width: '100%',
                   alignItems: 'flex-start',
                   backgroundColor: '#0c0d0e',
                   backdropFilter: 'blur(10px)',
@@ -406,12 +349,9 @@ export const Player = ({ teamId }: PlayerProps) => {
                   padding: '30px',
                   paddingBottom: '0',
                   borderTopRadius: '20px',
-                  overflow: 'auto',
                   animation: `moveUp 0.4s`,
+                  overflow: 'auto',
                   maxHeight: 'calc(100% - 80px)',
-                  '&::-webkit-scrollbar': {
-                    display: 'none',
-                  },
                 })}
               >
                 <div className={hstack()}>
@@ -440,12 +380,9 @@ export const Player = ({ teamId }: PlayerProps) => {
                     display: 'grid',
                     gridTemplateRows: 'auto 1fr',
                     gridTemplateColumns: 'repeat(5, 1fr)',
-                    gridGap: '24px',
+                    gridGap: '20px',
                     marginTop: '30px',
                     overflow: 'auto',
-                    '&::-webkit-scrollbar': {
-                      display: 'none',
-                    },
                   })}
                 >
                   {filteredUsers[currentRound].map((user) => (

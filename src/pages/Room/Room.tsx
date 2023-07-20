@@ -22,7 +22,8 @@ const Room = () => {
   }, [roomId]);
 
   if (!exist) return <NotFound />;
-  if (!role || !teamId) return <Entry handleRole={setRole} setTeamId={setTeamId} />;
+  if (!role || !teamId)
+    return <Entry setRole={setRole} setTeamId={setTeamId} />;
   return role === 'player' ? <Player teamId={teamId} /> : <Admin />;
 };
 

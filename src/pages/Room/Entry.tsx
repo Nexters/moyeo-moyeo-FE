@@ -7,13 +7,13 @@ import { container, vstack } from '@/styled-system/patterns';
 import { Team } from '@/types';
 
 type EntryProps = {
-  handleRole: (role: 'admin' | 'player') => void;
+  setRole: (role: 'admin' | 'player') => void;
   setTeamId: (teamId: Team['id']) => void;
 };
 
 const ROOM_NAME = 'NEXTERS 23기 팀 빌딩 - 방 제목';
 
-export const Entry = ({ handleRole, setTeamId }: EntryProps) => {
+export const Entry = ({ setRole, setTeamId }: EntryProps) => {
   const [selectedTeam, setSelectedTeam] = useState<
     Team['pmName'] | undefined
   >();
@@ -79,7 +79,7 @@ export const Entry = ({ handleRole, setTeamId }: EntryProps) => {
       >
         <button
           type="button"
-          onClick={() => handleRole('admin')}
+          onClick={() => setRole('admin')}
           className={css({
             fontSize: '16px',
             fontWeight: '600',
@@ -92,7 +92,7 @@ export const Entry = ({ handleRole, setTeamId }: EntryProps) => {
         <Button
           disabled={!selectedTeam}
           size="large"
-          onClick={() => handleRole('player')}
+          onClick={() => setRole('player')}
         >
           전략적 팀 빌딩 시작
         </Button>
