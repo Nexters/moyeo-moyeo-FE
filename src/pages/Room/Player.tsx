@@ -78,6 +78,27 @@ export const Player = ({ teamId }: PlayerProps) => {
           return user;
         }),
       );
+
+      // UT 다른 팀들에서 해당 라운드에 선택된 유저(임시)들 currentTeamId 변경
+      mockTeams.forEach((team) => {
+        if (team.id === selectedTeamId) return;
+        setUsers((prev) =>
+          prev.map((user) => {
+            if (
+              user.choices[roundIndexMap[currentRound]] === team.id &&
+              !user.joinedTeamId &&
+              Math.random() > 0.5 // 50% 확률로 팀에 배정
+            ) {
+              return {
+                ...user,
+                joinedTeamId: team.id,
+              };
+            }
+            return user;
+          }),
+        );
+      });
+
       setSelectedUsers([]);
     }, 3000);
   };
@@ -162,7 +183,7 @@ export const Player = ({ teamId }: PlayerProps) => {
                 objectFit: 'cover',
                 borderRadius: '10px',
               })}
-              src="https://framerusercontent.com/images/TeoNhQyEXaPnI8mt5Zquak7mZI0.jpg"
+              src="https://framerusercontent.com/images/LQrBcusf4UkzK4JvxzIxkPnRc.png"
             />
             <div className={stack({ width: '100%', gap: '15px' })}>
               <Button visual="secondary" className={css({ textAlign: 'left' })}>
