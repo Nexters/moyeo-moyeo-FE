@@ -13,7 +13,7 @@ export type CardProps = {
 export const Card = ({
   name,
   position,
-  imageUrl = 'https://framerusercontent.com/images/Z4glq7zJ6NXvB7eJvuZ8iewrbDs.png',
+  imageUrl = 'https://framerusercontent.com/images/Eq9Flp2bXD1AeW4UzqLfZffzM.png',
   selected = false,
   onClick,
 }: CardProps) => {
