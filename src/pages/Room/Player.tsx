@@ -1,25 +1,18 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 
 import arrowDown from '@/assets/icons/arrowDown.svg';
 import arrowUp from '@/assets/icons/arrowUp.svg';
 import warning from '@/assets/icons/warning.svg';
 import { Button } from '@/components/Button';
 import { Card } from '@/components/Card';
-import { mockTeams, mockUsers } from '@/mock/data';
+import { mockPositions, mockTeams, mockUsers } from '@/mock/data';
 import { css } from '@/styled-system/css';
 import { hstack, stack, vstack } from '@/styled-system/patterns';
 import { Round, Team, User } from '@/types';
 
 type PlayerState = 'selecting' | 'selected' | 'finish';
 
-const POSITION_LIST = [
-  '전체',
-  '디자이너',
-  'iOS',
-  '안드로이드',
-  '프론트엔드',
-  '백엔드',
-];
+const positions = ['전체', ...mockPositions];
 
 const roundIndexMap: Record<string, number> = {
   '1지망': 0,
@@ -105,8 +98,10 @@ export const Player = ({ teamId }: PlayerProps) => {
     if (selectedTeamId !== teamId) return alert('자신의 팀만 선택 가능합니다.');
     if (playerState !== 'selecting') return alert('선택할 수 없는 상태입니다.');
 
-    const isSelected = !!selectedUsers.find((id) => id === selectUser.id);
-    if (confirm(isSelected ? '선택해제 하시겠습니까?' : '선택 하시겠습니까?')) {
+    const isSelected =
+      !!selectedUsers.find((id) => id === selectUser.id) ||
+      selectUser.joinedTeamId !== null;
+    if (isSelected ? confirm(isSelected && '선택해제 하시겠습니까?') : true) {
       setSelectedUsers((prev) =>
         isSelected
           ? prev.filter((id) => id !== selectUser.id)
@@ -141,6 +136,43 @@ export const Player = ({ teamId }: PlayerProps) => {
     // FIXME: 팀 빌딩이 최종적으로 완료했다는 것을 서버에 알려야 함.
     setPlayerState('finish');
   };
+
+  const filteredUsersByRound = useMemo(() => {
+    return users.filter((user) => {
+      if (user.choices[roundIndexMap[currentRound]] !== selectedTeamId)
+        return false;
+      if (selectedPosition !== '전체' && user.position !== selectedPosition)
+        return false;
+      return true;
+    });
+  }, [currentRound, selectedPosition, selectedTeamId, users]);
+
+  const filteredUsers: Record<Round, User[]> = {
+    '1지망': filteredUsersByRound,
+    '2지망': filteredUsersByRound,
+    '3지망': filteredUsersByRound,
+    '4지망': filteredUsersByRound,
+    자유: useMemo(
+      () =>
+        users.filter((user) => {
+          if (user.joinedTeamId !== null) return false;
+          if (selectedPosition !== '전체' && user.position !== selectedPosition)
+            return false;
+          return true;
+        }),
+      [selectedPosition, users],
+    ),
+    종료: [],
+  };
+
+  const filteredSelectedUsers = useMemo(() => {
+    return users.filter((user) => {
+      if (user.joinedTeamId !== selectedTeamId) return false;
+      if (selectedPosition !== '전체' && user.position !== selectedPosition)
+        return false;
+      return true;
+    });
+  }, [selectedPosition, selectedTeamId, users]);
 
   return (
     <>
@@ -190,8 +222,7 @@ export const Player = ({ teamId }: PlayerProps) => {
                 결과 이미지 저장
               </Button>
               <Button
-                visual="secondary"
-                color="green"
+                visual="green"
                 className={css({ textAlign: 'left' })}
                 disabled={currentRound !== '종료'}
                 onClick={handleCompleteButton}
@@ -218,7 +249,6 @@ export const Player = ({ teamId }: PlayerProps) => {
             className={vstack({
               width: '100%',
               borderRadius: '20px',
-              height: 'fit-content',
               alignItems: 'flex-start',
               backgroundColor: '#0c0d0e99',
               backdropFilter: 'blur(10px)',
@@ -284,7 +314,7 @@ export const Player = ({ teamId }: PlayerProps) => {
             })}
           >
             <div className={hstack()}>
-              {POSITION_LIST.map((position) => (
+              {positions.map((position) => (
                 <button
                   onClick={() => setSelectedPosition(position)}
                   type="button"
@@ -318,11 +348,7 @@ export const Player = ({ teamId }: PlayerProps) => {
                 },
               })}
             >
-              {filteredSelectedUsers({
-                users,
-                selectedTeamId,
-                selectedPosition,
-              }).map((user) => (
+              {filteredSelectedUsers.map((user) => (
                 <Card
                   key={user.id}
                   name={user.name}
@@ -379,7 +405,7 @@ export const Player = ({ teamId }: PlayerProps) => {
                   border: '1px solid #17191c',
                   padding: '30px',
                   paddingBottom: '0',
-                  borderTopLeftRadius: '20px',
+                  borderTopRadius: '20px',
                   overflow: 'auto',
                   animation: `moveUp 0.4s`,
                   maxHeight: 'calc(100% - 80px)',
@@ -389,7 +415,7 @@ export const Player = ({ teamId }: PlayerProps) => {
                 })}
               >
                 <div className={hstack()}>
-                  {POSITION_LIST.map((position) => (
+                  {positions.map((position) => (
                     <button
                       onClick={() => setSelectedPosition(position)}
                       type="button"
@@ -414,7 +440,7 @@ export const Player = ({ teamId }: PlayerProps) => {
                     display: 'grid',
                     gridTemplateRows: 'auto 1fr',
                     gridTemplateColumns: 'repeat(5, 1fr)',
-                    gridGap: '25px',
+                    gridGap: '24px',
                     marginTop: '30px',
                     overflow: 'auto',
                     '&::-webkit-scrollbar': {
@@ -422,11 +448,7 @@ export const Player = ({ teamId }: PlayerProps) => {
                     },
                   })}
                 >
-                  {filteredUsers[currentRound]({
-                    users,
-                    selectedTeamId,
-                    selectedPosition,
-                  }).map((user) => (
+                  {filteredUsers[currentRound].map((user) => (
                     <Card
                       key={user.id}
                       name={user.name}
