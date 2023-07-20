@@ -22,9 +22,8 @@ const Room = () => {
   }, [roomId]);
 
   if (!exist) return <NotFound />;
-  if (!role || !teamId)
-    return <Entry setRole={setRole} setTeamId={setTeamId} />;
-  return role === 'player' ? <Player teamId={teamId} /> : <Admin />;
+  if (!role) return <Entry setRole={setRole} setTeamId={setTeamId} />;
+  return role === 'player' && !!teamId ? <Player teamId={teamId} /> : <Admin />;
 };
 
 export default Room;
