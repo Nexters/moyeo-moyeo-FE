@@ -17,15 +17,11 @@ export const Entry = ({ handleRole, setTeamId }: EntryProps) => {
   const [selectedTeam, setSelectedTeam] = useState<
     Team['pmName'] | undefined
   >();
-  const teams = mockTeams.map((team) => team.pmName);
 
   const handleChangeSelect = (e: ChangeEvent<HTMLSelectElement>) => {
     e.preventDefault();
     setSelectedTeam(e.target.value);
-    setTeamId(
-      mockTeams.find((team) => team.pmName === e.target.value)
-        ?.id as Team['id'],
-    );
+    setTeamId(e.target.value);
   };
 
   return (
@@ -67,9 +63,9 @@ export const Entry = ({ handleRole, setTeamId }: EntryProps) => {
           value={selectedTeam}
         >
           <option value="">팀 선택</option>
-          {teams.map((team) => (
-            <option key={team} value={team}>
-              {team}
+          {mockTeams.map((team) => (
+            <option key={team.id} label={team.pmName} value={team.id}>
+              {team.pmName}
             </option>
           ))}
         </select>
