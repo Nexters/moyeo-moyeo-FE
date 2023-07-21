@@ -96,7 +96,7 @@ export const Admin = () => {
 
       setUsers(users.slice());
 
-      await delay(100);
+      await delay(1000);
     }
 
     const nextRound = nextRoundMap[selectedRound];
