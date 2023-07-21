@@ -25,7 +25,7 @@ const Room = () => {
   useEffect(() => {
     if (searchParams.get('role') === 'admin') {
       setRole('admin');
-      setSearchParams();
+      setSearchParams(undefined, { replace: true });
     }
     // @note: 한번만 실행되어야 함
     // eslint-disable-next-line react-hooks/exhaustive-deps
