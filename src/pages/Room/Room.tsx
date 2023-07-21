@@ -27,7 +27,9 @@ const Room = () => {
       setRole('admin');
       setSearchParams();
     }
-  }, [searchParams, setSearchParams]);
+    // @note: 한번만 실행되어야 함
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   if (!exist) return <NotFound />;
   if (!role) return <Entry setRole={setRole} setTeamId={setTeamId} />;
