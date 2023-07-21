@@ -1,3 +1,4 @@
+import { Toaster } from 'react-hot-toast';
 import { BrowserRouter, Outlet, Route, Routes } from 'react-router-dom';
 
 import '@/index.css';
@@ -8,15 +9,18 @@ import { vstack } from '@/styled-system/patterns';
 
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route element={<Background />}>
-          <Route path="/" element={<Home />} />
-          <Route path="/create" element={<Create />} />
-          <Route path="/:roomId" element={<Room />} />
-        </Route>
-      </Routes>
-    </BrowserRouter>
+    <>
+      <BrowserRouter>
+        <Routes>
+          <Route element={<Background />}>
+            <Route path="/" element={<Home />} />
+            <Route path="/create" element={<Create />} />
+            <Route path="/:roomId" element={<Room />} />
+          </Route>
+        </Routes>
+      </BrowserRouter>
+      <Toaster />
+    </>
   );
 }
 

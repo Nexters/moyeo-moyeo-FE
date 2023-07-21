@@ -113,7 +113,7 @@ const Create = () => {
 
   const submit = () => {
     // @todo: 서버 호출 후 /room-id 로 이동
-    navigate('/fake-room-id');
+    navigate('/room?role=admin');
   };
 
   return (

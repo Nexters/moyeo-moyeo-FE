@@ -1,5 +1,7 @@
 import { useMemo, useState } from 'react';
 
+import toast from 'react-hot-toast';
+
 import warningIcon from '@/assets/icons/warning.svg';
 import { Button } from '@/components/Button';
 import { CardInAdmin } from '@/components/CardInAdmin';
@@ -97,7 +99,9 @@ export const Admin = () => {
       await delay(1000);
     }
 
-    setSelectedRound(nextRoundMap[selectedRound]);
+    const nextRound = nextRoundMap[selectedRound];
+    setSelectedRound(nextRound);
+    toast.success(`${nextRound} 라운드로 변경되었습니다.`);
 
     await delay(1000);
 
