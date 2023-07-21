@@ -1,5 +1,7 @@
 import { useMemo, useState } from 'react';
 
+import { toast } from 'react-hot-toast';
+
 import arrowDown from '@/assets/icons/arrowDown.svg';
 import arrowUp from '@/assets/icons/arrowUp.svg';
 import warning from '@/assets/icons/warning.svg';
@@ -64,8 +66,11 @@ export const Player = ({ teamId }: PlayerProps) => {
   const handleTeamSelectionComplete = () => {
     setPlayerState('selected');
     setTimeout(() => {
-      setCurrentRound(nextRoundMap[currentRound]);
-      if (nextRoundMap[currentRound] !== '종료') setPlayerState('selecting');
+      const nextRound = nextRoundMap[currentRound];
+      setCurrentRound(nextRound);
+      toast.success(`${nextRound} 라운드로 변경되었습니다.`);
+
+      if (nextRound !== '종료') setPlayerState('selecting');
 
       // users에서 해당 라운드에 선택된 유저들 currentTeamId를 selectedTeamId로 변경
       setUsers((prev) =>
