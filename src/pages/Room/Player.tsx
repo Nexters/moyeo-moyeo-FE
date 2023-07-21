@@ -9,6 +9,7 @@ import { mockPositions, mockTeams, mockUsers } from '@/mock/data';
 import { css } from '@/styled-system/css';
 import { hstack, stack, vstack } from '@/styled-system/patterns';
 import { Round, Team, User } from '@/types';
+import { shakeArray } from '@/utils/array';
 
 type PlayerState = 'selecting' | 'selected' | 'finish';
 
@@ -78,6 +79,36 @@ export const Player = ({ teamId }: PlayerProps) => {
           return user;
         }),
       );
+
+      const countByTeamPosition: Record<string, number> = {};
+      users.forEach((user) => {
+        if (user.joinedTeamId === null) return;
+
+        const key = `${user.joinedTeamId}-${user.position}`;
+        countByTeamPosition[key] = (countByTeamPosition[key] ?? 0) + 1;
+      });
+
+      for (const team of shakeArray(mockTeams)) {
+        // 특정 팀마다 임의 인원 배정
+        if (team.id === teamId) continue;
+        users.forEach((user) => {
+          if (user.joinedTeamId !== null) return;
+          // 현재 라운드가 1지망~4지망이면, 희망하는 팀인지 확인
+          if (
+            currentRound !== '자유' &&
+            user.choices[roundIndexMap[currentRound]] !== team.id
+          )
+            return;
+
+          const key = `${team.id}-${user.position}`;
+          const currentPositionCount = countByTeamPosition[key] ?? 0;
+
+          if (currentRound !== '자유' && currentPositionCount >= 2) return;
+          countByTeamPosition[key] = currentPositionCount + 1;
+          user.joinedTeamId = team.id;
+        });
+      }
+
       setSelectedUsers([]);
     }, 3000);
   };
@@ -91,6 +122,7 @@ export const Player = ({ teamId }: PlayerProps) => {
     return users.filter((user) => {
       if (user.choices[roundIndexMap[currentRound]] !== selectedTeamId)
         return false;
+      if (user.joinedTeamId !== null) return false;
       if (selectedPosition !== '전체' && user.position !== selectedPosition)
         return false;
       return true;
@@ -162,7 +194,7 @@ export const Player = ({ teamId }: PlayerProps) => {
                 objectFit: 'cover',
                 borderRadius: '10px',
               })}
-              src="https://framerusercontent.com/images/TeoNhQyEXaPnI8mt5Zquak7mZI0.jpg"
+              src="https://framerusercontent.com/images/LQrBcusf4UkzK4JvxzIxkPnRc.png"
             />
             <div className={stack({ width: '100%', gap: '15px' })}>
               <Button visual="secondary" className={css({ textAlign: 'left' })}>
@@ -262,6 +294,7 @@ export const Player = ({ teamId }: PlayerProps) => {
             <div className={hstack()}>
               {positions.map((position) => (
                 <button
+                  key={position}
                   onClick={() => setSelectedPosition(position)}
                   type="button"
                   className={css({
@@ -357,6 +390,7 @@ export const Player = ({ teamId }: PlayerProps) => {
                 <div className={hstack()}>
                   {positions.map((position) => (
                     <button
+                      key={`${position}-${currentRound}`}
                       onClick={() => setSelectedPosition(position)}
                       type="button"
                       className={css({
