@@ -90,15 +90,20 @@ export const Player = ({ teamId }: PlayerProps) => {
 
       for (const team of shakeArray(mockTeams)) {
         // 특정 팀마다 임의 인원 배정
+        if (team.id === teamId) continue;
         users.forEach((user) => {
           if (user.joinedTeamId !== null) return;
           // 현재 라운드가 1지망~4지망이면, 희망하는 팀인지 확인
-          if (user.choices[roundIndexMap[currentRound]] !== team.id) return;
+          if (
+            currentRound !== '자유' &&
+            user.choices[roundIndexMap[currentRound]] !== team.id
+          )
+            return;
 
           const key = `${team.id}-${user.position}`;
           const currentPositionCount = countByTeamPosition[key] ?? 0;
 
-          if (currentPositionCount >= 2) return;
+          if (currentRound !== '자유' && currentPositionCount >= 2) return;
           countByTeamPosition[key] = currentPositionCount + 1;
           user.joinedTeamId = team.id;
         });
@@ -117,6 +122,7 @@ export const Player = ({ teamId }: PlayerProps) => {
     return users.filter((user) => {
       if (user.choices[roundIndexMap[currentRound]] !== selectedTeamId)
         return false;
+      if (user.joinedTeamId !== null) return false;
       if (selectedPosition !== '전체' && user.position !== selectedPosition)
         return false;
       return true;
@@ -288,6 +294,7 @@ export const Player = ({ teamId }: PlayerProps) => {
             <div className={hstack()}>
               {positions.map((position) => (
                 <button
+                  key={position}
                   onClick={() => setSelectedPosition(position)}
                   type="button"
                   className={css({
@@ -383,6 +390,7 @@ export const Player = ({ teamId }: PlayerProps) => {
                 <div className={hstack()}>
                   {positions.map((position) => (
                     <button
+                      key={`${position}-${currentRound}`}
                       onClick={() => setSelectedPosition(position)}
                       type="button"
                       className={css({
