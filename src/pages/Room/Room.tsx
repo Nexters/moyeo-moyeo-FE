@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-import { useParams } from 'react-router-dom';
+import { useParams, useSearchParams } from 'react-router-dom';
 
 import { Team } from '@/types';
 import { isValidRoomId } from '@/utils/room';
@@ -15,11 +15,19 @@ const Room = () => {
   const [exist, setExist] = useState<boolean>();
   const [teamId, setTeamId] = useState<Team['id'] | null>();
   const { roomId } = useParams();
+  const [searchParams, setSearchParams] = useSearchParams();
 
   useEffect(() => {
     if (!roomId) return;
     setExist(isValidRoomId(roomId));
   }, [roomId]);
+
+  useEffect(() => {
+    if (searchParams.get('role') === 'admin') {
+      setRole('admin');
+      setSearchParams();
+    }
+  }, [searchParams, setSearchParams]);
 
   if (!exist) return <NotFound />;
   if (!role) return <Entry setRole={setRole} setTeamId={setTeamId} />;
