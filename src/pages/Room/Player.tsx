@@ -9,6 +9,7 @@ import { mockPositions, mockTeams, mockUsers } from '@/mock/data';
 import { css } from '@/styled-system/css';
 import { hstack, stack, vstack } from '@/styled-system/patterns';
 import { Round, Team, User } from '@/types';
+import { shakeArray } from '@/utils/array';
 
 type PlayerState = 'selecting' | 'selected' | 'finish';
 
@@ -79,25 +80,29 @@ export const Player = ({ teamId }: PlayerProps) => {
         }),
       );
 
-      // UT 다른 팀들에서 해당 라운드에 선택된 유저(임시)들 currentTeamId 변경
-      mockTeams.forEach((team) => {
-        if (team.id === selectedTeamId) return;
-        setUsers((prev) =>
-          prev.map((user) => {
-            if (
-              user.choices[roundIndexMap[currentRound]] === team.id &&
-              !user.joinedTeamId &&
-              Math.random() > 0.5 // 50% 확률로 팀에 배정
-            ) {
-              return {
-                ...user,
-                joinedTeamId: team.id,
-              };
-            }
-            return user;
-          }),
-        );
+      const countByTeamPosition: Record<string, number> = {};
+      users.forEach((user) => {
+        if (user.joinedTeamId === null) return;
+
+        const key = `${user.joinedTeamId}-${user.position}`;
+        countByTeamPosition[key] = (countByTeamPosition[key] ?? 0) + 1;
       });
+
+      for (const team of shakeArray(mockTeams)) {
+        // 특정 팀마다 임의 인원 배정
+        users.forEach((user) => {
+          if (user.joinedTeamId !== null) return;
+          // 현재 라운드가 1지망~4지망이면, 희망하는 팀인지 확인
+          if (user.choices[roundIndexMap[currentRound]] !== team.id) return;
+
+          const key = `${team.id}-${user.position}`;
+          const currentPositionCount = countByTeamPosition[key] ?? 0;
+
+          if (currentPositionCount >= 2) return;
+          countByTeamPosition[key] = currentPositionCount + 1;
+          user.joinedTeamId = team.id;
+        });
+      }
 
       setSelectedUsers([]);
     }, 3000);
