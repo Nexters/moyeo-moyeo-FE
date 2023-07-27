@@ -1,46 +1,52 @@
 import { Toaster } from 'react-hot-toast';
 import { BrowserRouter, Outlet, Route, Routes } from 'react-router-dom';
 
-import '@/index.css';
 import Create from '@/pages/Create';
 import Home from '@/pages/Home';
 import Room from '@/pages/Room';
-import { vstack } from '@/styled-system/patterns';
+import Survey from '@/pages/Survey/Survey';
+import { ThemeProvider } from '@/styles/theme';
+import { ChakraProvider } from '@chakra-ui/react';
+import styled from '@emotion/styled';
 
 function App() {
   return (
-    <>
-      <BrowserRouter>
-        <Routes>
-          <Route element={<Background />}>
-            <Route path="/" element={<Home />} />
-            <Route path="/create" element={<Create />} />
-            <Route path="/:roomId" element={<Room />} />
-          </Route>
-        </Routes>
-      </BrowserRouter>
-      <Toaster />
-    </>
+    <ChakraProvider>
+      <ThemeProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route element={<Background />}>
+              <Route path="/" element={<Home />} />
+              <Route path="/create" element={<Create />} />
+              <Route path="/survey" element={<Survey />} />
+              <Route path="/:roomId" element={<Room />} />
+            </Route>
+          </Routes>
+        </BrowserRouter>
+        <Toaster />
+      </ThemeProvider>
+    </ChakraProvider>
   );
 }
 
 const Background = () => {
   return (
-    <main
-      className={vstack({
-        width: '100%',
-        minWidth: 'fit-content',
-        height: '100vh',
-        backgroundImage: 'url(/images/temporal-bg.jpg)',
-        backgroundSize: 'cover',
-        position: 'relative',
-        justifyContent: 'center',
-        alignItems: 'center',
-      })}
-    >
+    <Container>
       <Outlet />
-    </main>
+    </Container>
   );
 };
+
+const Container = styled.main`
+  width: 100%;
+  min-width: fit-content;
+  height: 100vh;
+  background-image: url(/images/temporal-bg.jpg);
+  background-size: cover;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
 
 export default App;
