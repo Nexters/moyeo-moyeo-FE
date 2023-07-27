@@ -19,6 +19,7 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
+    "types": ["@emotion/react/types/css-prop"],
     "paths": {
       "@/styled-system/*": ["./styled-system/*"],
       "@/*": ["./src/*"]

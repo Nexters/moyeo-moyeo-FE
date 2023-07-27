@@ -11,6 +11,10 @@
     "prepare": "panda codegen"
   },
   "dependencies": {
+    "@chakra-ui/react": "2.6.0",
+    "@emotion/babel-plugin": "^11.11.0",
+    "@emotion/react": "^11.11.1",
+    "@emotion/styled": "^11.11.0",
     "framer-motion": "^10.12.18",
     "jotai": "^2.2.2",
     "react": "^18.2.0",
