@@ -53,6 +53,11 @@ const Survey = () => {
     e.preventDefault();
     // FIXME
     console.log(inputs);
+    toast({
+      description: '설문조사가 제출되었습니다',
+      status: 'success',
+      position: 'top',
+    });
   };
 
   return (
@@ -73,17 +78,17 @@ const Survey = () => {
           {POSITION[inputs.userPosition] || '포지션을 선택해주세요'}
         </MenuButton>
         <MenuList>
-          {Object.entries(POSITION).map(([key, value]) => {
+          {Object.entries(POSITION).map(([positionType, positionText]) => {
             return (
               <MenuItem
-                key={key}
+                key={positionType}
                 onClick={handleChange}
-                value={key}
-                id={value}
+                value={positionType}
+                id={positionText}
                 name="userPosition"
                 textAlign="left"
               >
-                {value}
+                {positionText}
               </MenuItem>
             );
           })}
@@ -98,9 +103,6 @@ const Survey = () => {
                 as={Button}
                 textAlign="left"
                 size="lg"
-                textOverflow="ellipsis"
-                overflow="hidden"
-                whiteSpace="nowrap"
                 css={{
                   '& > span': {
                     textOverflow: 'ellipsis',
