@@ -1,10 +1,9 @@
 import React, { Fragment, useState } from 'react';
 
-import toast from 'react-hot-toast';
-
 import { MAX_ROUND, POSITION } from '@/constants/game';
 import { mockTeams } from '@/mock/data';
 import * as S from '@/pages/Survey/Survey.style';
+import { useToast } from '@chakra-ui/react';
 import {
   Button,
   Input,
@@ -14,12 +13,15 @@ import {
   MenuList,
 } from '@chakra-ui/react';
 
+const ROUND_ARRAY = Array.from({ length: MAX_ROUND }, (_, i) => i);
+
 const Survey = () => {
   const [inputs, setInputs] = useState({
     name: '',
     userPosition: '',
-    selectedPosition: Array.from({ length: MAX_ROUND }) as string[],
+    selectedPosition: Array.from({ length: MAX_ROUND }, () => ''),
   });
+  const toast = useToast();
 
   const handleChange = (e: React.ChangeEvent | React.MouseEvent) => {
     const { name, value } = e.target as HTMLButtonElement | HTMLInputElement;
@@ -29,7 +31,11 @@ const Survey = () => {
   const handleChangeSelectedPosition = (e: React.MouseEvent) => {
     const { name, value } = e.target as HTMLButtonElement;
     if (inputs.selectedPosition.includes(value)) {
-      toast.error('이미 선택한 포지션입니다.');
+      toast({
+        description: '이미 선택한 포지션입니다',
+        status: 'error',
+        position: 'top',
+      });
       return;
     }
     setInputs({
@@ -49,7 +55,6 @@ const Survey = () => {
   return (
     <S.Container>
       <S.Title>넥스터즈 23기 팀 빌딩</S.Title>
-
       <S.Label htmlFor="name">이름 *</S.Label>
       <Input
         color="white"
@@ -65,23 +70,23 @@ const Survey = () => {
           {POSITION[inputs.userPosition] || '포지션을 선택해주세요'}
         </MenuButton>
         <MenuList>
-          {Object.keys(POSITION).map((key) => {
+          {Object.entries(POSITION).map(([key, value]) => {
             return (
               <MenuItem
                 key={key}
                 onClick={handleChange}
                 value={key}
-                id={POSITION[key]}
+                id={value}
                 name="userPosition"
                 textAlign="left"
               >
-                {POSITION[key]}
+                {value}
               </MenuItem>
             );
           })}
         </MenuList>
       </Menu>
-      {Array.from({ length: MAX_ROUND }, (_, i) => i).map((round) => {
+      {ROUND_ARRAY.map((round) => {
         return (
           <Fragment key={round}>
             <S.Label>{round + 1}지망 *</S.Label>
@@ -121,7 +126,6 @@ const Survey = () => {
           </Fragment>
         );
       })}
-
       <S.SubmitButton onClick={handleSubmit}>제출하기</S.SubmitButton>
     </S.Container>
   );

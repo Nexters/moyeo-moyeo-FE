@@ -9,6 +9,8 @@ import { ThemeProvider } from '@/styles/theme';
 import { ChakraProvider } from '@chakra-ui/react';
 import styled from '@emotion/styled';
 
+import './index.css';
+
 function App() {
   return (
     <ChakraProvider>

@@ -1,7 +1,6 @@
 import { css } from '@emotion/react';
 
 const defaultFont = css`
-  font-family: 'Pretendard';
   line-height: '1.5';
 `;
 
