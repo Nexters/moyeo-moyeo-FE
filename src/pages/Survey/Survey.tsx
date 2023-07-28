@@ -30,7 +30,10 @@ const Survey = () => {
 
   const handleChangeSelectedPosition = (e: React.MouseEvent) => {
     const { name, value } = e.target as HTMLButtonElement;
-    if (inputs.selectedPosition.includes(value)) {
+    if (
+      inputs.selectedPosition[Number(name)] !== value &&
+      inputs.selectedPosition.includes(value)
+    ) {
       toast({
         description: '이미 선택한 포지션입니다',
         status: 'error',
