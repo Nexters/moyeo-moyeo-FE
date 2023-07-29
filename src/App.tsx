@@ -5,6 +5,7 @@ import '@/index.css';
 import Create from '@/pages/Create';
 import Home from '@/pages/Home';
 import Room from '@/pages/Room';
+import SseTest from '@/pages/SseTest';
 import { vstack } from '@/styled-system/patterns';
 
 function App() {
@@ -15,6 +16,7 @@ function App() {
           <Route element={<Background />}>
             <Route path="/" element={<Home />} />
             <Route path="/create" element={<Create />} />
+            <Route path="/sse" element={<SseTest />} />
             <Route path="/:roomId" element={<Room />} />
           </Route>
         </Routes>
