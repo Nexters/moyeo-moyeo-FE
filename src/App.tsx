@@ -5,7 +5,7 @@ import Create from '@/pages/Create';
 import Home from '@/pages/Home';
 import Room from '@/pages/Room';
 import Survey from '@/pages/Survey/Survey';
-import { ThemeProvider } from '@/styles/theme';
+import theme from '@/styles/theme';
 import { ChakraProvider } from '@chakra-ui/react';
 import styled from '@emotion/styled';
 
@@ -13,20 +13,18 @@ import './index.css';
 
 function App() {
   return (
-    <ChakraProvider>
-      <ThemeProvider>
-        <BrowserRouter>
-          <Routes>
-            <Route element={<Background />}>
-              <Route path="/" element={<Home />} />
-              <Route path="/create" element={<Create />} />
-              <Route path="/survey" element={<Survey />} />
-              <Route path="/:roomId" element={<Room />} />
-            </Route>
-          </Routes>
-        </BrowserRouter>
-        <Toaster />
-      </ThemeProvider>
+    <ChakraProvider theme={theme}>
+      <BrowserRouter>
+        <Routes>
+          <Route element={<Background />}>
+            <Route path="/" element={<Home />} />
+            <Route path="/create" element={<Create />} />
+            <Route path="/survey" element={<Survey />} />
+            <Route path="/:roomId" element={<Room />} />
+          </Route>
+        </Routes>
+      </BrowserRouter>
+      <Toaster />
     </ChakraProvider>
   );
 }

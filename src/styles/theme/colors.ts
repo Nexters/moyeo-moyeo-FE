@@ -1,4 +1,4 @@
-export const color = {
+const colors = {
   white: '#fff',
   black: '#000',
   blue: {
@@ -13,4 +13,8 @@ export const color = {
     800: '#0050b3',
     900: '#003a8c',
   },
-};
+} as const;
+
+export type ColorType = typeof colors;
+
+export default colors;
