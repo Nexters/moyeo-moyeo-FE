@@ -30,14 +30,10 @@ const Background = () => {
   return (
     <main
       className={vstack({
-        width: '100%',
-        minWidth: 'fit-content',
         height: '100vh',
-        backgroundImage: 'url(/images/temporal-bg.jpg)',
-        backgroundSize: 'cover',
-        position: 'relative',
-        justifyContent: 'center',
+        width: '100%',
         alignItems: 'center',
+        justifyContent: 'center',
       })}
     >
       <Outlet />
