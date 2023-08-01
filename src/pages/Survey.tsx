@@ -17,7 +17,7 @@ const positionOption = Object.entries(POSITION).map(([value, label]) => ({
   label,
 }));
 
-const teamOption = mockTeams.map((team) => ({
+const choicesOption = mockTeams.map((team) => ({
   value: team.id,
   label: team.id,
 }));
@@ -110,7 +110,7 @@ const Survey = () => {
           <Fragment key={round}>
             <label className={css({ color: 'white' })}>{round + 1}지망 *</label>
             <Select
-              options={teamOption}
+              options={choicesOption}
               placeholder={`${round + 1}지망을 선택해주세요`}
               onChange={(e) => {
                 if (!e) return;
