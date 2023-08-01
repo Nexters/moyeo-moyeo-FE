@@ -5,10 +5,10 @@ import Select from 'react-select';
 
 import { Button } from '@/components/Button';
 import { Input } from '@/components/Input';
-import { MAX_ROUND, POSITION } from '@/constants/game';
 import { mockTeams } from '@/mock/data';
 import { css } from '@/styled-system/css';
 import { stack } from '@/styled-system/patterns';
+import { MAX_ROUND, POSITION } from '@/utils/const';
 
 const ROUND_ARRAY = Array.from({ length: MAX_ROUND }, (_, i) => i);
 
