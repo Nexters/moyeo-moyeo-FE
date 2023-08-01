@@ -100,7 +100,7 @@ const Survey = () => {
       <label className={css({ color: 'white' })}>직군 *</label>
       <Select
         options={positionOption}
-        onChange={(e: SingleValue<{ value: string; label: string }>) => {
+        onChange={(e) => {
           setInputs({ ...inputs, position: e?.value || '' });
         }}
         placeholder="포지션을 선택해주세요"
@@ -112,7 +112,7 @@ const Survey = () => {
             <Select
               options={choicesOption}
               placeholder={`${round + 1}지망을 선택해주세요`}
-              onChange={(e: SingleValue<{ value: string; label: string }>) => {
+              onChange={(e) => {
                 if (!e) return;
                 setInputs({
                   ...inputs,
