@@ -29,20 +29,16 @@ const Survey = () => {
     choices: Array.from({ length: MAX_ROUND }, () => ''),
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setInputs({ ...inputs, [name]: value.replace(/\s/g, '') });
+  const handleChangeName = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { value } = e.target;
+    setInputs({ ...inputs, userName: value.replace(/\s/g, '') });
   };
 
   const validation = useMemo(() => {
-    const isDuplicate = inputs.choices.some(
-      (team, i) => inputs.choices.indexOf(team) !== i,
-    );
     return {
       isEmptyUserName: inputs.userName === '',
       isEmptyPosition: inputs.position === '',
       hasEmptyChoices: inputs.choices.includes(''),
-      isDuplicateChoices: isDuplicate,
     };
   }, [inputs]);
 
@@ -59,10 +55,6 @@ const Survey = () => {
     }
     if (validation.hasEmptyChoices) {
       toast.error('지망을 모두 선택해주세요');
-      return;
-    }
-    if (validation.isDuplicateChoices) {
-      toast.error('팀은 중복되지 않게 선택해주세요');
       return;
     }
     console.log(inputs);
@@ -104,7 +96,7 @@ const Survey = () => {
         id="userName"
         maxLength={MAX_LENGTH__USER_NAME}
         value={inputs.userName}
-        onChange={handleChange}
+        onChange={handleChangeName}
       />
       <label className={css({ color: 'white' })}>직군 *</label>
       <Select
@@ -121,12 +113,14 @@ const Survey = () => {
             <Select
               options={choicesOption}
               placeholder={`${round + 1}지망을 선택해주세요`}
+              menuPortalTarget={document.body}
+              menuShouldScrollIntoView={false}
               onChange={(e) => {
                 if (!e) return;
                 setInputs({
                   ...inputs,
-                  choices: inputs.choices.map((position, i) => {
-                    if (i !== round) return position;
+                  choices: inputs.choices.map((choice, i) => {
+                    if (i !== round) return choice;
                     return e.value;
                   }),
                 });
