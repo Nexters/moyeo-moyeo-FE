@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from 'react';
+import React, { Fragment, useMemo, useState } from 'react';
 
 import { toast } from 'react-hot-toast';
 import Select from 'react-select';
@@ -34,25 +34,34 @@ const Survey = () => {
     setInputs({ ...inputs, [name]: value.replace(/\s/g, '') });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // FIXME
-    if (inputs.userName === '') {
-      toast.error('이름을 입력해주세요');
-      return;
-    }
-    if (inputs.position === '') {
-      toast.error('직군을 선택해주세요');
-      return;
-    }
-    if (inputs.choices.includes('')) {
-      toast.error('지망을 모두 선택해주세요');
-      return;
-    }
+  const validation = useMemo(() => {
     const isDuplicate = inputs.choices.some(
       (team, i) => inputs.choices.indexOf(team) !== i,
     );
-    if (isDuplicate) {
+    return {
+      isEmptyUserName: inputs.userName === '',
+      isEmptyPosition: inputs.position === '',
+      hasEmptyChoices: inputs.choices.includes(''),
+      isDuplicateChoices: isDuplicate,
+    };
+  }, [inputs]);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    // FIXME
+    if (validation.isEmptyUserName) {
+      toast.error('이름을 입력해주세요');
+      return;
+    }
+    if (validation.isEmptyPosition) {
+      toast.error('직군을 선택해주세요');
+      return;
+    }
+    if (validation.hasEmptyChoices) {
+      toast.error('지망을 모두 선택해주세요');
+      return;
+    }
+    if (validation.isDuplicateChoices) {
       toast.error('팀은 중복되지 않게 선택해주세요');
       return;
     }
@@ -81,7 +90,7 @@ const Survey = () => {
         넥스터즈 23기 팀 빌딩
       </h1>
       <label
-        htmlFor="name"
+        htmlFor="userName"
         className={css({
           fontSize: '16px',
           color: 'white',
@@ -91,8 +100,8 @@ const Survey = () => {
       </label>
       <Input
         placeholder="이름을 입력해주세요"
-        name="name"
-        id="name"
+        name="userName"
+        id="userName"
         maxLength={MAX_LENGTH__USER_NAME}
         value={inputs.userName}
         onChange={handleChange}
