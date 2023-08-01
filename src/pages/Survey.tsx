@@ -8,7 +8,7 @@ import { Input } from '@/components/Input';
 import { mockTeams } from '@/mock/data';
 import { css } from '@/styled-system/css';
 import { stack } from '@/styled-system/patterns';
-import { MAX_ROUND, POSITION } from '@/utils/const';
+import { MAX_LENGTH__USER_NAME, MAX_ROUND, POSITION } from '@/utils/const';
 
 const ROUND_ARRAY = Array.from({ length: MAX_ROUND }, (_, i) => i);
 
@@ -93,7 +93,7 @@ const Survey = () => {
         placeholder="이름을 입력해주세요"
         name="name"
         id="name"
-        maxLength={50}
+        maxLength={MAX_LENGTH__USER_NAME}
         value={inputs.userName}
         onChange={handleChange}
       />
