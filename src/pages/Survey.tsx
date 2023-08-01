@@ -1,7 +1,7 @@
 import React, { Fragment, useState } from 'react';
 
 import { toast } from 'react-hot-toast';
-import Select, { SingleValue } from 'react-select';
+import Select from 'react-select';
 
 import { Button } from '@/components/Button';
 import { Input } from '@/components/Input';
