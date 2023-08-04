@@ -14,7 +14,8 @@ const __fetch = async <T = unknown, D = unknown>(
 ) => {
   const response = await fetch(resolveUrl(BASE_URL, path), {
     method,
-    body: body ? JSON.stringify(body) : null,
+    // @note: body가 undefined이면, stringify 된 값도 undefined이므로 body는 전송되지 않는다.
+    body: JSON.stringify(body),
     headers: {
       'Content-Type': 'application/json',
     },
