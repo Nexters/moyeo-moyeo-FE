@@ -10,14 +10,7 @@ import Room from '@/pages/Room';
 import Survey from '@/pages/Survey';
 import { vstack } from '@/styled-system/patterns';
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      refetchOnWindowFocus: false,
-      refetchOnReconnect: false,
-    },
-  },
-});
+const queryClient = new QueryClient();
 
 function App() {
   return (
