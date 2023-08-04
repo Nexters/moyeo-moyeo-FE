@@ -11,6 +11,8 @@
     "prepare": "panda codegen"
   },
   "dependencies": {
+    "@tanstack/react-query": "^4.32.1",
+    "@tanstack/react-query-devtools": "^4.32.1",
     "framer-motion": "^10.12.18",
     "jotai": "^2.2.2",
     "react": "^18.2.0",

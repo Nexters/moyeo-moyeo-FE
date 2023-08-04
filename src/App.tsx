@@ -1,3 +1,5 @@
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { Toaster } from 'react-hot-toast';
 import { BrowserRouter, Outlet, Route, Routes } from 'react-router-dom';
 
@@ -8,9 +10,11 @@ import Room from '@/pages/Room';
 import Survey from '@/pages/Survey';
 import { vstack } from '@/styled-system/patterns';
 
+const queryClient = new QueryClient();
+
 function App() {
   return (
-    <>
+    <QueryClientProvider client={queryClient}>
       <BrowserRouter>
         <Routes>
           <Route element={<Background />}>
@@ -22,7 +26,8 @@ function App() {
         </Routes>
       </BrowserRouter>
       <Toaster />
-    </>
+      <ReactQueryDevtools initialIsOpen={false} />
+    </QueryClientProvider>
   );
 }
 
