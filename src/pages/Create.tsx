@@ -10,7 +10,7 @@ import { useDisclosure } from '@/hooks/useDisclosure';
 import { AddUserModal } from '@/modals/AddUserModal';
 import { css } from '@/styled-system/css';
 import { hstack, vstack } from '@/styled-system/patterns';
-import { Team, User } from '@/types';
+import { Team, User } from '@/typesOld';
 import { compareUser, generateId } from '@/utils/user';
 
 const Create = () => {

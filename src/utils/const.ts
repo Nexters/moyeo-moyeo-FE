@@ -1,4 +1,4 @@
-import { Round } from '@/types';
+import { Round } from '@/typesOld';
 
 export const MAX_ROUND = 4;
 

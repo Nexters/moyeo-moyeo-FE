@@ -10,7 +10,7 @@ import { mockTeams, mockUsers } from '@/mock/data';
 import { SelectTeamModal } from '@/modals/SelectTeamModal';
 import { css } from '@/styled-system/css';
 import { hstack, vstack } from '@/styled-system/patterns';
-import { Round, Team, User } from '@/types';
+import { Round, Team, User } from '@/typesOld';
 import { shakeArray } from '@/utils/array';
 import { delay } from '@/utils/time';
 

@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 
 import { useParams, useSearchParams } from 'react-router-dom';
 
-import { Team } from '@/types';
+import { Team } from '@/typesOld';
 import { isValidRoomId } from '@/utils/room';
 
 import { Admin } from './Admin';

@@ -5,7 +5,7 @@ import { Modal } from '@/components/Modal';
 import { Table } from '@/components/Table';
 import { css } from '@/styled-system/css';
 import { vstack } from '@/styled-system/patterns';
-import { Team, User } from '@/types';
+import { Team, User } from '@/typesOld';
 
 export type AddUserModalProps = {
   isOpen: boolean;
