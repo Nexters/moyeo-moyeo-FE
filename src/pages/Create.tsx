@@ -1,118 +1,56 @@
-import { useState } from 'react';
+import { ChangeEvent, useState } from 'react';
 
 import { useNavigate } from 'react-router-dom';
 
 import closeIcon from '@/assets/icons/close.svg';
-import { Button } from '@/components/Button';
-import { Input } from '@/components/Input';
-import { Table } from '@/components/Table';
-import { useDisclosure } from '@/hooks/useDisclosure';
-import { AddUserModal } from '@/modals/AddUserModal';
 import { css } from '@/styled-system/css';
 import { hstack, vstack } from '@/styled-system/patterns';
-import { Team, User } from '@/types';
-import { compareUser, generateId } from '@/utils/user';
+import { POSITION_LIST } from '@/utils/const';
+import { generateId } from '@/utils/user';
+
+type TeamRow = {
+  id: string;
+  pmName: string;
+  pmPosition: string;
+  ideaName: string;
+};
 
 const Create = () => {
   const [roomName, setRoomName] = useState('');
-  const [users, setUsers] = useState<User[]>([]);
-  const [teams, setTeams] = useState<Team[]>([]);
-  const [positions, setPositions] = useState<string[]>([]);
-  const { isOpen, onClose, onOpen } = useDisclosure();
+  const [teamRows, setTeamRows] = useState<TeamRow[]>([]);
   const navigate = useNavigate();
 
-  const cannotOpenAddUserModal = !users.length || !teams.length;
-  const cannotSubmit = !roomName || cannotOpenAddUserModal;
-
-  const readFile = (file: File) => {
-    const reader = new FileReader();
-
-    reader.onload = () => {
-      const { result } = reader;
-      const [, ...content] = (result as string).split('\r\n');
-      const users: User[] = [];
-      const choiceSet = new Set<string>();
-
-      // @note: tsv 파일에서 불필요한 공백과 따옴표를 제거합니다.
-      const sanitize = (str: string) => {
-        return str.trim().replace(/\s+/g, ' ').replace(/"/g, '');
-      };
-
-      // @note: `{팀 번호}. {팀 이름 = PM 이름 - 아이디어 이름}` 형식에서 팀 번호와 PM 및 아이디어 이름을 추출합니다.
-      const getTeamNumberAndNames = (choice: string) => {
-        const dotIndex = choice.indexOf('.');
-        const num = choice.slice(0, dotIndex);
-        const name = choice.slice(dotIndex + 1).trim();
-        const dashIndex = name.indexOf('-');
-        const pmName = name.slice(0, dashIndex).trim();
-        const ideaName = name.slice(dashIndex + 1).trim();
-        return {
-          num: parseInt(num),
-          pmName,
-          ideaName,
-        };
-      };
-
-      content.forEach((line) => {
-        const [name, position, ...choices] = line.split('\t');
-        const trimmedChoices = choices.map(sanitize);
-
-        users.push({
-          id: generateId(),
-          name,
-          position: sanitize(position),
-          choices: trimmedChoices,
-          joinedTeamId: null,
-        });
-        trimmedChoices.forEach((choice) => choiceSet.add(choice));
-      });
-      users.sort(compareUser);
-
-      const teams = [...choiceSet]
-        .map((choice) => ({
-          id: choice,
-          ...getTeamNumberAndNames(choice),
-        }))
-        .sort((a, b) => a.num - b.num);
-      const positions = [...new Set(users.map((user) => user.position))].sort(
-        (a, b) => a.localeCompare(b),
-      );
-      // const maxRound = users
-      //   .map((user) => user.choices.length)
-      //   .reduce((a, b) => Math.max(a, b), 0);
-
-      setUsers(users);
-      setTeams(teams);
-      setPositions(positions);
+  const handleAddTeamRow = () => {
+    const newTeam: TeamRow = {
+      id: generateId(), // <- 임시. 서버에 보낼때는 제거해야함
+      pmName: '',
+      pmPosition: '',
+      ideaName: '',
     };
-    reader.readAsText(file);
+    setTeamRows((prev) => prev.concat(newTeam));
   };
-
-  const showPmName = (teamId: Team['id']) => {
-    // 번호. 이름 - 설명
-    // 위와 같은 형식의 문자열에서 이름만 추출
-    return teams.find((team) => team.id === teamId)?.pmName;
+  const handleUpdateTeamRow =
+    (id: string) => (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+      const { name, value } = e.target;
+      setTeamRows((prev) =>
+        prev.map((t) => {
+          if (t.id === id) {
+            return {
+              ...t,
+              [name]: value,
+            };
+          }
+          return t;
+        }),
+      );
+    };
+  const handleDeleteTeamRow = (id: string) => () => {
+    if (confirm('삭제하시겠습니까?')) {
+      setTeamRows((prev) => prev.filter((t) => t.id !== id));
+    }
   };
-
-  const onAddUser = ({
-    name,
-    choices,
-    position,
-  }: Pick<User, 'name' | 'position' | 'choices'>) => {
-    setUsers((prev) => [
-      {
-        id: generateId(),
-        name,
-        choices,
-        position,
-        joinedTeamId: null,
-      },
-      ...prev,
-    ]);
-  };
-
   const submit = () => {
-    // @todo: 서버 호출 후 /room-id 로 이동
+    // @todo: rest api 호출 후 /room-id 로 이동
     navigate('/room?role=admin');
   };
 
@@ -121,148 +59,239 @@ const Create = () => {
       <section
         className={vstack({
           alignItems: 'stretch',
-          overflow: 'auto',
-          width: '640px',
-          height: '90%',
-          backdropFilter: 'blur(10px)',
-          backgroundColor: 'rgba(23, 25, 28, 0.6)',
+          width: '100%',
+          maxWidth: '1280px',
+          margin: '80px auto 160px',
+          padding: '60px',
+          backgroundColor: '#0C0D0E',
+          borderRadius: '40px',
+          gap: '80px',
           color: '#fff',
-          gap: '60px',
-          borderRadius: '20px',
-          padding: '30px',
         })}
       >
-        <header
-          className={hstack({
-            justifyContent: 'space-between',
-            lineHeight: '80px',
-            gap: '20px',
-          })}
-        >
-          <h1
-            className={css({
-              fontSize: '40px',
-              fontWeight: '900',
-              textAlign: 'left',
+        <header className={vstack({ alignItems: 'flex-start', gap: '20px' })}>
+          <div
+            className={hstack({
+              width: '100%',
+              justifyContent: 'space-between',
             })}
           >
-            새로운 팀 빌딩 시작
-          </h1>
+            <h1
+              className={css({
+                fontSize: '48px',
+                fontFamily: 'GmarketSansBold',
+                textAlign: 'left',
+                lineHeight: '1',
+                letterSpacing: '-0.96px',
+              })}
+            >
+              새로운 팀 빌딩 준비하기
+            </h1>
 
-          <button
-            aria-label="홈으로 돌아가기"
-            className={css({ cursor: 'pointer' })}
-            onClick={() => navigate('/')}
+            <button
+              aria-label="홈으로 돌아가기"
+              className={css({ cursor: 'pointer' })}
+              onClick={() => navigate('/')}
+            >
+              <img
+                className={css({ width: '40px', height: '40px' })}
+                src={closeIcon}
+              />
+            </button>
+          </div>
+
+          <p
+            className={css({
+              width: '100%',
+              fontSize: '20px',
+              color: '#B9BDC5',
+            })}
           >
-            <img
-              className={css({ width: '40px', height: '40px' })}
-              src={closeIcon}
-            />
-          </button>
+            이번 팀 빌딩의 제목과 진행되는 팀 목록을 모두 입력해주세요.
+            <br />
+            입력한 데이터로 팀 빌딩 설문지가 생성됩니다.
+          </p>
         </header>
 
-        <section className={vstack({ alignItems: 'flex-start', gap: '20px' })}>
-          <h2 className={css({ fontSize: '17px', fontWeight: 800 })}>
-            생성할 방 이름
+        <section>
+          <h2 className={css({ fontSize: '28px', fontWeight: 800 })}>
+            팀 빌딩 제목
           </h2>
-          <Input
+          <input
             type="text"
             value={roomName}
-            placeholder="개최할 이벤트를 간단히 소개해주세요."
+            placeholder="ex) 넥스터즈 23기 팀 빌딩"
+            className={css({
+              width: '100%',
+              maxWidth: '600px',
+              padding: '16px',
+              margin: '20px 0 12px',
+              borderRadius: '12px',
+              border: '1px solid #000',
+              backgroundColor: '#22252A',
+              color: '#fff',
+            })}
             onChange={(e) => setRoomName(e.target.value)}
           />
+          {/* <p className={css({ fontSize: '14px' })}>
+            20자 이상의 제목은 입력이 불가능합니다.
+          </p> */}
         </section>
 
         <section className={vstack({ alignItems: 'flex-start', gap: '20px' })}>
-          <h2 className={css({ fontSize: '17px', fontWeight: 800 })}>
-            참여자 목록 생성
+          <h2 className={css({ fontSize: '28px', fontWeight: 800 })}>
+            팀 리스트
           </h2>
-          <div className={hstack({ width: '100%' })}>
-            <Input
-              type="file"
-              placeholder="파일 업로드"
-              accept=".tsv"
-              onChange={(e) => {
-                const file = e.target.files?.[0];
-                file && readFile(file);
-              }}
-            />
-            <Button
-              className={css({ width: '120px !important', flexShrink: '0' })}
-              disabled={cannotOpenAddUserModal}
-              onClick={onOpen}
+          <div
+            className={vstack({
+              width: '100%',
+              padding: '16px',
+              backgroundColor: '#22252A',
+              borderRadius: '28px',
+              gap: '40px',
+            })}
+          >
+            <table
+              className={css({
+                width: '100%',
+                fontSize: '16px',
+                color: '#D5D8DC',
+                '& tr': {
+                  height: '52px',
+                  borderBottom: '1px solid #2E3138',
+                },
+                '& thead tr': {
+                  fontWeight: 'bold',
+                  borderBottom: '1px solid #5C6270',
+                },
+                '& th, & td': {
+                  textAlign: 'left',
+                  paddingLeft: '16px',
+                },
+              })}
             >
-              사용자 추가
-            </Button>
+              <thead>
+                <tr>
+                  <th className={css({ width: '200px' })}>PM 이름</th>
+                  <th className={css({ width: '200px' })}>PM 직군</th>
+                  <th>아이디어 이름</th>
+                  <th className={css({ width: '80px' })}></th>
+                </tr>
+              </thead>
+              <tbody>
+                {teamRows.map((team) => (
+                  <tr key={team.id}>
+                    <td>
+                      <input
+                        name="pmName"
+                        placeholder="PM 이름을 입력해주세요"
+                        value={team.pmName}
+                        onChange={handleUpdateTeamRow(team.id)}
+                        className={css({
+                          width: '100%',
+                          padding: '16px 0',
+                          backgroundColor: 'transparent',
+                          color: '#fff',
+                        })}
+                      />
+                    </td>
+                    <td>
+                      <select
+                        name="pmPosition"
+                        value={team.pmPosition}
+                        onChange={handleUpdateTeamRow(team.id)}
+                        className={css({
+                          width: '100%',
+                          padding: '16px 0',
+                          backgroundColor: 'transparent',
+                          color: team.pmPosition === '' ? '#9ca3af' : '#fff',
+                        })}
+                      >
+                        <option value="" disabled>
+                          직군을 선택해주세요.
+                        </option>
+                        {POSITION_LIST.map(({ label, value }) => (
+                          <option key={value} value={value}>
+                            {label}
+                          </option>
+                        ))}
+                      </select>
+                    </td>
+                    <td>
+                      <input
+                        name="ideaName"
+                        placeholder="아이디어 제목을 입력해주세요"
+                        value={team.ideaName}
+                        onChange={handleUpdateTeamRow(team.id)}
+                        className={css({
+                          width: '100%',
+                          padding: '16px 0',
+                          backgroundColor: 'transparent',
+                          color: '#fff',
+                        })}
+                      />
+                    </td>
+                    <td>
+                      <button
+                        className={css({
+                          width: '40px',
+                          height: '40px',
+                          borderRadius: '50%',
+                          backgroundColor: '#17191C',
+                          color: '#fff',
+                          fontSize: '24px',
+                          fontWeight: 600,
+                          userSelect: 'none',
+                          cursor: 'pointer',
+                        })}
+                        onClick={handleDeleteTeamRow(team.id)}
+                      >
+                        -
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            <button
+              className={css({
+                width: '100%',
+                height: '80px',
+                borderRadius: '20px',
+                backgroundColor: '#17191C',
+                color: '#fff',
+                fontSize: '24px',
+                fontWeight: 600,
+                userSelect: 'none',
+                cursor: 'pointer',
+              })}
+              onClick={handleAddTeamRow}
+            >
+              + 팀 추가하기
+            </button>
           </div>
         </section>
 
-        <section className={vstack({ alignItems: 'flex-start', gap: '20px' })}>
-          <h2 className={css({ fontSize: '17px', fontWeight: 800 })}>
-            팀 구성
-          </h2>
-          <Table>
-            <thead>
-              <tr>
-                <th>PM</th>
-                <th>아이디어</th>
-              </tr>
-            </thead>
-            <tbody>
-              {teams.map((team) => (
-                <tr key={team.id}>
-                  <td>{team.pmName}</td>
-                  <td>{team.ideaName}</td>
-                </tr>
-              ))}
-            </tbody>
-          </Table>
-        </section>
-
-        <section className={vstack({ alignItems: 'flex-start', gap: '20px' })}>
-          <h2 className={css({ fontSize: '17px', fontWeight: 800 })}>
-            참여자 엔트리
-          </h2>
-          <Table>
-            <thead>
-              <tr>
-                <th>이름</th>
-                <th>포지션</th>
-                <th>1지망</th>
-                <th>2지망</th>
-                <th>3지망</th>
-                <th>4지망</th>
-              </tr>
-            </thead>
-            <tbody>
-              {users.map((user) => (
-                <tr key={user.id}>
-                  <td>{user.name}</td>
-                  <td>{user.position}</td>
-                  <td>{showPmName(user.choices[0])}</td>
-                  <td>{showPmName(user.choices[1])}</td>
-                  <td>{showPmName(user.choices[2])}</td>
-                  <td>{showPmName(user.choices[3])}</td>
-                </tr>
-              ))}
-            </tbody>
-          </Table>
-        </section>
-
-        <section>
-          <Button size="large" disabled={cannotSubmit} onClick={submit}>
-            전략적 팀 빌딩 시작
-          </Button>
+        <section className={css({ textAlign: 'right' })}>
+          <button
+            className={css({
+              width: '320px',
+              height: '80px',
+              padding: '24px',
+              backgroundColor: '#7B5CFE',
+              borderRadius: '20px',
+              fontSize: '24px',
+              fontFamily: 'GmarketSansBold',
+              letterSpacing: '-0.48px',
+              color: '#fff',
+              cursor: 'pointer',
+            })}
+            onClick={submit}
+          >
+            팀 빌딩 시작하기
+          </button>
         </section>
       </section>
-
-      <AddUserModal
-        isOpen={isOpen}
-        positions={positions}
-        teams={teams}
-        onAddUser={onAddUser}
-        onClose={onClose}
-      />
     </>
   );
 };

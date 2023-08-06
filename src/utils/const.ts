@@ -34,6 +34,10 @@ export const POSITION: Record<string, string> = {
   android: '안드로이드',
   design: '디자인',
 };
+export const POSITION_LIST = Object.entries(POSITION).map(([key, value]) => ({
+  label: value,
+  value: key,
+}));
 
 // max length
 export const MAX_LENGTH__USER_NAME = 50;
