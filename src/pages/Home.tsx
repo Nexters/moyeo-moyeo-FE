@@ -41,7 +41,7 @@ const Home = () => {
         })}
         onClick={handleCreateButton}
       >
-        팀빌딩 준비하기
+        팀 빌딩 준비하기
       </button>
     </section>
   );
