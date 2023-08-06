@@ -3,6 +3,7 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { Toaster } from 'react-hot-toast';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
+import '@/font.css';
 import '@/index.css';
 import CommonLayout from '@/layout/CommonLayout';
 import Create from '@/pages/Create';
