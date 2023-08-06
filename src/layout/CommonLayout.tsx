@@ -6,6 +6,35 @@ import { css } from '@/styled-system/css';
 import { vstack } from '@/styled-system/patterns';
 
 const CommonLayout = () => {
+  return (
+    <div
+      className={css({
+        display: 'flex',
+        flexDirection: 'column',
+        minHeight: '100vh',
+        position: 'relative',
+        backgroundColor: '#290C60',
+      })}
+    >
+      <Background />
+
+      <main
+        className={vstack({
+          flex: 1,
+          justifyContent: 'center',
+          alignItems: 'center',
+          position: 'relative',
+        })}
+      >
+        <Outlet />
+      </main>
+    </div>
+  );
+};
+
+export default CommonLayout;
+
+const Background = () => {
   const [, rerender] = useState(0);
 
   // 1920 * 1080 화면비로 구현한 걸, 현재 화면비에 맞게 조정
@@ -38,84 +67,58 @@ const CommonLayout = () => {
         left: '0',
         width: '100%',
         height: '100%',
-        backgroundColor: '#290C60',
+        pointerEvents: 'none',
+        overflow: 'hidden',
       })}
     >
       <div
         className={css({
           position: 'absolute',
-          top: '0',
-          left: '0',
           width: '100%',
-          height: '100%',
-          pointerEvents: 'none',
-          overflow: 'auto',
+          aspectRatio: '1.78',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
         })}
       >
         <div
+          style={{ width: fit(1330), height: fit(1330) }}
           className={css({
             position: 'absolute',
-            width: '100%',
-            aspectRatio: '1.78',
             top: '50%',
             left: '50%',
             transform: 'translate(-50%, -50%)',
+            borderRadius: '50%',
+            background:
+              'linear-gradient(180deg, #3B04B9 0%, rgba(59, 4, 185, 0.00) 100%)',
+            filter: 'blur(15px)',
           })}
-        >
-          <div
-            style={{ width: fit(1330), height: fit(1330) }}
-            className={css({
-              position: 'absolute',
-              top: '50%',
-              left: '50%',
-              transform: 'translate(-50%, -50%)',
-              borderRadius: '50%',
-              background:
-                'linear-gradient(180deg, #3B04B9 0%, rgba(59, 4, 185, 0.00) 100%)',
-              filter: 'blur(15px)',
-            })}
+        />
+        <div
+          style={{ width: fit(956), height: fit(956) }}
+          className={css({
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            borderRadius: '50%',
+            background:
+              'linear-gradient(180deg, #6824EB 0%, rgba(104, 36, 235, 0.00) 100%)',
+            filter: 'blur(10px)',
+          })}
+        />
+        {Stars.map(({ size, x, y, rotate }, index) => (
+          <Star
+            key={index}
+            size={fit(size)}
+            {...fitCoord(x, y)}
+            rotate={rotate}
           />
-          <div
-            style={{ width: fit(956), height: fit(956) }}
-            className={css({
-              position: 'absolute',
-              top: '50%',
-              left: '50%',
-              transform: 'translate(-50%, -50%)',
-              borderRadius: '50%',
-              background:
-                'linear-gradient(180deg, #6824EB 0%, rgba(104, 36, 235, 0.00) 100%)',
-              filter: 'blur(10px)',
-            })}
-          />
-          {Stars.map(({ size, x, y, rotate }, index) => (
-            <Star
-              key={index}
-              size={fit(size)}
-              {...fitCoord(x, y)}
-              rotate={rotate}
-            />
-          ))}
-        </div>
+        ))}
       </div>
-
-      <main
-        className={vstack({
-          justifyContent: 'center',
-          alignItems: 'center',
-          position: 'relative',
-          width: '100%',
-          height: '100%',
-          overflow: 'scroll',
-        })}
-      >
-        <Outlet />
-      </main>
     </div>
   );
 };
-
-export default CommonLayout;
 
 type StarProps = {
   size: number;
