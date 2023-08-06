@@ -174,7 +174,7 @@ const Create = () => {
                 <tr>
                   <th className={css({ width: '200px' })}>PM 이름</th>
                   <th className={css({ width: '200px' })}>PM 직군</th>
-                  <th>아이디어 이름</th>
+                  <th>아이디어 제목</th>
                   <th className={css({ width: '80px' })}></th>
                 </tr>
               </thead>
@@ -292,6 +292,8 @@ const Create = () => {
           </button>
         </section>
       </section>
+
+      <section className=""></section>
     </>
   );
 };
