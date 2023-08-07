@@ -1,6 +1,6 @@
 import { Modal } from '@/components/Modal';
 import { css } from '@/styled-system/css';
-import { Team } from '@/typesOld';
+import { Team } from '@/types.old';
 
 export type SelectTeamModalProps = {
   isOpen: boolean;

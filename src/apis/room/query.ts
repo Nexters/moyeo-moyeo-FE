@@ -1,11 +1,11 @@
 import { useQuery } from '@tanstack/react-query';
 
 import { httpClient } from '@/apis/http';
-import { type TotalInfo } from '@/apis/room/type';
+import { type API } from '@/apis/room/type';
 
-export const useGetTotalInfo = (params: TotalInfo['get']['request']) => {
+export const useGetTotalInfo = (params: API['getTotalInfo']['request']) => {
   const getTotalInfo = async () => {
-    const data = await httpClient.get<TotalInfo['get']['response']>(
+    const data = await httpClient.get<API['getTotalInfo']['response']>(
       `rooms/${params.roomId}/info`,
     );
     return data;

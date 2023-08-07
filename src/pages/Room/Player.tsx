@@ -10,7 +10,7 @@ import { Card } from '@/components/Card';
 import { mockPositions, mockTeams, mockUsers } from '@/mock/data';
 import { css } from '@/styled-system/css';
 import { hstack, stack, vstack } from '@/styled-system/patterns';
-import { Round, Team, User } from '@/typesOld';
+import { Round, Team, User } from '@/types.old';
 import { shakeArray } from '@/utils/array';
 
 type PlayerState = 'selecting' | 'selected' | 'finish';

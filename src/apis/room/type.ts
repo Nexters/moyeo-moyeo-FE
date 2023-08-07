@@ -1,10 +1,10 @@
-import { TotalInfo as TotalInfoType } from '@/types';
+import { TotalInfo } from '@/types';
 
-export type TotalInfo = {
-  get: {
+export type API = {
+  getTotalInfo: {
     request: {
       roomId: string;
     };
-    response: TotalInfoType;
+    response: TotalInfo;
   };
 };
