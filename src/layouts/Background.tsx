@@ -19,19 +19,28 @@ export const Background = ({ src, isBlurred = false }: BackgroundProps) => {
       })}
     >
       <img
+        src={src}
         className={css({
           position: 'absolute',
           top: '50%',
           left: '50%',
           transform: 'translate(-50%, -50%)',
           width: '100%',
-          ...(isBlurred && {
-            backgroundColor: 'rgba(0,0,0,0.2)',
-            filter: 'blur(20px)',
-          }),
+          filter: isBlurred ? 'blur(20px)' : 'none',
         })}
-        src={src}
       />
+      {isBlurred && (
+        <div
+          className={css({
+            position: 'absolute',
+            top: '0',
+            left: '0',
+            width: '100%',
+            height: '100%',
+            backgroundColor: 'rgba(0,0,0,0.2)',
+          })}
+        />
+      )}
     </div>
   );
 };
