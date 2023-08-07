@@ -1,5 +1,6 @@
 import { Outlet } from 'react-router-dom';
 
+import BlurBackgroundImage from '@/assets/images/blur-bg.svg';
 import { css } from '@/styled-system/css';
 import { vstack } from '@/styled-system/patterns';
 
@@ -16,7 +17,7 @@ const CommonLayout = () => {
         backgroundColor: '#290C60',
       })}
     >
-      <Background src="images/blur-bg.svg" isBlurred />
+      <Background src={BlurBackgroundImage} isBlurred />
 
       <main
         className={vstack({

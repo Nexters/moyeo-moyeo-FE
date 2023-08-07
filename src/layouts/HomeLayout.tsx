@@ -1,5 +1,6 @@
 import { Outlet } from 'react-router-dom';
 
+import HomeBackgroundImage from '@/assets/images/home-bg.svg';
 import { css } from '@/styled-system/css';
 import { vstack } from '@/styled-system/patterns';
 
@@ -16,7 +17,7 @@ const HomeLayout = () => {
         backgroundColor: '#290C60',
       })}
     >
-      <Background src="images/home-bg.svg" />
+      <Background src={HomeBackgroundImage} />
 
       <main
         className={vstack({
