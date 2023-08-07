@@ -1,4 +1,4 @@
-import { User } from '@/types';
+import { User } from '@/types.old';
 
 export const generateId = () => {
   return Math.random().toString(36).substr(2, 9);
