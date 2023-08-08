@@ -1,6 +1,6 @@
 import checkIcon from '@/assets/icons/check.svg';
 import { css } from '@/styled-system/css';
-import { center, vstack } from '@/styled-system/patterns';
+import { center, hstack, vstack } from '@/styled-system/patterns';
 
 export type CardProps = {
   name: string;
@@ -19,15 +19,15 @@ export const Card = ({
 }: CardProps) => {
   return (
     <button
-      className={vstack({
-        width: '144px',
-        padding: '16px',
-        backgroundColor: 'rgb(23, 25, 28)',
-        color: '#fff',
-        gap: '10px',
+      className={hstack({
+        justifyContent: 'space-between',
+        width: '295px',
+        padding: '24px',
+        backgroundColor: 'rgba(255, 255, 255, 0.16)',
+        color: 'gray.5',
         borderRadius: '20px',
         cursor: 'pointer',
-        border: '1px solid transparent',
+        border: '1px solid rgba(255, 255, 255, 0.23)',
         transition: 'border 0.3s ease-in-out',
         _hover: {
           border: '1px solid #0F83F7',
@@ -35,6 +35,20 @@ export const Card = ({
       })}
       onClick={onClick}
     >
+      <div className={vstack({ alignItems: 'flex-start' })}>
+        <span
+          className={css({
+            textStyle: 'h4',
+            paddingX: '10px',
+            borderRadius: '6px',
+            backgroundColor: 'green.70',
+          })}
+        >
+          1지망
+        </span>
+        <p className={css({ textStyle: 'h4' })}>{position}</p>
+        <p className={css({ textStyle: 'h3' })}>{name}</p>
+      </div>
       <div
         className={css({
           position: 'relative',
@@ -44,7 +58,7 @@ export const Card = ({
       >
         <img
           className={css({
-            width: '112px',
+            width: '120px',
             aspectRatio: '1',
             objectFit: 'cover',
             borderRadius: '10px',
@@ -72,13 +86,6 @@ export const Card = ({
             />
           </div>
         )}
-      </div>
-
-      <div className={vstack()}>
-        <p className={css({ fontSize: '14px', fontWeight: 'bold' })}>
-          {position}
-        </p>
-        <p className={css({ fontSize: '18px', fontWeight: '900' })}>{name}</p>
       </div>
     </button>
   );
