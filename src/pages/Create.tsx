@@ -160,6 +160,9 @@ const Create = () => {
                   height: '52px',
                   borderBottom: '1px solid #2E3138',
                 },
+                '& tbody tr:last-child': {
+                  borderBottom: 'none',
+                },
                 '& thead tr': {
                   fontWeight: 'bold',
                   borderBottom: '1px solid #5C6270',
