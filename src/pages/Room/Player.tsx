@@ -1,27 +1,17 @@
-import { useMemo, useState } from 'react';
-
 import arrowUp from '@/assets/icons/arrowUp.svg';
 import face from '@/assets/icons/face.svg';
 import group from '@/assets/icons/group.svg';
 import { Button } from '@/components/Button';
 import { Card } from '@/components/Card';
-import { mockUsers } from '@/mock/data';
 import { css } from '@/styled-system/css';
 import { grid, hstack, stack, vstack } from '@/styled-system/patterns';
-import { Round, Team, User } from '@/types.old';
+import { Team } from '@/types.old';
 
 type PlayerProps = {
   teamId: Team['id'];
 };
 export const Player = ({ teamId }: PlayerProps) => {
-  const [users, setUsers] = useState(mockUsers);
-
-  const filteredSelectedUsers = useMemo(() => {
-    return users.filter((user) => {
-      if (user.joinedTeamId !== teamId) return false;
-      return true;
-    });
-  }, [teamId, users]);
+  console.log(teamId);
   return (
     <div
       className={vstack({
