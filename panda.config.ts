@@ -1,5 +1,7 @@
 import { defineConfig } from '@pandacss/dev';
 
+import { colors, textStyles } from '@/styles';
+
 export default defineConfig({
   // Whether to use css reset
   preflight: true,
@@ -12,6 +14,8 @@ export default defineConfig({
 
   // Useful for theme customization
   theme: {
+    textStyles,
+    tokens: { colors },
     extend: {
       keyframes: {
         moveUp: {
@@ -21,7 +25,6 @@ export default defineConfig({
       },
     },
   },
-
   // The output directory for your css system
   outdir: 'styled-system',
 });
