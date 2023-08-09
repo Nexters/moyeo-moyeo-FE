@@ -16,7 +16,7 @@ type TeamRow = {
 };
 
 const Create = () => {
-  const [roomName, setRoomName] = useState('');
+  const [teamBuildingName, setTeamBuildingName] = useState('');
   const [teamRows, setTeamRows] = useState<TeamRow[]>([]);
   const navigate = useNavigate();
 
@@ -49,9 +49,32 @@ const Create = () => {
       setTeamRows((prev) => prev.filter((t) => t.id !== id));
     }
   };
-  const submit = () => {
-    // @todo: rest api 호출 후 /room-id 로 이동
-    navigate('/room?role=admin');
+  const handleSubmit = () => {
+    if (teamBuildingName === '') {
+      return alert('팀 빌딩 제목을 입력해주세요.');
+    }
+    if (teamRows.length === 0) {
+      return alert('팀 리스트를 입력해주세요.');
+    }
+    if (teamRows.some((t) => t.pmName === '')) {
+      return alert('PM 이름을 입력해주세요.');
+    }
+    if (teamRows.some((t) => t.pmPosition === '')) {
+      return alert('PM 직군을 선택해주세요.');
+    }
+    if (teamRows.some((t) => t.ideaName === '')) {
+      return alert('아이디어 제목을 입력해주세요.');
+    }
+
+    if (
+      confirm(
+        '입력된 정보를 토대로 생성되며, 이후 팀 정보 수정이 어렵습니다.\n팀 빌딩을 시작하시겠습니까?',
+      )
+    ) {
+      console.log(teamBuildingName, teamRows);
+      // @todo: rest api 호출 후 /room-id 로 이동
+      // navigate('/room?role=admin');
+    }
   };
 
   return (
@@ -119,7 +142,7 @@ const Create = () => {
           </h2>
           <input
             type="text"
-            value={roomName}
+            value={teamBuildingName}
             placeholder="ex) 넥스터즈 23기 팀 빌딩"
             className={css({
               width: '100%',
@@ -131,7 +154,7 @@ const Create = () => {
               backgroundColor: '#22252A',
               color: '#fff',
             })}
-            onChange={(e) => setRoomName(e.target.value)}
+            onChange={(e) => setTeamBuildingName(e.target.value)}
           />
           {/* <p className={css({ fontSize: '14px' })}>
             20자 이상의 제목은 입력이 불가능합니다.
@@ -289,7 +312,7 @@ const Create = () => {
               color: '#fff',
               cursor: 'pointer',
             })}
-            onClick={submit}
+            onClick={handleSubmit}
           >
             팀 빌딩 시작하기
           </button>
