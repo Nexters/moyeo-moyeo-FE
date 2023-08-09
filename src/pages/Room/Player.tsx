@@ -5,6 +5,7 @@ import { ReactComponent as Face } from '@/assets/icons/face.svg';
 import { ReactComponent as Group } from '@/assets/icons/group.svg';
 import { Button } from '@/components/Button';
 import { Card } from '@/components/Card';
+import { LinearProgress } from '@/components/LinearProgress';
 import { Step, Stepper } from '@/components/stepper';
 import { css } from '@/styled-system/css';
 import { grid, hstack, stack, vstack } from '@/styled-system/patterns';
@@ -14,7 +15,7 @@ type PlayerProps = {
   teamId: Team['id'];
 };
 
-const steps = [
+const ROUNDS = [
   {
     label: '1지망',
     Icon: Face,
@@ -37,12 +38,18 @@ const steps = [
   },
 ];
 
+const TOTAL_TEAM_COUNT = 10;
+
 export const Player = ({ teamId }: PlayerProps) => {
   const [activeStep, setActiveStep] = useState(0);
+  const [selectedTeamCount, setSelectedTeamCount] = useState(0);
 
   const handleNext = () => {
-    if (activeStep === steps.length - 1) return;
+    if (activeStep === ROUNDS.length - 1) return;
     setActiveStep((prev) => prev + 1);
+
+    // FIXME: 임시로 선택 완료 상황 증가시킴
+    setSelectedTeamCount((prev) => prev + 1);
   };
 
   console.log(teamId);
@@ -77,31 +84,25 @@ export const Player = ({ teamId }: PlayerProps) => {
           >
             Nexters23기 팀빌딩입니다
           </h1>
-          <div className={hstack()}>
+          <div className={hstack({ gap: '15px' })}>
             <span className={css({ textStyle: 'h3', color: 'gray.5' })}>
               선택 완료 상황
             </span>
-            <span className={css({ textStyle: 'h4', color: 'gray.5' })}>
-              1 / 10
+            <span
+              className={css({
+                textStyle: 'h4',
+                color: 'gray.5',
+                marginLeft: '5px',
+                width: '50px',
+                textAlign: 'center',
+              })}
+            >
+              {selectedTeamCount} / {TOTAL_TEAM_COUNT}
             </span>
-            <div className={css({ w: '138px', h: '30px' })}>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="138"
-                height="30"
-                viewBox="0 0 138 30"
-                fill="none"
-              >
-                <rect
-                  width="138"
-                  height="30"
-                  rx="10"
-                  fill="white"
-                  fillOpacity="0.23"
-                />
-                <rect width="93" height="30" rx="10" fill="#45B134" />
-              </svg>
-            </div>
+            <LinearProgress
+              value={selectedTeamCount}
+              total={TOTAL_TEAM_COUNT}
+            />
           </div>
         </div>
         <div
@@ -122,7 +123,7 @@ export const Player = ({ teamId }: PlayerProps) => {
             전체 현황 보기
           </button>
           <Stepper activeStep={activeStep}>
-            {steps.map(({ label, Icon }, index) => (
+            {ROUNDS.map(({ label, Icon }, index) => (
               <Step key={label} id={index}>
                 <Icon className={css({ marginRight: '10px' })} />
                 <span className={css({ textStyle: 'h3' })}>{label}</span>
