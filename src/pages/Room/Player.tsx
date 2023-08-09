@@ -50,84 +50,41 @@ export const Player = ({ teamId }: PlayerProps) => {
   return (
     <div
       className={vstack({
-        width: '100%',
         height: '100vh',
-        minWidth: '1920px',
-        gap: '30px',
-        padding: '0 100px',
+        gap: '20px',
+        padding: '0 80px',
       })}
     >
       <section
-        className={hstack({
-          width: '100%',
-          gap: '80px',
+        className={vstack({
+          width: '1280px',
+          background: 'rgba(0, 0, 0, 0.07)',
+          backdropFilter: 'blur(50px)',
+          gap: '20px',
+          padding: '20px 30px',
+          borderRadius: '0 0 20px 20px',
+          border: '1px solid rgba(255, 255, 255, 0.11)',
         })}
       >
         <div
-          className={stack({
-            flex: 1,
-            background: 'rgba(0, 0, 0, 0.25)',
-            backdropFilter: 'blur(50px)',
-            padding: '25px 30px',
-            border: '1px solid rgba(255, 255, 255, 0.11)',
-            borderRadius: '0 0 40px 40px',
-          })}
+          className={hstack({ width: '100%', justifyContent: 'space-between' })}
         >
           <h1
             className={css({
-              textStyle: 'h1',
+              textStyle: 'h2',
               color: 'gray.5',
             })}
           >
             Nexters23기 팀빌딩입니다
           </h1>
           <div className={hstack()}>
-            <Stepper
-              activeStep={activeStep}
-              className={css({
-                flex: 1,
-              })}
-            >
-              {steps.map(({ label, Icon }, index) => (
-                <Step key={label} id={index}>
-                  <Icon className={css({ mr: '10px' })} />
-                  <span className={css({ textStyle: 'h3' })}>{label}</span>
-                </Step>
-              ))}
-            </Stepper>
-            <button
-              onClick={handleNext}
-              className={css({
-                padding: '15px 20px',
-                textStyle: 'h3',
-                color: 'gray.5',
-                borderRadius: '10px',
-                border: '1px solid rgba(255, 255, 255, 0.36)',
-                backgroundColor: 'rgba(255, 255, 255, 0.28)',
-                cursor: 'pointer',
-              })}
-            >
-              전체 현황 보기
-            </button>
-          </div>
-        </div>
-        <div
-          className={vstack({
-            height: '100%',
-            alignItems: 'start',
-            justifyContent: 'center',
-            background: 'rgba(0, 0, 0, 0.25)',
-            backdropFilter: 'blur(50px)',
-            padding: '25px 30px',
-            border: '1px solid rgba(255, 255, 255, 0.11)',
-            borderRadius: '0 0 40px 40px',
-          })}
-        >
-          <span className={css({ textStyle: 'h3', color: 'gray.5' })}>
-            선택 완료 현황
-          </span>
-          <div className={hstack({ gap: '15px' })}>
-            <div className={css({ width: '138px', height: '30px' })}>
+            <span className={css({ textStyle: 'h3', color: 'gray.5' })}>
+              선택 완료 상황
+            </span>
+            <span className={css({ textStyle: 'h4', color: 'gray.5' })}>
+              1 / 10
+            </span>
+            <div className={css({ w: '138px', h: '30px' })}>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="138"
@@ -145,20 +102,43 @@ export const Player = ({ teamId }: PlayerProps) => {
                 <rect width="93" height="30" rx="10" fill="#45B134" />
               </svg>
             </div>
-            <span className={css({ textStyle: 'h4', color: 'gray.5' })}>
-              1 / 10
-            </span>
           </div>
+        </div>
+        <div
+          className={hstack({ width: '100%', justifyContent: 'space-between' })}
+        >
+          <button
+            onClick={handleNext}
+            className={css({
+              padding: '10.5px 25px',
+              textStyle: 'h3',
+              color: 'gray.5',
+              borderRadius: '10px',
+              border: '1px solid rgba(255, 255, 255, 0.36)',
+              background: 'rgba(255, 255, 255, 0.28)',
+              cursor: 'pointer',
+            })}
+          >
+            전체 현황 보기
+          </button>
+          <Stepper activeStep={activeStep}>
+            {steps.map(({ label, Icon }, index) => (
+              <Step key={label} id={index}>
+                <Icon className={css({ marginRight: '10px' })} />
+                <span className={css({ textStyle: 'h3' })}>{label}</span>
+              </Step>
+            ))}
+          </Stepper>
         </div>
       </section>
       <section
         className={css({
-          width: '100%',
-          background: 'rgba(0, 0, 0, 0.25)',
+          width: '1280px',
+          background: 'rgba(0, 0, 0, 0.07)',
           backdropFilter: 'blur(50px)',
           padding: '40px 40px 0 40px',
           border: '1px solid rgba(255, 255, 255, 0.11)',
-          borderRadius: '40px',
+          borderRadius: '20px',
           flex: 1,
           overflow: 'auto',
         })}
@@ -168,11 +148,18 @@ export const Player = ({ teamId }: PlayerProps) => {
         </h2>
         <div
           className={grid({
-            columns: 5,
+            columns: 4,
             marginTop: '30px',
-            gap: '30px',
+            gap: '20px',
             overflow: 'auto',
             maxHeight: 'calc(100% - 72px)',
+            _scrollbarThumb: {
+              background: 'rgba(255, 255, 255, 0.50)',
+              borderRadius: '99px',
+            },
+            _scrollbar: {
+              width: '10px',
+            },
           })}
         >
           {Array.from({ length: 12 }).map((_, index) => (
@@ -187,20 +174,21 @@ export const Player = ({ teamId }: PlayerProps) => {
       </section>
       <section
         className={hstack({
-          width: '100%',
-          gap: '85px',
+          width: '1280px',
+          gap: '40px',
+          alignItems: 'flex-start',
         })}
       >
         <div
           className={stack({
             flex: 1,
-            background: 'rgba(0, 0, 0, 0.25)',
+            background: 'rgba(0, 0, 0, 0.07)',
             backdropFilter: 'blur(50px)',
             padding: '40px 40px 0 40px',
             border: '1px solid rgba(255, 255, 255, 0.11)',
-            borderRadius: '40px 40px 0 0',
+            borderRadius: '20px 20px 0 0',
             overflow: 'auto',
-            height: '220px',
+            height: '280px',
             gap: '0',
           })}
         >
@@ -223,6 +211,7 @@ export const Player = ({ teamId }: PlayerProps) => {
                   fontWeight: 600,
                   fontSize: '20px',
                   gap: '15px',
+                  background: 'blue.60',
                 })}
               >
                 펼치기
@@ -232,14 +221,20 @@ export const Player = ({ teamId }: PlayerProps) => {
           </div>
           <div
             className={grid({
-              columns: 4,
+              columns: 3,
               marginTop: '30px',
-              gap: '30px',
+              gap: '20px',
               overflow: 'auto',
-              maxHeight: 'calc(100% - 72px)',
+              _scrollbarThumb: {
+                background: 'rgba(255, 255, 255, 0.50)',
+                borderRadius: '99px',
+              },
+              _scrollbar: {
+                width: '10px',
+              },
             })}
           >
-            {Array.from({ length: 7 }).map((_, index) => (
+            {Array.from({ length: 11 }).map((_, index) => (
               <Card
                 key={index}
                 name="홍길동"
@@ -249,7 +244,7 @@ export const Player = ({ teamId }: PlayerProps) => {
             ))}
           </div>
         </div>
-        <div className={css({ width: '250px', height: '200px' })}>
+        <div className={css({ width: '255px', height: '180px' })}>
           <Button
             visual="primary"
             size="large"

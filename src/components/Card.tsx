@@ -21,7 +21,7 @@ export const Card = ({
     <button
       className={hstack({
         justifyContent: 'space-between',
-        width: '295px',
+        width: '275px',
         padding: '24px',
         backgroundColor: 'rgba(255, 255, 255, 0.16)',
         color: 'gray.5',
