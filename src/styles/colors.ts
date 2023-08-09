@@ -1,13 +1,13 @@
 export const colors = {
-  designer: {
+  de: {
     dark: { value: '#FF7A01' },
     light: { value: '#FEB100' },
   },
-  backend: {
+  be: {
     dark: { value: '#441FE2' },
     light: { value: '#7B5CFE' },
   },
-  frontend: {
+  fe: {
     dark: { value: '#E41530' },
     light: { value: '#F679A6' },
   },
