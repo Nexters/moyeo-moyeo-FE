@@ -1,8 +1,11 @@
+import { useState } from 'react';
+
 import arrowUp from '@/assets/icons/arrowUp.svg';
-import face from '@/assets/icons/face.svg';
-import group from '@/assets/icons/group.svg';
+import { ReactComponent as Face } from '@/assets/icons/face.svg';
+import { ReactComponent as Group } from '@/assets/icons/group.svg';
 import { Button } from '@/components/Button';
 import { Card } from '@/components/Card';
+import { Step, Stepper } from '@/components/stepper';
 import { css } from '@/styled-system/css';
 import { grid, hstack, stack, vstack } from '@/styled-system/patterns';
 import { Team } from '@/types.old';
@@ -10,8 +13,40 @@ import { Team } from '@/types.old';
 type PlayerProps = {
   teamId: Team['id'];
 };
+
+const steps = [
+  {
+    label: '1지망',
+    Icon: Face,
+  },
+  {
+    label: '2지망',
+    Icon: Face,
+  },
+  {
+    label: '3지망',
+    Icon: Face,
+  },
+  {
+    label: '4지망',
+    Icon: Face,
+  },
+  {
+    label: '팀 구성 조정',
+    Icon: Group,
+  },
+];
+
 export const Player = ({ teamId }: PlayerProps) => {
+  const [activeStep, setActiveStep] = useState(0);
+
+  const handleNext = () => {
+    if (activeStep === steps.length - 1) return;
+    setActiveStep((prev) => prev + 1);
+  };
+
   console.log(teamId);
+
   return (
     <div
       className={vstack({
@@ -47,104 +82,21 @@ export const Player = ({ teamId }: PlayerProps) => {
             Nexters23기 팀빌딩입니다
           </h1>
           <div className={hstack()}>
-            <div
-              className={hstack({
+            <Stepper
+              activeStep={activeStep}
+              className={css({
                 flex: 1,
               })}
             >
-              <span
-                className={hstack({
-                  color: 'gray.5',
-                  border: '1px solid rgba(255, 255, 255, 0.53)',
-                  borderRadius: '10px',
-                  padding: '10px 15px',
-                  textStyle: 'h3',
-                })}
-              >
-                <img src={face} />
-                1지망
-              </span>
-              <span
-                className={css({
-                  width: '20px',
-                  height: '5px',
-                  backgroundColor: 'rgba(255, 255, 255, 0.19)',
-                  borderRadius: '5px',
-                })}
-              />
-              <span
-                className={hstack({
-                  color: 'gray.5',
-                  border: '1px solid rgba(255, 255, 255, 0.53)',
-                  borderRadius: '10px',
-                  padding: '10px 15px',
-                  textStyle: 'h3',
-                })}
-              >
-                <img src={face} />
-                2지망
-              </span>
-              <span
-                className={css({
-                  width: '20px',
-                  height: '5px',
-                  backgroundColor: 'rgba(255, 255, 255, 0.19)',
-                  borderRadius: '5px',
-                })}
-              />
-              <span
-                className={hstack({
-                  color: 'gray.5',
-                  border: '1px solid rgba(255, 255, 255, 0.53)',
-                  borderRadius: '10px',
-                  padding: '10px 15px',
-                  textStyle: 'h3',
-                })}
-              >
-                <img src={face} />
-                3지망
-              </span>
-              <span
-                className={css({
-                  width: '20px',
-                  height: '5px',
-                  backgroundColor: 'rgba(255, 255, 255, 0.19)',
-                  borderRadius: '5px',
-                })}
-              />
-              <span
-                className={hstack({
-                  color: 'gray.5',
-                  border: '1px solid rgba(255, 255, 255, 0.53)',
-                  borderRadius: '10px',
-                  padding: '10px 15px',
-                  textStyle: 'h3',
-                })}
-              >
-                <img src={face} />
-                4지망
-              </span>
-              <span
-                className={css({
-                  width: '20px',
-                  height: '5px',
-                  backgroundColor: 'rgba(255, 255, 255, 0.19)',
-                  borderRadius: '5px',
-                })}
-              />
-              <span
-                className={hstack({
-                  color: 'gray.5',
-                  border: '1px solid rgba(255, 255, 255, 0.53)',
-                  borderRadius: '10px',
-                  padding: '10px 15px',
-                  textStyle: 'h3',
-                })}
-              >
-                <img src={group} />팀 구성 조정
-              </span>
-            </div>
+              {steps.map(({ label, Icon }, index) => (
+                <Step key={label} id={index}>
+                  <Icon className={css({ mr: '10px' })} />
+                  <span className={css({ textStyle: 'h3' })}>{label}</span>
+                </Step>
+              ))}
+            </Stepper>
             <button
+              onClick={handleNext}
               className={css({
                 padding: '15px 20px',
                 textStyle: 'h3',
@@ -188,7 +140,7 @@ export const Player = ({ teamId }: PlayerProps) => {
                   height="30"
                   rx="10"
                   fill="white"
-                  fill-opacity="0.23"
+                  fillOpacity="0.23"
                 />
                 <rect width="93" height="30" rx="10" fill="#45B134" />
               </svg>
