@@ -1,4 +1,4 @@
-const BASE_URL = import.meta.env.VIResponseE_BASE_URL;
+const BASE_URL = import.meta.env.VITE_BASE_URL;
 
 export const httpClient = {
   get: <T>(url: string) => __fetch<T>('get', url),
