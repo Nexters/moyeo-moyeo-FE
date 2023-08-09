@@ -67,6 +67,18 @@ export const colors = {
     90: { value: '#033491' },
     100: { value: '#02286E' },
   },
+  purple: {
+    10: { value: '#EEEAFF' },
+    20: { value: '#C9BCFF' },
+    30: { value: '#A48EFF' },
+    40: { value: '#8060FF' },
+    50: { value: '#6F3DFF' },
+    60: { value: '#5818DF' },
+    70: { value: '#470FC0' },
+    80: { value: '#3E029E' },
+    90: { value: '#2F007C' },
+    100: { value: '#22005A' },
+  },
   gray: {
     5: { value: '#FFFFFF' },
     10: { value: '#F1F2F3' },

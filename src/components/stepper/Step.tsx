@@ -22,11 +22,11 @@ export const Step = ({ id, children }: StepProps) => {
           p: '10px 20px',
           textStyle: 'h3',
           gap: '0',
-          bg: activeStep === id ? 'be.dark' : 'transparent',
+          bg: activeStep === id ? 'purple.60' : 'transparent',
           fill: activeStep === id ? 'gray.5' : 'rgba(255, 255, 255, 0.53)',
           borderWidth: '1px',
           borderColor:
-            activeStep === id ? 'be.dark' : 'rgba(255, 255, 255, 0.19)',
+            activeStep === id ? 'purple.60' : 'rgba(255, 255, 255, 0.19)',
           transition: 'all 0.2s ease-in-out',
         })}
       >
