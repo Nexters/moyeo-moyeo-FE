@@ -25,7 +25,7 @@ export const Step = ({ id, children }: StepProps) => {
           bg: activeStep === id ? 'be.dark' : 'transparent',
           fill: activeStep === id ? 'gray.5' : 'rgba(255, 255, 255, 0.53)',
           borderWidth: '1px',
-          borderColor: activeStep === id ? 'be.dark' : '#fff',
+          borderColor: activeStep === id ? 'be.dark' : 'gray.5',
           transition: 'all 0.2s ease-in-out',
         })}
       >
