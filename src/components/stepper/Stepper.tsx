@@ -1,9 +1,7 @@
-import React, { useEffect } from 'react';
+import React, { Fragment } from 'react';
 
-import { useSetAtom } from 'jotai';
-
-import { stepperAtom } from '@/components/stepper/store';
-import { cx } from '@/styled-system/css';
+import StepperContext from '@/components/stepper/StepperContext';
+import { css, cx } from '@/styled-system/css';
 import { hstack } from '@/styled-system/patterns';
 
 type StepperProps = {
@@ -13,14 +11,32 @@ type StepperProps = {
 };
 
 export const Stepper = ({ activeStep, children, className }: StepperProps) => {
-  const setActiveStepAtom = useSetAtom(stepperAtom);
+  const childrenArray = React.Children.toArray(children).filter(
+    Boolean,
+  ) as React.ReactElement[];
+  const steps = childrenArray.map((step, index) => {
+    return (
+      <Fragment key={`${step.key}`}>
+        {React.cloneElement(step, {
+          id: index,
+        })}
+        {index !== childrenArray.length - 1 && (
+          <span
+            className={css({
+              width: '20px',
+              height: '2px',
+              backgroundColor: 'rgba(255, 255, 255, 0.19)',
+              borderRadius: '5px',
+            })}
+          />
+        )}
+      </Fragment>
+    );
+  });
 
-  useEffect(() => {
-    setActiveStepAtom({
-      totalCount: React.Children.count(children),
-      activeStep,
-    });
-  }, [activeStep]);
-
-  return <div className={cx(hstack({ gap: '0' }), className)}>{children}</div>;
+  return (
+    <StepperContext.Provider value={{ activeStep }}>
+      <div className={cx(hstack({ gap: '0' }), className)}>{steps}</div>
+    </StepperContext.Provider>
+  );
 };
