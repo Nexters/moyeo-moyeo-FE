@@ -25,3 +25,7 @@ dist-ssr
 
 # pandaCSS output dir
 /styled-system
+
+# dotenv
+.env*
+!.env.sample
