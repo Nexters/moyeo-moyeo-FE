@@ -68,7 +68,7 @@ export const SurveyForm = ({ onAfterSubmit }: SurveyFormProps) => {
   };
 
   return (
-    <div
+    <section
       className={stack({
         flex: '1',
         width: '100%',
@@ -76,28 +76,28 @@ export const SurveyForm = ({ onAfterSubmit }: SurveyFormProps) => {
         padding: '70px 30px 130px',
         color: '#fff',
         wordBreak: 'keep-all',
+        gap: '50px',
       })}
     >
-      <h1
-        className={css({
-          fontSize: '28px',
-          fontWeight: '800',
-          marginBottom: '8px',
-        })}
-      >
-        넥스터즈 23기 팀 빌딩
-      </h1>
+      <header>
+        <h1
+          className={css({
+            textStyle: 'h1',
+            marginBottom: '8px',
+          })}
+        >
+          넥스터즈 23기 팀 빌딩
+        </h1>
 
-      <p
-        className={css({
-          fontSize: '16px',
-          fontWeight: '400',
-          marginBottom: '50px',
-        })}
-      >
-        한 번 제출한 설문은 변경할 수 없습니다. <br />
-        안내된 시간을 엄수해주세요.
-      </p>
+        <p
+          className={css({
+            textStyle: 'p2',
+          })}
+        >
+          한 번 제출한 설문은 변경할 수 없습니다. <br />
+          안내된 시간을 엄수해주세요.
+        </p>
+      </header>
 
       <form className={stack({ gap: '36px' })} onSubmit={handleSubmit}>
         <FormControl label="이름">
@@ -122,8 +122,7 @@ export const SurveyForm = ({ onAfterSubmit }: SurveyFormProps) => {
                 isClickedSubmit && validation.isEmptyUserName
                   ? '2px solid #FF453A'
                   : '2px solid transparent',
-              fontSize: '16px',
-              fontWeight: '600',
+              textStyle: 'h4',
               color: '#fff',
             })}
           />
@@ -147,8 +146,7 @@ export const SurveyForm = ({ onAfterSubmit }: SurveyFormProps) => {
               height: '50px',
               backgroundColor: 'rgba(12, 13, 14, 0.50)',
               borderRadius: '12px',
-              fontSize: '16px',
-              fontWeight: '600',
+              textStyle: 'h4',
               color: '#fff',
             })}
           />
@@ -209,7 +207,7 @@ export const SurveyForm = ({ onAfterSubmit }: SurveyFormProps) => {
           설문 제출하기
         </button>
       </form>
-    </div>
+    </section>
   );
 };
 
@@ -221,15 +219,14 @@ type FormControlProps = {
 const FormControl = ({ label, children }: FormControlProps) => {
   return (
     <label className={stack({ gap: '15px' })}>
-      <div
+      <legend
         className={css({
-          fontSize: '20px',
-          fontWeight: '600',
-          lineHeight: '1',
+          textStyle: 'h3',
+          lineHeight: 'normal',
         })}
       >
         {label}
-      </div>
+      </legend>
       {children}
     </label>
   );

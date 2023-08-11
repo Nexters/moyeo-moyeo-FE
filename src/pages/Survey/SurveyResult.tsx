@@ -11,13 +11,12 @@ export const SurveyResult = () => {
         padding: '70px 30px 130px',
         color: '#fff',
         wordBreak: 'keep-all',
+        gap: '8px',
       })}
     >
       <h1
         className={css({
-          fontSize: '28px',
-          fontWeight: '800',
-          marginBottom: '8px',
+          textStyle: 'h1',
         })}
       >
         제출완료
@@ -25,9 +24,7 @@ export const SurveyResult = () => {
 
       <p
         className={css({
-          fontSize: '16px',
-          fontWeight: '400',
-          marginBottom: '50px',
+          textStyle: 'p2',
         })}
       >
         설문 응답이 정상적으로 제출되었습니다.
