@@ -295,7 +295,14 @@ export const Player = ({ teamId }: PlayerProps) => {
                 onClick={toggleSelectList}
               >
                 {isOpenSelectList ? '접기' : '펼치기'}
-                <img src={arrowUp} />
+                <img
+                  src={arrowUp}
+                  className={css({
+                    transform: isOpenSelectList
+                      ? 'rotate(180deg)'
+                      : 'rotate(0deg)',
+                  })}
+                />
               </Button>
             </div>
           </div>
