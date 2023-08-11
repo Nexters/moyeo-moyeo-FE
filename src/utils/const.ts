@@ -37,3 +37,4 @@ export const POSITION: Record<string, string> = {
 
 // max length
 export const MAX_LENGTH__USER_NAME = 50;
+export const MAX_LENGTH__USER_PROFILE = 50;
