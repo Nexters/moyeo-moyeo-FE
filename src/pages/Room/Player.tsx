@@ -220,9 +220,9 @@ export const Player = ({ teamId }: PlayerProps) => {
             },
           })}
         >
-          {filteredSelectedUsers.map((user, index) => (
+          {filteredSelectedUsers.map((user) => (
             <Card
-              key={index}
+              key={user.id}
               className={css({
                 cursor: 'default',
               })}
@@ -314,7 +314,7 @@ export const Player = ({ teamId }: PlayerProps) => {
               },
             })}
           >
-            {filteredUsersByRound.map((user, index) => (
+            {filteredUsersByRound.map((user) => (
               <Card
                 className={css({
                   _hover: {
