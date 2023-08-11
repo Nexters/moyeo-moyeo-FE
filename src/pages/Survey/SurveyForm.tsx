@@ -114,6 +114,7 @@ export const SurveyForm = ({ onAfterSubmit }: SurveyFormProps) => {
             }
             className={css({
               padding: '16px',
+              width: '100%',
               height: '50px',
               backgroundColor: 'rgba(12, 13, 14, 0.50)',
               borderRadius: '12px',
@@ -142,6 +143,7 @@ export const SurveyForm = ({ onAfterSubmit }: SurveyFormProps) => {
             }
             className={css({
               padding: '16px',
+              width: '100%',
               height: '50px',
               backgroundColor: 'rgba(12, 13, 14, 0.50)',
               borderRadius: '12px',
