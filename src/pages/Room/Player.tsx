@@ -95,7 +95,6 @@ export const Player = ({ teamId }: PlayerProps) => {
       setPlayerState('selecting');
       setSelectedTeamCount(0);
 
-      // users에서 해당 라운드에 선택된 유저들 currentTeamId를 selectedTeamId로 변경
       setUsers((prev) =>
         prev.map((user) => {
           if (selectedUsers.includes(user.id)) {
