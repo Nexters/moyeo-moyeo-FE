@@ -61,6 +61,7 @@ export const Card = ({
           gap: '12px',
           transition: 'border 0.3s ease-in-out',
           cursor: 'pointer',
+          position: 'relative',
         }),
         className,
       )}
