@@ -6,6 +6,7 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import '@/font.css';
 import '@/index.css';
 import CommonLayout from '@/layouts/CommonLayout';
+import MobileLayout from '@/layouts/MobileLayout';
 import Create from '@/pages/Create';
 import Home from '@/pages/Home';
 import Room from '@/pages/Room';
@@ -21,8 +22,10 @@ function App() {
           <Route element={<CommonLayout />}>
             <Route path="/" element={<Home />} />
             <Route path="/create" element={<Create />} />
-            <Route path="/survey" element={<Survey />} />
             <Route path="/:roomId" element={<Room />} />
+          </Route>
+          <Route element={<MobileLayout />}>
+            <Route path="/survey" element={<Survey />} />
           </Route>
         </Routes>
       </BrowserRouter>
