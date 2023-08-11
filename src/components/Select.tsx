@@ -11,6 +11,8 @@ export const Select = ({ isError, ...restProps }: SelectProps) => {
     <ReactSelect
       menuPortalTarget={document.body}
       menuShouldScrollIntoView={false}
+      // isSearchable = true이면 모바일에서 검색이 가능해짐
+      isSearchable={false}
       {...restProps}
       // @todo: style 변경은 일단 미지원...
       styles={{
@@ -37,11 +39,6 @@ export const Select = ({ isError, ...restProps }: SelectProps) => {
             ...styles[':hover'],
             color: '#6D677E',
           },
-        }),
-        input: (styles) => ({
-          ...styles,
-          // 뒤에 caret이 보이지 않도록 함
-          color: 'transparent',
         }),
         singleValue: (styles) => ({ ...styles, color: '#fff' }),
         valueContainer: (styles) => ({ ...styles, padding: '0' }),
