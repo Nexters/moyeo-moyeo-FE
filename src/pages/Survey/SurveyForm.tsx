@@ -74,7 +74,7 @@ export const SurveyForm = ({ onAfterSubmit }: SurveyFormProps) => {
         width: '100%',
         maxWidth: '520px',
         padding: '70px 30px 130px',
-        color: '#fff',
+        color: 'gray.5',
         wordBreak: 'keep-all',
         gap: '50px',
       })}
@@ -120,10 +120,10 @@ export const SurveyForm = ({ onAfterSubmit }: SurveyFormProps) => {
               borderRadius: '12px',
               border:
                 isClickedSubmit && validation.isEmptyUserName
-                  ? '2px solid #FF453A'
+                  ? '2px solid token(colors.red.60)'
                   : '2px solid transparent',
               textStyle: 'h4',
-              color: '#fff',
+              color: 'gray.5',
             })}
           />
         </FormControl>
@@ -147,7 +147,7 @@ export const SurveyForm = ({ onAfterSubmit }: SurveyFormProps) => {
               backgroundColor: 'rgba(12, 13, 14, 0.50)',
               borderRadius: '12px',
               textStyle: 'h4',
-              color: '#fff',
+              color: 'gray.5',
             })}
           />
         </FormControl>
@@ -195,10 +195,10 @@ export const SurveyForm = ({ onAfterSubmit }: SurveyFormProps) => {
             marginTop: '34px', // 70px만큼 떨어트리기 위함 (36 + 34)
             padding: '24px 0',
             borderRadius: '20px',
-            backgroundColor: '#FF7A01',
+            backgroundColor: 'yellow.80',
             fontSize: '20px',
             fontFamily: 'GmarketSansBold',
-            color: '#fff',
+            color: 'gray.5',
             boxShadow:
               '4px 4px 8px 0px rgba(255, 255, 255, 0.25) inset, -4px -4px 8px 0px #B84200 inset',
             cursor: 'pointer',

@@ -9,7 +9,7 @@ export const SurveyResult = () => {
         width: '100%',
         maxWidth: '520px',
         padding: '70px 30px 130px',
-        color: '#fff',
+        color: 'gray.5',
         wordBreak: 'keep-all',
         gap: '8px',
       })}
