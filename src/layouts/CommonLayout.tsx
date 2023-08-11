@@ -21,41 +21,31 @@ const CommonLayout = () => {
         backgroundColor: '#290C60',
       })}
     >
-      <div
+      {/* @note: 두 이미지를 가져오는 이유는 페이지 전환시 깜빡이는 느낌을 제거하기 위함 */}
+      <img
+        src={HomeBackgroundImage}
         className={css({
           position: 'absolute',
           top: '0',
           left: '0',
           width: '100%',
           height: '100%',
-          pointerEvents: 'none',
-          overflow: 'hidden',
+          objectFit: 'cover',
+          opacity: isHome ? 1 : 0,
         })}
-      >
-        {/* @note: 두 이미지를 가져오는 이유는 페이지 전환시 깜빡이는 느낌을 제거하기 위함 */}
-        <img
-          src={HomeBackgroundImage}
-          className={css({
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            width: '100%',
-            opacity: isHome ? 1 : 0,
-          })}
-        />
-        <img
-          src={BlurBackgroundImage}
-          className={css({
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            width: '100%',
-            opacity: isHome ? 0 : 1,
-          })}
-        />
-      </div>
+      />
+      <img
+        src={BlurBackgroundImage}
+        className={css({
+          position: 'absolute',
+          top: '0',
+          left: '0',
+          width: '100%',
+          height: '100%',
+          objectFit: 'cover',
+          opacity: isHome ? 0 : 1,
+        })}
+      />
 
       <main
         className={vstack({

@@ -17,26 +17,17 @@ const MobileLayout = () => {
         backgroundColor: '#290C60',
       })}
     >
-      <div
+      <img
+        src={MobileBackgroundImage}
         className={css({
           position: 'absolute',
           top: '0',
           left: '0',
           width: '100%',
           height: '100%',
-          pointerEvents: 'none',
-          overflow: 'hidden',
+          objectFit: 'cover',
         })}
-      >
-        <img
-          src={MobileBackgroundImage}
-          className={css({
-            width: '100%',
-            height: '100%',
-            objectFit: 'cover',
-          })}
-        />
-      </div>
+      />
 
       <main
         className={vstack({
