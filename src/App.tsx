@@ -9,6 +9,7 @@ import CommonLayout from '@/layouts/CommonLayout';
 import MobileLayout from '@/layouts/MobileLayout';
 import Create from '@/pages/Create';
 import Home from '@/pages/Home';
+import NotFound from '@/pages/NotFound';
 import Room from '@/pages/Room';
 import Survey from '@/pages/Survey';
 
@@ -23,6 +24,7 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/create" element={<Create />} />
             <Route path="/:roomId" element={<Room />} />
+            <Route path="*" element={<NotFound />} />
           </Route>
           <Route element={<MobileLayout />}>
             <Route path="/survey" element={<Survey />} />
