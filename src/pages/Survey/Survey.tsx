@@ -10,6 +10,7 @@ const Survey = () => {
     setIsSubmitted(true);
   };
 
+  // @todo: url에서 room-id로 방정보를 가져온 뒤 방이 존재하지 않으면 NotFound를 띄우기
   return !isSubmitted ? (
     <SurveyForm onAfterSubmit={handleSubmit} />
   ) : (
