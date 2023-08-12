@@ -17,36 +17,34 @@ export const Entry = ({ setRole, teamId, setTeamId }: EntryProps) => {
   return (
     <section
       className={vstack({
-        width: '590px',
+        gap: '0',
         backgroundColor: 'rgba(255, 255, 255, 0.07)',
         borderRadius: '20px',
-        padding: '60px 60px 80px 60px',
+        padding: '80px 40px',
         backdropFilter: 'blur(50px)',
-        gap: '70px',
       })}
     >
-      <div className={vstack({ gap: '20px' })}>
-        <h1
-          className={css({
-            fontFamily: 'GmarketSansBold',
-            fontSize: '48px',
-            fontWeight: '400',
-            textAlign: 'center',
-            lineHeight: '1',
-            color: 'gray.5',
-          })}
-        >
-          {ROOM_NAME}
-        </h1>
-        <span
-          className={css({
-            textStyle: 'p1',
-            color: 'gray.10',
-          })}
-        >
-          자신에게 해당하는 아이디어를 선택해주세요
-        </span>
-      </div>
+      <h1
+        className={css({
+          fontFamily: 'GmarketSansBold',
+          fontSize: '48px',
+          fontWeight: '400',
+          textAlign: 'center',
+          lineHeight: '1',
+          color: 'gray.5',
+        })}
+      >
+        {ROOM_NAME}
+      </h1>
+      <span
+        className={css({
+          textStyle: 'p1',
+          color: 'gray.10',
+          marginTop: '120px',
+        })}
+      >
+        자신에게 해당하는 아이디어를 선택해주세요
+      </span>
       <div
         className={vstack({
           width: '330px',
@@ -54,7 +52,7 @@ export const Entry = ({ setRole, teamId, setTeamId }: EntryProps) => {
           gap: '0',
         })}
       >
-        <div className={css({ width: '100%' })}>
+        <div className={css({ width: '100%', marginTop: '12px' })}>
           <Select
             placeholder="본인의 아이디어를 선택해주세요"
             options={mockTeams.map((team) => ({
@@ -70,7 +68,7 @@ export const Entry = ({ setRole, teamId, setTeamId }: EntryProps) => {
           disabled={!teamId}
           size="medium"
           onClick={() => setRole('player')}
-          className={css({ marginTop: '120px' })}
+          className={css({ marginTop: '80px' })}
         >
           PM으로 입장하기
         </Button>
@@ -82,8 +80,8 @@ export const Entry = ({ setRole, teamId, setTeamId }: EntryProps) => {
             fontWeight: '600',
             cursor: 'pointer',
             color: 'rgba(255, 255, 255, 0.8)',
-            padding: '20px',
-            marginTop: '20px',
+            padding: '12px',
+            marginTop: '12px',
           })}
         >
           운영진으로 참여하기
