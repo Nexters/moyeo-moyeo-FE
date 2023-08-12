@@ -103,6 +103,8 @@ export const Card = ({
               },
             })}
             href={link}
+            // @note: 툴팁같은 효과를 주기 위함
+            title={link}
             target={link ? '_blank' : undefined}
             onClick={(e) => {
               e.stopPropagation();

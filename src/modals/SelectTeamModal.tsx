@@ -6,7 +6,7 @@ export type SelectTeamModalProps = {
   isOpen: boolean;
   teams: Team[];
   onClose: () => void;
-  onSelect: (teamId: Team['id']) => void;
+  onSelect: (teamId: Team['id'] | null) => void;
 };
 
 export const SelectTeamModal = ({
@@ -34,10 +34,9 @@ export const SelectTeamModal = ({
             },
           })}
           onChange={(e) => {
-            const teamId = e.target.value as Team['id'];
+            const teamId = e.target.value as Team['id'] | 'unselect';
             if (!teamId) return;
-
-            onSelect?.(teamId);
+            onSelect?.(teamId === 'unselect' ? null : teamId);
             onClose();
           }}
         >
@@ -47,6 +46,7 @@ export const SelectTeamModal = ({
               {team.pmName} 팀
             </option>
           ))}
+          <option value="unselect">배정 해제</option>
         </select>
       </section>
     </Modal>
