@@ -1,14 +1,10 @@
-import { Outlet, useLocation } from 'react-router-dom';
+import { Outlet } from 'react-router-dom';
 
-import BlurBackgroundImage from '@/assets/images/blur.webp';
-import HomeBackgroundImage from '@/assets/images/home.webp';
+import MobileBackgroundImage from '@/assets/images/mobile.webp';
 import { css } from '@/styled-system/css';
 import { vstack } from '@/styled-system/patterns';
 
-const CommonLayout = () => {
-  const location = useLocation();
-  const isHome = location.pathname === '/';
-
+const MobileLayout = () => {
   return (
     <div
       className={css({
@@ -21,9 +17,8 @@ const CommonLayout = () => {
         backgroundColor: '#290C60',
       })}
     >
-      {/* @note: 두 이미지를 가져오는 이유는 페이지 전환시 깜빡이는 느낌을 제거하기 위함 */}
       <img
-        src={HomeBackgroundImage}
+        src={MobileBackgroundImage}
         className={css({
           position: 'absolute',
           top: '0',
@@ -31,19 +26,6 @@ const CommonLayout = () => {
           width: '100%',
           height: '100%',
           objectFit: 'cover',
-          opacity: isHome ? 1 : 0,
-        })}
-      />
-      <img
-        src={BlurBackgroundImage}
-        className={css({
-          position: 'absolute',
-          top: '0',
-          left: '0',
-          width: '100%',
-          height: '100%',
-          objectFit: 'cover',
-          opacity: isHome ? 0 : 1,
         })}
       />
 
@@ -61,4 +43,4 @@ const CommonLayout = () => {
   );
 };
 
-export default CommonLayout;
+export default MobileLayout;

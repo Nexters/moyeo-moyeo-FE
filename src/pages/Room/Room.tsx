@@ -5,9 +5,9 @@ import { useParams, useSearchParams } from 'react-router-dom';
 import { Team } from '@/types.old';
 import { isValidRoomId } from '@/utils/room';
 
+import NotFound from '../NotFound';
 import { Admin } from './Admin';
 import { Entry } from './Entry';
-import { NotFound } from './NotFound';
 import { Player } from './Player';
 
 const Room = () => {
@@ -31,6 +31,7 @@ const Room = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // @todo: room id로 방정보를 불러온 뒤에도 존재하지 않으면 그때 NotFound를 띄우기
   if (!exist) return <NotFound />;
   if (!role) return <Entry setRole={setRole} setTeamId={setTeamId} />;
   return role === 'player' && !!teamId ? <Player teamId={teamId} /> : <Admin />;
