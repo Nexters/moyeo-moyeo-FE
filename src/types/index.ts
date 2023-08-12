@@ -13,14 +13,16 @@ export type Position =
   | 'IOS'
   | 'ANDROID';
 
-export type Room = {
-  roomUrl: string;
-  roundStatus: Round;
+export type TeamBuilding = {
+  teamBuildingUrl: string;
+  teamBuildingName: string;
+  teamBuildingStatus: Round;
 };
 
 export type Team = {
   uuid: string;
   teamName: string;
+  pmName: string;
   pmPosition: Position;
   selectDone: boolean;
 };
@@ -29,13 +31,14 @@ export type User = {
   uuid: string;
   userName: string;
   position: Position;
-  choices: string[];
+  choices: Team['uuid'][];
   joinedTeamId: string;
+  profileLink: string;
   selectedTeam: boolean;
 };
 
 export type TotalInfo = {
-  roomInfo: Room;
+  teamBuildingInfo: TeamBuilding;
   teamInfoList: Team[];
   userInfoList: User[];
 };

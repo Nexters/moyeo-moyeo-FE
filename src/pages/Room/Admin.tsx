@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 
 import toast from 'react-hot-toast';
 
-// import { useGetTotalInfo } from '@/apis/room';
+import { useGetTotalInfo } from '@/apis/team-building/queries';
 import { ReactComponent as Face } from '@/assets/icons/face.svg';
 import { ReactComponent as Group } from '@/assets/icons/group.svg';
 import { Button } from '@/components/Button';
@@ -71,7 +71,7 @@ export const Admin = ({ roomId }: AdminProps) => {
   const shareSurveyModalProps = useDisclosure();
 
   const [isRunning, setIsRunning] = useState(false);
-  // const query = useGetTotalInfo({ roomId: 'g8qzA4w79BgG4Nm2mBFKMQ' });
+  const query = useGetTotalInfo({ teamBuildingUuid: 'g8qzA4w79BgG4Nm2mBFKMQ' });
 
   const allMemberByTeam = useMemo(() => {
     const allMemberByTeam: Record<Team['pmName'], User[]> = {};
