@@ -35,9 +35,9 @@ const AgreementModal = ({ isOpen, onClose, onAgree }: AgreementModalProps) => {
             marginTop: '36px',
           })}
         >
-          <span className={css({ textStyle: 'h2', color: 'gray.5' })}>
+          <h1 className={css({ textStyle: 'h2', color: 'gray.5' })}>
             팀 빌딩 안내
-          </span>
+          </h1>
           <p
             className={css({
               color: 'gray.20',
