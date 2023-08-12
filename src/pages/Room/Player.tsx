@@ -72,33 +72,21 @@ export const Player = ({ teamId }: PlayerProps) => {
   const [selectedTeamCount, setSelectedTeamCount] = useState(0);
   const { isOpen: isOpenSelectList, onToggle: setIsOpenSelectList } =
     useDisclosure();
-  const {
-    isOpen: isOpenRoundStartModal,
-    onClose: closeRoundStartModal,
-    onOpen: openRoundStartModal,
-  } = useDisclosure();
-  const {
-    isOpen: isOpenSelectConfirmModal,
-    onClose: closeSelectConfirmModal,
-    onOpen: openSelectConfirmModal,
-  } = useDisclosure();
-  const {
-    isOpen: isOpenAgreementModal,
-    onClose: closeAgreementModal,
-    onOpen: openAgreementModal,
-  } = useDisclosure();
+  const roundStartModalProps = useDisclosure();
+  const selectConfirmModalProps = useDisclosure();
+  const agreementModalProps = useDisclosure();
   const [playerState, setPlayerState] = useState<PlayerState>('wait');
 
   useEffect(() => {
-    openAgreementModal();
+    agreementModalProps.onOpen();
   }, []);
 
   useEffect(() => {
     // FIXME: SSE로 라운드 시작 이벤트를 받아서 처리
     if (playerState !== 'selecting') return;
-    openRoundStartModal();
+    roundStartModalProps.onOpen();
     const delay = setTimeout(() => {
-      closeRoundStartModal();
+      roundStartModalProps.onClose();
     }, 5000);
 
     return () => clearTimeout(delay);
@@ -446,7 +434,7 @@ export const Player = ({ teamId }: PlayerProps) => {
               size="large"
               className={css({ height: '100%' })}
               disabled={playerState !== 'selecting'}
-              onClick={openSelectConfirmModal}
+              onClick={selectConfirmModalProps.onOpen}
             >
               {ROUNDS[currentRound].label}
               <br />
@@ -456,18 +444,18 @@ export const Player = ({ teamId }: PlayerProps) => {
         </section>
       </div>
       <RoundFinishModal
-        isOpen={isOpenRoundStartModal}
-        onClose={closeRoundStartModal}
+        isOpen={roundStartModalProps.isOpen}
+        onClose={roundStartModalProps.onClose}
         round={currentRound}
       />
       <SelectConfirmModal
-        isOpen={isOpenSelectConfirmModal}
-        onClose={closeSelectConfirmModal}
+        isOpen={selectConfirmModalProps.isOpen}
+        onClose={selectConfirmModalProps.onClose}
         selectionConfirm={handleTeamSelectionComplete}
       />
       <AgreementModal
-        isOpen={isOpenAgreementModal}
-        onClose={closeAgreementModal}
+        isOpen={agreementModalProps.isOpen}
+        onClose={agreementModalProps.onClose}
         onAgree={onClickAgreement}
       />
     </>
