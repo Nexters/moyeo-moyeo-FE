@@ -81,7 +81,7 @@ export const SurveyForm = ({ onAfterSubmit }: SurveyFormProps) => {
         flex: '1',
         width: '100%',
         maxWidth: '520px',
-        padding: '70px 30px 130px',
+        padding: '120px 30px 130px',
         color: 'gray.5',
         wordBreak: 'keep-all',
         gap: '50px',
@@ -210,14 +210,14 @@ export const SurveyForm = ({ onAfterSubmit }: SurveyFormProps) => {
           type="submit"
           className={css({
             marginTop: '34px', // 70px만큼 떨어트리기 위함 (36 + 34)
-            padding: '24px 0',
+            padding: '14px 0',
             borderRadius: '20px',
             backgroundColor: 'yellow.80',
             fontSize: '20px',
             fontFamily: 'GmarketSansBold',
             color: 'gray.5',
             boxShadow:
-              '4px 4px 8px 0px rgba(255, 255, 255, 0.25) inset, -4px -4px 8px 0px #B84200 inset',
+              '2px 2px 6px 0px rgba(255, 255, 255, 0.25) inset, -2px -2px 6px 0px #A13A00 inset',
             cursor: 'pointer',
           })}
         >
