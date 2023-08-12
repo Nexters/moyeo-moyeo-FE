@@ -1,3 +1,4 @@
+import { Position } from '@/types';
 import { Round } from '@/types.old';
 
 export const MAX_ROUND = 4;
@@ -27,16 +28,16 @@ export const NEXT_ROUND_MAP: Record<Round, Round> = {
   종료: '종료',
 };
 
-export const POSITION: Record<string, string> = {
-  frontend: '프론트엔드',
-  backend: '백엔드',
-  ios: 'iOS',
-  android: '안드로이드',
-  design: '디자인',
+export const POSITION: Record<Position, string> = {
+  DESIGNER: '디자이너',
+  FRONT_END: '프론트엔드',
+  BACK_END: '백엔드',
+  IOS: 'iOS',
+  ANDROID: '안드로이드',
 };
 export const POSITION_LIST = Object.entries(POSITION).map(([key, value]) => ({
   label: value,
-  value: key,
+  value: key as Position,
 }));
 
 // max length
