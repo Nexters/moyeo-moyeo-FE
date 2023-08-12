@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 
-import trashIcon from '@/assets/icons/trash.svg';
+import { ReactComponent as TrashBinIcon } from '@/assets/icons/trashbin.svg';
 import { css } from '@/styled-system/css';
 import { center, hstack } from '@/styled-system/patterns';
 import { User } from '@/types.old';
@@ -30,13 +30,14 @@ export const ChipWithUser = ({
     <div
       className={css({
         position: 'relative',
-        width: '132px',
+        width: '128px',
         padding: '12px',
-        backgroundColor: '#17191C',
-        borderRadius: '16px',
+        backgroundColor: 'rgba(12, 13, 14, 0.50)',
+        borderRadius: '12px',
         overflow: 'hidden',
       })}
     >
+      {/* @fixme: 일단 타입 체크 피하기 위해 any 잠시 사용... */}
       <Chip visual={visual as any} label={user.name} />
 
       {!isPm && (
@@ -49,7 +50,7 @@ export const ChipWithUser = ({
             right: '0',
             bottom: '0',
             padding: '12px',
-            backgroundColor: '#17191C',
+            backgroundColor: 'rgb(6,7,7)', // @note: rgba(12, 13, 14, 0.50)를 rgb로 변환한 값
             transition: 'opacity 0.2s ease-in-out',
             opacity: 0,
             _hover: {
@@ -59,15 +60,12 @@ export const ChipWithUser = ({
         >
           <button
             className={center({
-              width: '72px',
-              height: '30px',
-              borderRadius: '8px',
-              backgroundColor: '#1E6BFB',
-              fontSize: '16px',
-              fontWeight: 600,
-              lineHeight: 1,
-              letterSpacing: '-0.32px',
-              color: '#fff',
+              width: '70px',
+              height: '28px',
+              borderRadius: '6px',
+              backgroundColor: 'gray.80',
+              textStyle: 'h4',
+              color: 'gray.5',
               cursor: 'pointer',
             })}
             onClick={onClickReassign}
@@ -81,12 +79,16 @@ export const ChipWithUser = ({
               height: '26px',
               borderRadius: '6px',
               backgroundColor: '#FF453A',
-              color: '#fff',
+              color: 'gray.5',
               cursor: 'pointer',
+              '& svg': {
+                width: '16px',
+                height: '16px',
+              },
             })}
             onClick={onClickDelete}
           >
-            <img width="16px" height="16px" src={trashIcon} />
+            <TrashBinIcon />
           </button>
         </div>
       )}

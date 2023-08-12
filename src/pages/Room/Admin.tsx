@@ -38,7 +38,7 @@ export const Admin = () => {
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const { isOpen, onClose, onOpen } = useDisclosure();
   const [isRunning, setIsRunning] = useState(false);
-  const query = useGetTotalInfo({ roomId: 'g8qzA4w79BgG4Nm2mBFKMQ' });
+  // const query = useGetTotalInfo({ roomId: 'g8qzA4w79BgG4Nm2mBFKMQ' });
 
   const allMemberByTeam = useMemo(() => {
     const allMemberByTeam: Record<Team['pmName'], User[]> = {};
@@ -116,27 +116,7 @@ export const Admin = () => {
     onClose();
   };
 
-  const handleClickMember = (selectUser: User) => () => {
-    const isNotSelected = selectUser.joinedTeamId === null;
-    if (isNotSelected) {
-      setSelectedUser(selectUser);
-      return onOpen();
-    }
-
-    if (confirm('배정 해제하겠습니까?')) {
-      setUsers((prev) =>
-        prev.map((user) => {
-          if (user.id !== selectUser.id) return user;
-          return {
-            ...user,
-            joinedTeamId: null,
-          };
-        }),
-      );
-    }
-  };
-
-  const handleSelectTeam = (teamId: Team['id']) => {
+  const handleSelectTeam = (teamId: Team['id'] | null) => {
     if (!selectedUser) return;
 
     setUsers((prev) =>
@@ -148,6 +128,11 @@ export const Admin = () => {
         };
       }),
     );
+    toast.success(
+      teamId !== null
+        ? `${selectedUser.name}님을 ${teamId}팀으로 배정했습니다.`
+        : `${selectedUser.name}님의 팀 배정을 해제했습니다.`,
+    );
   };
 
   const renderUser = (selectUser: User) => {
@@ -158,18 +143,16 @@ export const Admin = () => {
         onClickReassign={() => {
           setSelectedUser(selectUser);
           onOpen();
+          // 이후 로직은 handleSelectTeam에서 처리됨.
         }}
         onClickDelete={() => {
-          if (confirm('배정 해제하겠습니까?')) {
+          if (confirm(`${selectUser.name}님을 삭제하시겠습니까?`)) {
+            // @todo: api 호출
+            // 아래는 임시 로직
             setUsers((prev) =>
-              prev.map((user) => {
-                if (user.id !== selectUser.id) return user;
-                return {
-                  ...user,
-                  joinedTeamId: null,
-                };
-              }),
+              prev.filter((user) => user.id !== selectUser.id),
             );
+            toast.success(`${selectUser.name}님을 삭제했습니다.`);
           }
         }}
       />
@@ -195,30 +178,29 @@ export const Admin = () => {
       <section
         className={vstack({
           flex: 1,
-          // @note: 일단 가변 너비로 안해봄
-          // width: '100%',
-          // maxWidth: '1280px',
           width: '1280px',
           gap: '40px',
-          color: '#fff',
+          color: 'gray.5',
           paddingBottom: '80px',
         })}
       >
         <nav
           className={hstack({
             width: '100%',
-            height: '142px',
+            height: '92px',
             justifyContent: 'space-between',
-            padding: '30px 24px',
-            backgroundColor: '#0C0D0E',
-            borderRadius: '0 0 40px 40px',
-            // position: 'sticky',
-            // top: '0',
-            // zIndex: '2',
+            padding: '30px',
+            border: '1px solid rgba(255, 255, 255, 0.11)',
+            borderRadius: '0 0 20px 20px',
+            backgroundColor: 'rgba(255, 255, 255, 0.07)',
+            backdropFilter: 'blur(50px)',
+            position: 'sticky',
+            top: 0,
+            zIndex: 2,
           })}
         >
           <div>
-            <h2>{teamBuildingName}</h2>
+            <h1>{teamBuildingName}</h1>
             <div>stepper</div>
           </div>
 
@@ -232,37 +214,35 @@ export const Admin = () => {
           className={vstack({
             width: '100%',
             padding: '60px',
-            gap: '80px',
-            backgroundColor: '#0C0D0E',
-            borderRadius: '40px',
+            gap: '48px',
+            border: '1px solid rgba(255, 255, 255, 0.11)',
+            backgroundColor: 'rgba(255, 255, 255, 0.07)',
+            backdropFilter: 'blur(50px)',
+            borderRadius: '20px',
           })}
         >
           <header
-            className={vstack({
+            className={hstack({
               width: '100%',
-              alignItems: 'flex-start',
-              gap: '20px',
+              gap: '24px',
             })}
           >
-            <h1
+            <h2
               className={css({
-                fontSize: '48px',
-                fontFamily: 'GmarketSansBold',
-                lineHeight: 1,
+                textStyle: 'h1',
               })}
             >
-              팀 빌딩 게임 진행현황
-            </h1>
+              팀 빌딩 현황
+            </h2>
 
             <p
               className={css({
-                fontSize: '20px',
-                color: '#B9BDC5',
+                textStyle: 'p1',
+                color: 'gray.10',
               })}
             >
-              현재 진행 중인 [ {teamBuildingName} ] 의 현황입니다. <br />
-              팀원 이름 태그에 마우스를 호버하여 팀 재배정 혹은 인원 제거를 할
-              수 있습니다.
+              팀원 이름을 마우스로 호버하면 팀 재배정하거나, 해당 인원을 팀에서
+              제거할 수 있습니다.
             </p>
           </header>
 
@@ -270,29 +250,24 @@ export const Admin = () => {
             className={vstack({
               width: '100%',
               alignItems: 'flex-start',
-              gap: '40px',
+              gap: '24px',
             })}
           >
-            <div className={hstack({ gap: '80px' })}>
-              <h2 className={css({ fontSize: '28px', fontWeight: '800' })}>
-                팀 지망 우선순위 표시
-              </h2>
-
-              <div className={hstack({ gap: '40px' })}>
-                <Chip visual="first" label="1 지망" />
-                <Chip visual="second" label="2 지망" />
-                <Chip visual="third" label="3 지망" />
-                <Chip visual="fourth" label="4 지망" />
-                <Chip visual="extra" label="임의배정" />
-                <Chip visual="pm" label="PM" />
-              </div>
+            <div className={hstack({ gap: '16px' })}>
+              <Chip visual="first" label="1 지망" />
+              <Chip visual="second" label="2 지망" />
+              <Chip visual="third" label="3 지망" />
+              <Chip visual="fourth" label="4 지망" />
+              <Chip visual="extra" label="임의배정" />
+              <Chip visual="pm" label="PM" />
             </div>
 
             <div
               className={css({
                 width: '100%',
                 padding: '12px',
-                backgroundColor: '#24222A',
+                backgroundColor: 'rgba(12, 13, 14, 0.50)',
+                backdropFilter: 'blur(50px)',
                 borderRadius: '20px',
               })}
             >
@@ -300,24 +275,17 @@ export const Admin = () => {
                 className={css({
                   width: '100%',
                   fontSize: '16px',
-                  color: '#D5D8DC',
+                  color: 'gray.20',
                   '& tr': {
                     height: '52px',
-                    borderBottom: '1px solid #2E3138',
-                  },
-                  // @temp
-                  '& thead': {
-                    position: 'sticky',
-                    top: '0',
-                    zIndex: '2',
-                    backgroundColor: '#24222A',
+                    borderBottom: '1px solid token(colors.gray.30)',
                   },
                   '& tbody tr:last-child': {
                     borderBottom: 'none',
                   },
                   '& thead tr': {
                     fontWeight: 'bold',
-                    borderBottom: '1px solid #5C6270',
+                    borderBottom: '1px solid rgba(255, 255, 255, 0.28)',
                   },
                   '& th': {
                     textAlign: 'left',
@@ -335,11 +303,11 @@ export const Admin = () => {
                 <thead>
                   <tr>
                     <th>팀 이름</th>
-                    <th className={css({ width: '164px' })}>디자이너</th>
-                    <th className={css({ width: '164px' })}>프론트엔드</th>
-                    <th className={css({ width: '164px' })}>백엔드</th>
-                    <th className={css({ width: '164px' })}>iOS</th>
-                    <th className={css({ width: '164px' })}>안드로이드</th>
+                    <th className={css({ width: '160px' })}>디자이너</th>
+                    <th className={css({ width: '160px' })}>프론트엔드</th>
+                    <th className={css({ width: '160px' })}>백엔드</th>
+                    <th className={css({ width: '160px' })}>iOS</th>
+                    <th className={css({ width: '160px' })}>안드로이드</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -352,6 +320,7 @@ export const Admin = () => {
                           className={vstack({
                             alignItems: 'flex-start',
                             padding: '16px',
+                            gap: '8px',
                           })}
                         >
                           {members
@@ -365,13 +334,12 @@ export const Admin = () => {
                           className={vstack({
                             alignItems: 'flex-start',
                             padding: '16px',
+                            gap: '8px',
                           })}
                         >
                           {members
                             .filter((user) => user.position === '프론트엔드')
-                            .map((user) => (
-                              <ChipWithUser key={user.id} user={user} />
-                            ))}
+                            .map(renderUser)}
                         </div>
                       </td>
 
@@ -380,13 +348,12 @@ export const Admin = () => {
                           className={vstack({
                             alignItems: 'flex-start',
                             padding: '16px',
+                            gap: '8px',
                           })}
                         >
                           {members
                             .filter((user) => user.position === '백엔드')
-                            .map((user) => (
-                              <ChipWithUser key={user.id} user={user} />
-                            ))}
+                            .map(renderUser)}
                         </div>
                       </td>
 
@@ -395,13 +362,12 @@ export const Admin = () => {
                           className={vstack({
                             alignItems: 'flex-start',
                             padding: '16px',
+                            gap: '8px',
                           })}
                         >
                           {members
                             .filter((user) => user.position === 'iOS')
-                            .map((user) => (
-                              <ChipWithUser key={user.id} user={user} />
-                            ))}
+                            .map(renderUser)}
                         </div>
                       </td>
 
@@ -410,13 +376,12 @@ export const Admin = () => {
                           className={vstack({
                             alignItems: 'flex-start',
                             padding: '16px',
+                            gap: '8px',
                           })}
                         >
                           {members
                             .filter((user) => user.position === '안드로이드')
-                            .map((user) => (
-                              <ChipWithUser key={user.id} user={user} />
-                            ))}
+                            .map(renderUser)}
                         </div>
                       </td>
                     </tr>

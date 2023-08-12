@@ -11,12 +11,10 @@ export const Chip = ({ visual = 'none', label }: ChipProps) => {
   return (
     <div
       className={hstack({
-        height: '24px',
-        gap: '10px',
-        fontSize: '16px',
-        fontWeight: '600',
-        letterSpacing: '-0.32px',
-        color: '#fff',
+        height: '28px',
+        gap: '8px',
+        textStyle: 'p2',
+        color: 'gray.5',
       })}
     >
       <span className={cx(center(), square({ visual }))}>{shortChar}</span>
@@ -38,32 +36,34 @@ const visualShortCharMap = {
 
 const square = cva({
   base: {
-    width: '24px',
-    height: '24px',
+    width: '28px',
+    height: '28px',
     borderRadius: '6px',
+    textStyle: 'h4',
+    color: 'gray.5',
   },
   variants: {
     visual: {
       first: {
-        backgroundColor: '#27AF49',
+        backgroundColor: 'purple.80',
       },
       second: {
-        backgroundColor: '#1C8537',
+        backgroundColor: 'purple.50',
       },
       third: {
-        backgroundColor: '#145D26',
+        backgroundColor: 'purple.60',
       },
       fourth: {
-        backgroundColor: '#0E431B',
+        backgroundColor: 'purple.70',
       },
       extra: {
-        backgroundColor: '#505762',
+        backgroundColor: 'gray.70',
       },
       pm: {
-        backgroundColor: '#FFB800',
+        backgroundColor: 'yellow.80',
       },
       none: {
-        backgroundColor: '#505762', // @fixme: 임시
+        backgroundColor: 'gray.70', // @fixme: 임시
       },
     },
   },
