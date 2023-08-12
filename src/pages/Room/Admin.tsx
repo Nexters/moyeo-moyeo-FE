@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 
 import toast from 'react-hot-toast';
 
+import { useAdjustUser, useFinishTeamBuilding } from '@/apis/admin/mutations';
 import { useGetTotalInfo } from '@/apis/team-building/queries';
 import { ReactComponent as Face } from '@/assets/icons/face.svg';
 import { ReactComponent as Group } from '@/assets/icons/group.svg';
@@ -53,7 +54,6 @@ export type AdminProps = {
 };
 
 export const Admin = ({ teamBuildingUuid }: AdminProps) => {
-  // @note: 유저 목록을 복사한 이유는 선택된 팀에 대한 정보를 반영하기 위함
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const selectTeamModalProps = useDisclosure();
   const shareSurveyModalProps = useDisclosure();
@@ -61,12 +61,19 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
   const { data } = useGetTotalInfo(teamBuildingUuid);
   const { teamBuildingInfo, teamInfoList, userInfoList } = data ?? {};
 
+  const { mutate: adjustUser } = useAdjustUser();
+  const { mutate: finishTeamBuilding } = useFinishTeamBuilding();
+
   const activeStep =
     roundIndexMap[teamBuildingInfo?.teamBuildingStatus ?? 'FIRST_ROUND'];
   const processValue = (teamInfoList ?? []).reduce(
     (acc, team) => (acc += team.selectDone ? 1 : 0),
     0,
   );
+  const canFinishTeamBuilding = useMemo(() => {
+    if (teamBuildingInfo?.teamBuildingStatus !== 'ADJUSTED_ROUND') return false;
+    return teamInfoList?.every((team) => team.selectDone) ?? false;
+  }, [teamBuildingInfo?.teamBuildingStatus, teamInfoList]);
 
   const allMemberByTeam = useMemo(() => {
     const allMemberByTeam: Record<Team['pmName'], User[]> = {};
@@ -105,25 +112,44 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
   const handleSelectTeam = (teamUuid: Team['uuid'] | null) => {
     if (!selectedUser) return;
 
-    // setUsers((prev) =>
-    //   prev.map((user) => {
-    //     if (user.id !== selectedUser.id) return user;
-    //     return {
-    //       ...user,
-    //       joinedTeamId: teamId,
-    //     };
-    //   }),
-    // );
     if (teamUuid === null) {
-      return toast.success(
-        `${selectedUser.userName}님의 팀 배정을 해제했습니다.`,
+      return adjustUser(
+        {
+          teamBuildingUuid,
+          userUuid: selectedUser.uuid,
+          body: {
+            teamUuid: null,
+          },
+        },
+        {
+          onSuccess: () => {
+            // @todo: 쿼리 클라이언트 수정
+            toast.success(
+              `${selectedUser.userName}님의 팀 배정을 해제했습니다.`,
+            );
+          },
+        },
       );
     }
 
     const team = teamInfoList?.find((team) => team.uuid === teamUuid);
     if (team) {
-      return toast.success(
-        `${selectedUser.userName}님을 ${team.pmName}팀으로 배정했습니다.`,
+      return adjustUser(
+        {
+          teamBuildingUuid,
+          userUuid: selectedUser.uuid,
+          body: {
+            teamUuid: team.uuid,
+          },
+        },
+        {
+          onSuccess: () => {
+            // @todo: 쿼리 클라이언트 수정
+            toast.success(
+              `${selectedUser.userName}님을 ${team.pmName}팀으로 배정했습니다.`,
+            );
+          },
+        },
       );
     }
   };
@@ -135,6 +161,19 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
   const handleClickShareLink = () => {
     navigator.clipboard.writeText(location.href);
     toast.success('참여 링크가 복사되었습니다');
+  };
+
+  const handleClickFinishTeamBuilding = () => {
+    finishTeamBuilding(
+      {
+        teamBuildingUuid,
+      },
+      {
+        onSuccess: () => {
+          toast.success('팀 빌딩을 완료했습니다.');
+        },
+      },
+    );
   };
 
   const renderUser = (selectUser: User) => {
@@ -150,10 +189,6 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
         onClickDelete={() => {
           if (confirm(`${selectUser.userName}님을 삭제하시겠습니까?`)) {
             // @todo: api 호출
-            // // 아래는 임시 로직
-            // setUsers((prev) =>
-            //   prev.filter((user) => user.id !== selectUser.id),
-            // );
             toast.success(`${selectUser.userName}님을 삭제했습니다.`);
           }
         }}
@@ -439,6 +474,8 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
                 color: 'gray.5',
                 cursor: 'pointer',
               })}
+              disabled={!canFinishTeamBuilding}
+              onClick={handleClickFinishTeamBuilding}
             >
               팀 빌딩 마치기
             </button>
