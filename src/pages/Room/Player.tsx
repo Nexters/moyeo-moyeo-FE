@@ -21,13 +21,20 @@ type PlayerProps = {
   teamId: Team['id'];
 };
 
-type PlayerState = 'selecting' | 'selected' | 'finish';
+type PlayerState = 'selecting' | 'selected' | 'wait';
 
 const ChoiceMap: Record<number, Choice> = {
   0: '1지망',
   1: '2지망',
   2: '3지망',
   3: '4지망',
+  4: '팀 구성 조정',
+};
+
+const PlayerStateMap: Record<PlayerState, string> = {
+  selecting: '선택',
+  selected: '선택 완료',
+  wait: '대기중',
 };
 
 const ROUNDS = [
@@ -70,14 +77,21 @@ export const Player = ({ teamId }: PlayerProps) => {
   const [playerState, setPlayerState] = useState<PlayerState>('selecting');
 
   const filteredSelectedUsers = useMemo(() => {
-    return users.filter((user) => user.joinedTeamId === teamId);
-  }, [users, teamId]);
+    // @note: 현재 PM 팀에 속해 있는 사람들과 이번 라운드에서 선택된 사람들을 보여준다.
+    return users.filter(
+      (user) => user.joinedTeamId === teamId || selectedUsers.includes(user.id),
+    );
+  }, [users, teamId, selectedUsers]);
 
   const filteredUsersByRound = useMemo(() => {
-    return users.filter(
-      (user) =>
-        user.choices[currentRound] === teamId && user.joinedTeamId === null,
-    );
+    // @note: 이번 라운드에서 선택할 수 있는 사람들을 보여준다.
+    return users.filter((user) => {
+      if (currentRound === 4) return true;
+      else
+        return (
+          user.choices[currentRound] === teamId && user.joinedTeamId === null
+        );
+    });
   }, [currentRound, teamId, users]);
 
   const toggleSelectList = () => {
@@ -101,10 +115,11 @@ export const Player = ({ teamId }: PlayerProps) => {
   const handleTeamSelectionComplete = () => {
     setPlayerState('selected');
     setTimeout(() => {
-      if (currentRound === ROUNDS.length - 1) return;
-      openModal();
       setCurrentRound((prev) => prev + 1);
-      setPlayerState('selecting');
+      if (currentRound === ROUNDS.length - 2) {
+        setPlayerState('wait');
+      } else setPlayerState('selecting');
+      openModal();
       setSelectedTeamCount(0);
 
       setUsers((prev) =>
@@ -137,8 +152,8 @@ export const Player = ({ teamId }: PlayerProps) => {
             width: '1280px',
             background: 'rgba(0, 0, 0, 0.07)',
             backdropFilter: 'blur(50px)',
-            gap: '20px',
-            padding: '20px 30px',
+            gap: '12px',
+            padding: '30px',
             borderRadius: '0 0 20px 20px',
             border: '1px solid rgba(255, 255, 255, 0.11)',
           })}
@@ -147,36 +162,29 @@ export const Player = ({ teamId }: PlayerProps) => {
             className={hstack({
               width: '100%',
               justifyContent: 'space-between',
+              gap: '12px',
             })}
           >
             <h1
               className={css({
-                textStyle: 'h2',
+                textStyle: 'h1',
                 color: 'gray.5',
               })}
             >
               Nexters23기 팀빌딩입니다
             </h1>
-            <div className={hstack({ gap: '15px' })}>
-              <span className={css({ textStyle: 'h3', color: 'gray.5' })}>
-                선택 완료 상황
-              </span>
-              <span
-                className={css({
-                  textStyle: 'h4',
-                  color: 'gray.5',
-                  marginLeft: '5px',
-                  width: '50px',
-                  textAlign: 'center',
-                })}
-              >
-                {selectedTeamCount} / {TOTAL_TEAM_COUNT}
-              </span>
-              <LinearProgress
-                value={selectedTeamCount}
-                total={TOTAL_TEAM_COUNT}
-              />
-            </div>
+            <button
+              className={css({
+                padding: '10px 25.5px',
+                textStyle: 'h4',
+                color: 'gray.5',
+                borderRadius: '10px',
+                background: 'rgba(255, 255, 255, 0.13)',
+                cursor: 'pointer',
+              })}
+            >
+              전체 현황 보기
+            </button>
           </div>
           <div
             className={hstack({
@@ -184,27 +192,28 @@ export const Player = ({ teamId }: PlayerProps) => {
               justifyContent: 'space-between',
             })}
           >
-            <button
-              className={css({
-                padding: '10px 16px',
-                textStyle: 'h3',
-                color: 'gray.5',
-                borderRadius: '10px',
-                border: '1px solid rgba(255, 255, 255, 0.36)',
-                background: 'rgba(255, 255, 255, 0.28)',
-                cursor: 'pointer',
-              })}
-            >
-              전체 현황 보기
-            </button>
-            <Stepper activeStep={currentRound}>
-              {ROUNDS.map(({ label, Icon }, index) => (
-                <Step key={label} id={index}>
-                  <Icon className={css({ marginRight: '10px' })} />
-                  <span className={css({ textStyle: 'h3' })}>{label}</span>
-                </Step>
-              ))}
-            </Stepper>
+            <div className={hstack({ gap: '12px' })}>
+              <span className={css({ textStyle: 'h3', color: 'gray.5' })}>
+                현재 라운드
+              </span>
+              <Stepper activeStep={currentRound}>
+                {ROUNDS.map(({ label, Icon }, index) => (
+                  <Step key={label} id={index}>
+                    <Icon className={css({ marginRight: '8px' })} />
+                    <span className={css({ textStyle: 'h3' })}>{label}</span>
+                  </Step>
+                ))}
+              </Stepper>
+            </div>
+            <div className={hstack({ gap: '12px' })}>
+              <span className={css({ textStyle: 'h3', color: 'gray.5' })}>
+                현 라운드 완료율
+              </span>
+              <LinearProgress
+                value={selectedTeamCount}
+                total={TOTAL_TEAM_COUNT}
+              />
+            </div>
           </div>
         </section>
         <section
@@ -241,10 +250,8 @@ export const Player = ({ teamId }: PlayerProps) => {
             {filteredSelectedUsers.map((user) => (
               <Card
                 key={user.id}
-                className={css({
-                  cursor: 'default',
-                })}
                 name={user.name}
+                border={selectedUsers.includes(user.id) ? 'yellow' : 'default'}
                 position={user.position}
                 choice={
                   ChoiceMap[
@@ -260,7 +267,7 @@ export const Player = ({ teamId }: PlayerProps) => {
         <section
           className={css({
             width: '1280px',
-            height: '280px',
+            height: '332px',
             _after: {
               content: '""',
               position: 'fixed',
@@ -275,7 +282,7 @@ export const Player = ({ teamId }: PlayerProps) => {
           <div
             className={stack({
               width: '1030px',
-              height: isOpenSelectList ? '650px' : '280px',
+              height: isOpenSelectList ? '650px' : '332px',
               background: isOpenSelectList
                 ? 'rgba(255, 255, 255, 0.07)'
                 : 'rgba(0, 0, 0, 0.07)',
@@ -344,6 +351,7 @@ export const Player = ({ teamId }: PlayerProps) => {
               {filteredUsersByRound.map((user) => (
                 <Card
                   className={css({
+                    cursor: 'pointer',
                     _hover: {
                       border: '1px solid rgba(255, 255, 255, 0.8)',
                     },
@@ -376,7 +384,7 @@ export const Player = ({ teamId }: PlayerProps) => {
             >
               {ROUNDS[currentRound].label}
               <br />
-              팀원 선택 완료
+              {PlayerStateMap[playerState]}
             </Button>
           </div>
         </section>
