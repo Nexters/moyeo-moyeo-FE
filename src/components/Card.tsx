@@ -9,6 +9,7 @@ export type CardProps = {
   name: string;
   position: string;
   choice: Choice;
+  border?: 'default' | 'yellow' | 'selected';
   link?: string;
   imageUrl?: string;
   selected?: boolean;
@@ -20,18 +21,52 @@ const choiceRecipe = cva({
   base: {
     display: 'inline-flex',
     alignItems: 'center',
+    justifyContent: 'center',
     textStyle: 'h4',
     height: '100%',
-    padding: '0 8px',
+    width: '54px',
     borderRadius: '8px',
   },
   variants: {
     choice: {
       '1지망': { background: 'purple.40' },
-      '2지망': { background: 'blue.40' },
-      '3지망': { background: 'green.70' },
-      '4지망': { background: 'yellow.70' },
+      '2지망': { background: 'purple.50' },
+      '3지망': { background: 'purple.60' },
+      '4지망': { background: 'purple.70' },
+      '팀 구성 조정': { background: 'gray.60' },
     },
+  },
+});
+
+const cardRecipe = cva({
+  base: {
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: '16px',
+    background: 'rgba(255, 255, 255, 0.11)',
+    color: 'gray.5',
+    borderRadius: '20px',
+    backdropFilter: 'blur(50px)',
+    gap: '12px',
+    transition: 'border 0.3s ease-in-out',
+    position: 'relative',
+  },
+  variants: {
+    border: {
+      default: {
+        border: '1px solid rgba(255, 255, 255, 0.23)',
+      },
+      yellow: {
+        border: '2px solid token(colors.yellow.20)',
+      },
+      selected: {
+        border: '1px solid rgba(255, 255, 255, 0.11)',
+      },
+    },
+  },
+  defaultVariants: {
+    border: 'default',
   },
 });
 
@@ -40,36 +75,19 @@ export const Card = ({
   position,
   choice,
   link,
+  border,
   imageUrl = 'https://framerusercontent.com/images/Eq9Flp2bXD1AeW4UzqLfZffzM.png',
   selected = false,
   onClick,
   className,
 }: CardProps) => {
   return (
-    <button
-      className={cx(
-        hstack({
-          justifyContent: 'space-between',
-          padding: '16px',
-          background: 'rgba(255, 255, 255, 0.11)',
-          border: selected
-            ? '1px solid rgba(255, 255, 255, 0.11)'
-            : '1px solid rgba(255, 255, 255, 0.23)',
-          color: 'gray.5',
-          borderRadius: '20px',
-          backdropFilter: 'blur(50px)',
-          gap: '12px',
-          transition: 'border 0.3s ease-in-out',
-          cursor: 'pointer',
-          position: 'relative',
-        }),
-        className,
-      )}
-      onClick={onClick}
-    >
+    <button className={cx(cardRecipe({ border }), className)} onClick={onClick}>
       <div className={vstack({ alignItems: 'flex-start' })}>
         <div className={hstack({ gap: '6px', height: '28px' })}>
-          <span className={choiceRecipe({ choice })}>{choice}</span>
+          <span className={choiceRecipe({ choice })}>
+            {choice === '팀 구성 조정' ? 'E' : choice}
+          </span>
           <a
             className={center({
               background: link
