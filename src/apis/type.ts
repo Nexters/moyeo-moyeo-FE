@@ -66,7 +66,7 @@ export type API = {
       teamBuildingUuid: string;
       userUuid: string;
       body: {
-        teamUuid: string;
+        teamUuid: string | null;
       };
     };
     response: User;
