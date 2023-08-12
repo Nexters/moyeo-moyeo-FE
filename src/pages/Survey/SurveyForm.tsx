@@ -124,6 +124,10 @@ export const SurveyForm = ({ onAfterSubmit }: SurveyFormProps) => {
                   : '2px solid transparent',
               textStyle: 'h4',
               color: 'gray.5',
+              outline: 'none',
+              _focus: {
+                border: '2px solid token(colors.purple.80)',
+              },
             })}
           />
         </FormControl>
@@ -148,6 +152,11 @@ export const SurveyForm = ({ onAfterSubmit }: SurveyFormProps) => {
               borderRadius: '12px',
               textStyle: 'h4',
               color: 'gray.5',
+              outline: 'none',
+              border: '2px solid transparent',
+              _focus: {
+                border: '2px solid token(colors.purple.80)',
+              },
             })}
           />
         </FormControl>
