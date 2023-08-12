@@ -13,6 +13,7 @@ import { Step, Stepper } from '@/components/stepper';
 import { useDisclosure } from '@/hooks/useDisclosure';
 import { mockTeams, mockUsers } from '@/mock/data';
 import { SelectTeamModal } from '@/modals/SelectTeamModal';
+import { ShareSurveyModal } from '@/modals/ShareSurveyModal';
 import { css } from '@/styled-system/css';
 import { hstack, stack, vstack } from '@/styled-system/patterns';
 import { Round, Team, User } from '@/types.old';
@@ -57,12 +58,18 @@ const nextRoundMap: Record<Round, Round> = {
   종료: '종료',
 };
 
-export const Admin = () => {
+export type AdminProps = {
+  roomId: string;
+};
+
+export const Admin = ({ roomId }: AdminProps) => {
   // @note: 유저 목록을 복사한 이유는 선택된 팀에 대한 정보를 반영하기 위함
   const [users, setUsers] = useState(mockUsers);
   const [selectedRound, setSelectedRound] = useState<Round>('1지망');
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
-  const { isOpen, onClose, onOpen } = useDisclosure();
+  const selectTeamModalProps = useDisclosure();
+  const shareSurveyModalProps = useDisclosure();
+
   const [isRunning, setIsRunning] = useState(false);
   // const query = useGetTotalInfo({ roomId: 'g8qzA4w79BgG4Nm2mBFKMQ' });
 
@@ -139,7 +146,7 @@ export const Admin = () => {
 
   const handleCloseModal = () => {
     setSelectedUser(null);
-    onClose();
+    selectTeamModalProps.onClose();
   };
 
   const handleSelectTeam = (teamId: Team['id'] | null) => {
@@ -168,7 +175,7 @@ export const Admin = () => {
         user={selectUser}
         onClickReassign={() => {
           setSelectedUser(selectUser);
-          onOpen();
+          selectTeamModalProps.onOpen();
           // 이후 로직은 handleSelectTeam에서 처리됨.
         }}
         onClickDelete={() => {
@@ -239,6 +246,7 @@ export const Admin = () => {
                   color: 'gray.20',
                   cursor: 'pointer',
                 })}
+                onClick={shareSurveyModalProps.onOpen}
               >
                 설문 링크 복사하기
               </button>
@@ -479,10 +487,15 @@ export const Admin = () => {
       </section>
 
       <SelectTeamModal
-        isOpen={isOpen}
+        isOpen={selectTeamModalProps.isOpen}
         teams={mockTeams}
         onClose={handleCloseModal}
         onSelect={handleSelectTeam}
+      />
+      <ShareSurveyModal
+        roomId={roomId}
+        isOpen={shareSurveyModalProps.isOpen}
+        onClose={shareSurveyModalProps.onClose}
       />
     </>
   );
