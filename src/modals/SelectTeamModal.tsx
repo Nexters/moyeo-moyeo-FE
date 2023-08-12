@@ -35,7 +35,7 @@ export const SelectTeamModal = ({
           })}
           onChange={(e) => {
             const teamId = e.target.value as Team['id'] | 'unselect';
-            if (teamId === '') return;
+            if (!teamId) return;
             onSelect?.(teamId === 'unselect' ? null : teamId);
             onClose();
           }}
