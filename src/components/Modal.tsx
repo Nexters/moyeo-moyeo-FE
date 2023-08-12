@@ -15,7 +15,7 @@ export const Modal = ({ isOpen, onClose, children }: ModalProps) => {
       onRequestClose={onClose}
       style={{
         overlay: {
-          backgroundColor: '#000000e6',
+          backgroundColor: 'rgba(0, 0, 0, 0.80)',
           zIndex: 100,
         },
         content: {

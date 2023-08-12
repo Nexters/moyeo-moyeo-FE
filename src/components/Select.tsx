@@ -24,13 +24,21 @@ export const Select = ({ isError, ...restProps }: SelectProps) => {
           color: '#fff',
           borderRadius: menuIsOpen ? '12px 12px 0 0' : '12px',
           borderWidth: '2px',
-          borderColor: isError ? '#FF453A' : '#3A3946',
+          borderColor: menuIsOpen ? '#3E029E' : isError ? '#FF453A' : '#3A3946',
           borderBottomColor: menuIsOpen ? 'transparent' : undefined,
           fontSize: '16px',
           fontWeight: '600',
           outline: 'none',
           boxShadow: 'none',
           transition: 'none',
+          ':hover': {
+            ...styles[':hover'],
+            borderColor: menuIsOpen
+              ? '#3E029E'
+              : isError
+              ? '#FF453A'
+              : '#3A3946',
+          },
         }),
         dropdownIndicator: (styles) => ({
           ...styles,
@@ -48,7 +56,7 @@ export const Select = ({ isError, ...restProps }: SelectProps) => {
           marginTop: '-2px',
           borderRadius: '0 0 12px 12px',
           backgroundColor: '#0C0C0E',
-          border: '2px solid #3A3946',
+          border: '2px solid #3E029E',
           borderTop: 'none',
           overflow: 'hidden',
         }),

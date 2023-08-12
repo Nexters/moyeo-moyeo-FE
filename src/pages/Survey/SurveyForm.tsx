@@ -43,6 +43,7 @@ export const SurveyForm = ({ onAfterSubmit }: SurveyFormProps) => {
       isEmptyUserName: inputs.userName === '',
       isEmptyPosition: inputs.position === '',
       hasEmptyChoices: inputs.choices.includes(''),
+      isDuplicatedChoices: new Set(inputs.choices).size !== MAX_ROUND,
     };
   }, [inputs]);
 
@@ -62,6 +63,13 @@ export const SurveyForm = ({ onAfterSubmit }: SurveyFormProps) => {
       toast.error('지망을 모두 선택해주세요');
       return;
     }
+    if (
+      validation.isDuplicatedChoices &&
+      !confirm('중복된 지망이 있습니다. 계속하시겠습니까?')
+    ) {
+      return;
+    }
+
     console.log(inputs);
     toast.success('설문조사가 제출되었습니다');
     onAfterSubmit();
@@ -73,7 +81,7 @@ export const SurveyForm = ({ onAfterSubmit }: SurveyFormProps) => {
         flex: '1',
         width: '100%',
         maxWidth: '520px',
-        padding: '70px 30px 130px',
+        padding: '120px 30px 130px',
         color: 'gray.5',
         wordBreak: 'keep-all',
         gap: '50px',
@@ -124,6 +132,10 @@ export const SurveyForm = ({ onAfterSubmit }: SurveyFormProps) => {
                   : '2px solid transparent',
               textStyle: 'h4',
               color: 'gray.5',
+              outline: 'none',
+              _focus: {
+                border: '2px solid token(colors.purple.80)',
+              },
             })}
           />
         </FormControl>
@@ -148,6 +160,11 @@ export const SurveyForm = ({ onAfterSubmit }: SurveyFormProps) => {
               borderRadius: '12px',
               textStyle: 'h4',
               color: 'gray.5',
+              outline: 'none',
+              border: '2px solid transparent',
+              _focus: {
+                border: '2px solid token(colors.purple.80)',
+              },
             })}
           />
         </FormControl>
@@ -193,14 +210,14 @@ export const SurveyForm = ({ onAfterSubmit }: SurveyFormProps) => {
           type="submit"
           className={css({
             marginTop: '34px', // 70px만큼 떨어트리기 위함 (36 + 34)
-            padding: '24px 0',
+            padding: '14px 0',
             borderRadius: '20px',
             backgroundColor: 'yellow.80',
             fontSize: '20px',
             fontFamily: 'GmarketSansBold',
             color: 'gray.5',
             boxShadow:
-              '4px 4px 8px 0px rgba(255, 255, 255, 0.25) inset, -4px -4px 8px 0px #B84200 inset',
+              '2px 2px 6px 0px rgba(255, 255, 255, 0.25) inset, -2px -2px 6px 0px #A13A00 inset',
             cursor: 'pointer',
           })}
         >

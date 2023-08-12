@@ -8,7 +8,7 @@ export const SurveyResult = () => {
         flex: '1',
         width: '100%',
         maxWidth: '520px',
-        padding: '70px 30px 130px',
+        padding: '120px 30px 130px',
         color: 'gray.5',
         wordBreak: 'keep-all',
         gap: '8px',
