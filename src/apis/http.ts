@@ -16,6 +16,15 @@ const __fetch = async <T, D>(method: string, path: string, body?: D) => {
       'Content-Type': 'application/json',
     },
   });
+
+  if (!response.ok) {
+    const error = new Error();
+    const text = await response.text();
+    error.message = text;
+    error.name = response.statusText;
+    throw error;
+  }
+
   const data = await response.json();
   return data as T;
 };
