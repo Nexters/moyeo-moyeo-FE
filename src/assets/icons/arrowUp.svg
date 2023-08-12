@@ -1,1 +1,3 @@
-<svg xmlns="http://www.w3.org/2000/svg" focusable="false" viewBox="0 0 24 24" color="rgb(255, 255, 255)" style="user-select: none; width: 100%; height: 100%; display: inline-block; fill: rgb(255, 255, 255); flex-shrink: 0;"><path d="M8.71 12.29L11.3 9.7c.39-.39 1.02-.39 1.41 0l2.59 2.59c.63.63.18 1.71-.71 1.71H9.41c-.89 0-1.33-1.08-.7-1.71z"></path></svg>
+<svg width="16" height="10" viewBox="0 0 16 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path id="Vector" d="M15.3394 6.27654L9.56818 0.636909C8.69915 -0.212302 7.29535 -0.212302 6.42633 0.636909L0.655134 6.27654C-0.748671 7.64834 0.254047 10 2.2372 10H13.7796C15.7627 10 16.7432 7.64834 15.3394 6.27654Z" fill="white"/>
+</svg>
