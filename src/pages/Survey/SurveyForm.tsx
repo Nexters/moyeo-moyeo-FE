@@ -43,6 +43,7 @@ export const SurveyForm = ({ onAfterSubmit }: SurveyFormProps) => {
       isEmptyUserName: inputs.userName === '',
       isEmptyPosition: inputs.position === '',
       hasEmptyChoices: inputs.choices.includes(''),
+      isDuplicatedChoices: new Set(inputs.choices).size !== MAX_ROUND,
     };
   }, [inputs]);
 
@@ -62,6 +63,13 @@ export const SurveyForm = ({ onAfterSubmit }: SurveyFormProps) => {
       toast.error('지망을 모두 선택해주세요');
       return;
     }
+    if (
+      validation.isDuplicatedChoices &&
+      !confirm('중복된 지망이 있습니다. 계속하시겠습니까?')
+    ) {
+      return;
+    }
+
     console.log(inputs);
     toast.success('설문조사가 제출되었습니다');
     onAfterSubmit();
