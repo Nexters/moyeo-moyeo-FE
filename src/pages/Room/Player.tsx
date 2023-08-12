@@ -1,231 +1,243 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
+
+import { toast } from 'react-hot-toast';
 
 import arrowUp from '@/assets/icons/arrowUp.svg';
-import { ReactComponent as Face } from '@/assets/icons/face.svg';
-import { ReactComponent as Group } from '@/assets/icons/group.svg';
+import { ReactComponent as FaceIcon } from '@/assets/icons/face.svg';
+import { ReactComponent as GroupIcon } from '@/assets/icons/group.svg';
 import { Button } from '@/components/Button';
 import { Card } from '@/components/Card';
 import { LinearProgress } from '@/components/LinearProgress';
 import { Step, Stepper } from '@/components/stepper';
+import { useDisclosure } from '@/hooks/useDisclosure';
+import { mockUsers } from '@/mock/data';
+import RoundFinishModal from '@/modals/RoundFinishModal';
 import { css } from '@/styled-system/css';
 import { grid, hstack, stack, vstack } from '@/styled-system/patterns';
-import { Team } from '@/types.old';
+import { Choice } from '@/types';
+import { Team, User } from '@/types.old';
 
 type PlayerProps = {
   teamId: Team['id'];
 };
 
+type PlayerState = 'selecting' | 'selected' | 'wait';
+
+const ChoiceMap: Record<number, Choice> = {
+  0: '1지망',
+  1: '2지망',
+  2: '3지망',
+  3: '4지망',
+  4: '팀 구성 조정',
+};
+
+const PlayerStateMap: Record<PlayerState, string> = {
+  selecting: '선택',
+  selected: '선택 완료',
+  wait: '대기중',
+};
+
 const ROUNDS = [
   {
     label: '1지망',
-    Icon: Face,
+    Icon: FaceIcon,
   },
   {
     label: '2지망',
-    Icon: Face,
+    Icon: FaceIcon,
   },
   {
     label: '3지망',
-    Icon: Face,
+    Icon: FaceIcon,
   },
   {
     label: '4지망',
-    Icon: Face,
+    Icon: FaceIcon,
   },
   {
     label: '팀 구성 조정',
-    Icon: Group,
+    Icon: GroupIcon,
   },
 ];
 
 const TOTAL_TEAM_COUNT = 10;
 
 export const Player = ({ teamId }: PlayerProps) => {
-  const [activeStep, setActiveStep] = useState(0);
+  const [users, setUsers] = useState(mockUsers);
+  const [selectedUsers, setSelectedUsers] = useState<User['id'][]>([]);
+  const [currentRound, setCurrentRound] = useState(0);
   const [selectedTeamCount, setSelectedTeamCount] = useState(0);
+  const { isOpen: isOpenSelectList, onToggle: setIsOpenSelectList } =
+    useDisclosure();
+  const {
+    isOpen: isOpenModal,
+    onClose: closeModal,
+    onOpen: openModal,
+  } = useDisclosure();
+  const [playerState, setPlayerState] = useState<PlayerState>('selecting');
 
-  const handleNext = () => {
-    if (activeStep === ROUNDS.length - 1) return;
-    setActiveStep((prev) => prev + 1);
+  const filteredSelectedUsers = useMemo(() => {
+    // @note: 현재 PM 팀에 속해 있는 사람들과 이번 라운드에서 선택된 사람들을 보여준다.
+    return users.filter(
+      (user) => user.joinedTeamId === teamId || selectedUsers.includes(user.id),
+    );
+  }, [users, teamId, selectedUsers]);
 
-    // FIXME: 임시로 선택 완료 상황 증가시킴
-    setSelectedTeamCount((prev) => prev + 1);
+  const filteredUsersByRound = useMemo(() => {
+    // @note: 이번 라운드에서 선택할 수 있는 사람들을 보여준다.
+    return users.filter((user) => {
+      if (currentRound === 4) return true;
+      else
+        return (
+          user.choices[currentRound] === teamId && user.joinedTeamId === null
+        );
+    });
+  }, [currentRound, teamId, users]);
+
+  const toggleSelectList = () => {
+    setIsOpenSelectList();
   };
 
-  console.log(teamId);
+  const toggleCard = (selectUser: User) => {
+    if (playerState !== 'selecting')
+      return toast.error('선택할 수 없는 상태입니다.');
+
+    const isSelected = !!selectedUsers.find((id) => id === selectUser.id);
+    if (isSelected ? confirm(isSelected && '선택해제 하시겠습니까?') : true) {
+      setSelectedUsers((prev) =>
+        isSelected
+          ? prev.filter((id) => id !== selectUser.id)
+          : [...prev, selectUser.id],
+      );
+    }
+  };
+
+  const handleTeamSelectionComplete = () => {
+    setPlayerState('selected');
+    setTimeout(() => {
+      setCurrentRound((prev) => prev + 1);
+      if (currentRound === ROUNDS.length - 2) {
+        setPlayerState('wait');
+      } else setPlayerState('selecting');
+      openModal();
+      setSelectedTeamCount(0);
+
+      setUsers((prev) =>
+        prev.map((user) => {
+          if (selectedUsers.includes(user.id)) {
+            return {
+              ...user,
+              joinedTeamId: teamId,
+            };
+          }
+          return user;
+        }),
+      );
+      setSelectedUsers([]);
+    }, 3000);
+  };
 
   return (
-    <div
-      className={vstack({
-        height: '100vh',
-        gap: '20px',
-        padding: '0 80px',
-      })}
-    >
-      <section
+    <>
+      <div
         className={vstack({
-          width: '1280px',
-          background: 'rgba(0, 0, 0, 0.07)',
-          backdropFilter: 'blur(50px)',
+          height: '100vh',
           gap: '20px',
-          padding: '20px 30px',
-          borderRadius: '0 0 20px 20px',
-          border: '1px solid rgba(255, 255, 255, 0.11)',
+          margin: '0 80px',
+          position: 'relative',
         })}
       >
-        <div
-          className={hstack({ width: '100%', justifyContent: 'space-between' })}
-        >
-          <h1
-            className={css({
-              textStyle: 'h2',
-              color: 'gray.5',
-            })}
-          >
-            Nexters23기 팀빌딩입니다
-          </h1>
-          <div className={hstack({ gap: '15px' })}>
-            <span className={css({ textStyle: 'h3', color: 'gray.5' })}>
-              선택 완료 상황
-            </span>
-            <span
-              className={css({
-                textStyle: 'h4',
-                color: 'gray.5',
-                marginLeft: '5px',
-                width: '50px',
-                textAlign: 'center',
-              })}
-            >
-              {selectedTeamCount} / {TOTAL_TEAM_COUNT}
-            </span>
-            <LinearProgress
-              value={selectedTeamCount}
-              total={TOTAL_TEAM_COUNT}
-            />
-          </div>
-        </div>
-        <div
-          className={hstack({ width: '100%', justifyContent: 'space-between' })}
-        >
-          <button
-            onClick={handleNext}
-            className={css({
-              padding: '10.5px 25px',
-              textStyle: 'h3',
-              color: 'gray.5',
-              borderRadius: '10px',
-              border: '1px solid rgba(255, 255, 255, 0.36)',
-              background: 'rgba(255, 255, 255, 0.28)',
-              cursor: 'pointer',
-            })}
-          >
-            전체 현황 보기
-          </button>
-          <Stepper activeStep={activeStep}>
-            {ROUNDS.map(({ label, Icon }, index) => (
-              <Step key={label} id={index}>
-                <Icon className={css({ marginRight: '10px' })} />
-                <span className={css({ textStyle: 'h3' })}>{label}</span>
-              </Step>
-            ))}
-          </Stepper>
-        </div>
-      </section>
-      <section
-        className={css({
-          width: '1280px',
-          background: 'rgba(0, 0, 0, 0.07)',
-          backdropFilter: 'blur(50px)',
-          padding: '40px 40px 0 40px',
-          border: '1px solid rgba(255, 255, 255, 0.11)',
-          borderRadius: '20px',
-          flex: 1,
-          overflow: 'auto',
-        })}
-      >
-        <h2 className={css({ textStyle: 'h1', color: 'gray.5' })}>
-          팀 구성 현황
-        </h2>
-        <div
-          className={grid({
-            columns: 4,
-            marginTop: '30px',
-            gap: '20px',
-            overflow: 'auto',
-            maxHeight: 'calc(100% - 72px)',
-            _scrollbarThumb: {
-              background: 'rgba(255, 255, 255, 0.50)',
-              borderRadius: '99px',
-            },
-            _scrollbar: {
-              width: '10px',
-            },
-          })}
-        >
-          {Array.from({ length: 12 }).map((_, index) => (
-            <Card
-              key={index}
-              name="홍길동"
-              position="Frontend"
-              selected={false}
-            />
-          ))}
-        </div>
-      </section>
-      <section
-        className={hstack({
-          width: '1280px',
-          gap: '40px',
-          alignItems: 'flex-start',
-        })}
-      >
-        <div
-          className={stack({
-            flex: 1,
+        <section
+          className={vstack({
+            width: '1280px',
             background: 'rgba(0, 0, 0, 0.07)',
             backdropFilter: 'blur(50px)',
-            padding: '40px 40px 0 40px',
+            gap: '12px',
+            padding: '30px',
+            borderRadius: '0 0 20px 20px',
             border: '1px solid rgba(255, 255, 255, 0.11)',
-            borderRadius: '20px 20px 0 0',
-            overflow: 'auto',
-            height: '280px',
-            gap: '0',
           })}
         >
-          <div className={hstack({ justifyContent: 'space-between' })}>
-            <h2
+          <div
+            className={hstack({
+              width: '100%',
+              justifyContent: 'space-between',
+              gap: '12px',
+            })}
+          >
+            <h1
               className={css({
                 textStyle: 'h1',
                 color: 'gray.5',
               })}
             >
-              1지망생 리스트
-            </h2>
-            <div className={css({ width: '123px', height: '44px' })}>
-              <Button
-                visual="blue"
-                className={hstack({
-                  whiteSpace: 'nowrap',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  fontWeight: 600,
-                  fontSize: '20px',
-                  gap: '15px',
-                  background: 'blue.60',
-                })}
-              >
-                펼치기
-                <img src={arrowUp} />
-              </Button>
-            </div>
+              Nexters23기 팀빌딩입니다
+            </h1>
+            <button
+              className={css({
+                padding: '10px 25.5px',
+                textStyle: 'h4',
+                color: 'gray.5',
+                borderRadius: '10px',
+                background: 'rgba(255, 255, 255, 0.13)',
+                cursor: 'pointer',
+              })}
+            >
+              전체 현황 보기
+            </button>
           </div>
           <div
+            className={hstack({
+              width: '100%',
+              justifyContent: 'space-between',
+            })}
+          >
+            <div className={hstack({ gap: '12px' })}>
+              <span className={css({ textStyle: 'h3', color: 'gray.5' })}>
+                현재 라운드
+              </span>
+              <Stepper activeStep={currentRound}>
+                {ROUNDS.map(({ label, Icon }, index) => (
+                  <Step key={label} id={index}>
+                    <Icon className={css({ marginRight: '8px' })} />
+                    <span className={css({ textStyle: 'h3' })}>{label}</span>
+                  </Step>
+                ))}
+              </Stepper>
+            </div>
+            <div className={hstack({ gap: '12px' })}>
+              <span className={css({ textStyle: 'h3', color: 'gray.5' })}>
+                현 라운드 완료율
+              </span>
+              <LinearProgress
+                value={selectedTeamCount}
+                total={TOTAL_TEAM_COUNT}
+              />
+            </div>
+          </div>
+        </section>
+        <section
+          className={css({
+            width: '1280px',
+            background: 'rgba(0, 0, 0, 0.07)',
+            backdropFilter: 'blur(50px)',
+            padding: '40px 30px',
+            border: '1px solid rgba(255, 255, 255, 0.11)',
+            borderRadius: '20px',
+            flex: 1,
+            overflow: 'auto',
+          })}
+        >
+          <h2 className={css({ textStyle: 'h1', color: 'gray.5' })}>
+            팀 구성 현황
+          </h2>
+          <div
             className={grid({
-              columns: 3,
+              columns: 5,
               marginTop: '30px',
-              gap: '20px',
+              gap: '16px',
               overflow: 'auto',
+              maxHeight: 'calc(100% - 72px)',
               _scrollbarThumb: {
                 background: 'rgba(255, 255, 255, 0.50)',
                 borderRadius: '99px',
@@ -235,28 +247,153 @@ export const Player = ({ teamId }: PlayerProps) => {
               },
             })}
           >
-            {Array.from({ length: 11 }).map((_, index) => (
+            {filteredSelectedUsers.map((user) => (
               <Card
-                key={index}
-                name="홍길동"
-                position="Frontend"
+                key={user.id}
+                name={user.name}
+                border={selectedUsers.includes(user.id) ? 'yellow' : 'default'}
+                position={user.position}
+                choice={
+                  ChoiceMap[
+                    user.choices.findIndex((choice) => choice === teamId)
+                  ]
+                }
+                link="temp"
                 selected={false}
               />
             ))}
           </div>
-        </div>
-        <div className={css({ width: '255px', height: '180px' })}>
-          <Button
-            visual="primary"
-            size="large"
-            className={css({ height: '100%' })}
+        </section>
+        <section
+          className={css({
+            width: '1280px',
+            height: '332px',
+            _after: {
+              content: '""',
+              position: 'fixed',
+              top: '0',
+              left: '0',
+              width: isOpenSelectList ? '100%' : '0',
+              height: '100%',
+              background: 'rgba(0, 0, 0, 0.8)',
+            },
+          })}
+        >
+          <div
+            className={stack({
+              width: '1030px',
+              height: isOpenSelectList ? '650px' : '332px',
+              background: isOpenSelectList
+                ? 'rgba(255, 255, 255, 0.07)'
+                : 'rgba(0, 0, 0, 0.07)',
+              backdropFilter: 'blur(50px)',
+              padding: '30px 30px 0 30px',
+              border: '1px solid rgba(255, 255, 255, 0.11)',
+              borderRadius: '20px 20px 0 0',
+              overflow: 'auto',
+              position: 'absolute',
+              bottom: '0',
+              gap: '0',
+              transition: 'all 0.3s ease-in-out',
+              zIndex: '1',
+            })}
           >
-            1지망
-            <br />
-            팀원 선택 완료
-          </Button>
-        </div>
-      </section>
-    </div>
+            <div className={hstack({ justifyContent: 'space-between' })}>
+              <h2
+                className={css({
+                  textStyle: 'h1',
+                  color: 'gray.5',
+                })}
+              >
+                {ROUNDS[currentRound].label} 리스트
+              </h2>
+              <div className={css({ width: '123px', height: '44px' })}>
+                <Button
+                  visual="blue"
+                  className={hstack({
+                    whiteSpace: 'nowrap',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    fontWeight: 600,
+                    fontSize: '20px',
+                    gap: '15px',
+                    background: 'blue.60',
+                  })}
+                  onClick={toggleSelectList}
+                >
+                  {isOpenSelectList ? '접기' : '펼치기'}
+                  <img
+                    src={arrowUp}
+                    className={css({
+                      transform: isOpenSelectList
+                        ? 'rotate(180deg)'
+                        : 'rotate(0deg)',
+                    })}
+                  />
+                </Button>
+              </div>
+            </div>
+            <div
+              className={grid({
+                columns: 4,
+                marginTop: '30px',
+                gap: '16px',
+                overflow: 'auto',
+                _scrollbarThumb: {
+                  background: 'rgba(255, 255, 255, 0.50)',
+                  borderRadius: '99px',
+                },
+                _scrollbar: {
+                  width: '10px',
+                },
+              })}
+            >
+              {filteredUsersByRound.map((user) => (
+                <Card
+                  className={css({
+                    cursor: 'pointer',
+                    _hover: {
+                      border: '1px solid rgba(255, 255, 255, 0.8)',
+                    },
+                  })}
+                  key={user.id}
+                  name={user.name}
+                  position={user.position}
+                  link="temp"
+                  choice={ChoiceMap[currentRound]}
+                  selected={selectedUsers.includes(user.id)}
+                  onClick={() => toggleCard(user)}
+                />
+              ))}
+            </div>
+          </div>
+          <div
+            className={css({
+              width: '230px',
+              height: '180px',
+              position: 'absolute',
+              right: '0',
+            })}
+          >
+            <Button
+              visual="primary"
+              size="large"
+              className={css({ height: '100%' })}
+              disabled={playerState !== 'selecting'}
+              onClick={handleTeamSelectionComplete}
+            >
+              {ROUNDS[currentRound].label}
+              <br />
+              {PlayerStateMap[playerState]}
+            </Button>
+          </div>
+        </section>
+      </div>
+      <RoundFinishModal
+        isOpen={isOpenModal}
+        onClose={closeModal}
+        round={currentRound}
+      />
+    </>
   );
 };
