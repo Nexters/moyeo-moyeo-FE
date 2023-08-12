@@ -40,4 +40,4 @@ export type TotalInfo = {
   userInfoList: User[];
 };
 
-export type Choice = '1지망' | '2지망' | '3지망' | '4지망';
+export type Choice = '1지망' | '2지망' | '3지망' | '4지망' | '팀 구성 조정';
