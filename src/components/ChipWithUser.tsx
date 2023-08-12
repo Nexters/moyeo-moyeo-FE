@@ -20,9 +20,10 @@ export const ChipWithUser = ({
   onClickDelete,
 }: ChipWithUserProps) => {
   const visual = useMemo(() => {
+    // @fixme: 여기 로직 수정
     if (user.id === 'pm') return 'pm';
     if (user.joinedTeamId == null) return 'none';
-    return indexRoundMap[user.choices.indexOf(user.joinedTeamId)] ?? 'none';
+    return indexRoundMap[user.choices.indexOf(user.joinedTeamId)] ?? 'extra';
   }, [user.choices, user.id, user.joinedTeamId]);
   const isPm = user.id === 'pm';
 
