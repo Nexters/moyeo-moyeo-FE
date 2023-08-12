@@ -369,8 +369,6 @@ const Create = () => {
           </button>
         </section>
       </form>
-
-      <section className=""></section>
     </>
   );
 };
