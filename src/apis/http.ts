@@ -1,17 +1,13 @@
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 
 export const httpClient = {
-  get: <T>(url: string) => __fetch<T>('get', url),
+  get: <T>(url: string) => __fetch<T, void>('get', url),
   post: <T, D>(url: string, body: D) => __fetch<T, D>('post', url, body),
   put: <T, D>(url: string, body: D) => __fetch<T, D>('put', url, body),
-  delete: <T>(url: string) => __fetch<T>('delete', url),
+  delete: <T>(url: string) => __fetch<T, void>('delete', url),
 };
 
-const __fetch = async <T = unknown, D = unknown>(
-  method: string,
-  path: string,
-  body?: D,
-) => {
+const __fetch = async <T, D>(method: string, path: string, body?: D) => {
   const response = await fetch(resolveUrl(BASE_URL, path), {
     method,
     // @note: body가 undefined이면, stringify 된 값도 undefined이므로 body는 전송되지 않는다.
