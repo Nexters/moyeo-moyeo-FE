@@ -86,6 +86,9 @@ export const Card = ({
             })}
             href={link}
             target={link ? '_blank' : undefined}
+            onClick={(e) => {
+              e.stopPropagation();
+            }}
           >
             {link ? (
               <LinkIcon />
