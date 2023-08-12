@@ -1,12 +1,13 @@
 import { ChangeEvent, useState } from 'react';
 
+import { toast } from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 
 import closeIcon from '@/assets/icons/close.svg';
 import { ReactComponent as TrashBinIcon } from '@/assets/icons/trashbin.svg';
 import { css } from '@/styled-system/css';
 import { center, hstack, vstack } from '@/styled-system/patterns';
-import { POSITION_LIST } from '@/utils/const';
+import { MAX_LENGTH__TEAM_BUILDING_NAME, POSITION_LIST } from '@/utils/const';
 import { generateId } from '@/utils/user';
 
 type TeamRow = {
@@ -19,6 +20,7 @@ type TeamRow = {
 const Create = () => {
   const [teamBuildingName, setTeamBuildingName] = useState('');
   const [teamRows, setTeamRows] = useState<TeamRow[]>([]);
+  const [isClickedSubmit, setIsClickedSubmit] = useState(false);
   const navigate = useNavigate();
 
   const handleAddTeamRow = () => {
@@ -50,21 +52,25 @@ const Create = () => {
       setTeamRows((prev) => prev.filter((t) => t.id !== id));
     }
   };
-  const handleSubmit = () => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    setIsClickedSubmit(true);
+
     if (teamBuildingName === '') {
-      return alert('팀 빌딩 제목을 입력해주세요.');
+      return toast.error('팀 빌딩 제목을 입력해주세요.');
     }
     if (teamRows.length === 0) {
-      return alert('팀 리스트를 입력해주세요.');
+      return toast.error('팀 리스트를 입력해주세요.');
     }
     if (teamRows.some((t) => t.pmName === '')) {
-      return alert('PM 이름을 입력해주세요.');
+      return toast.error('PM 이름을 입력해주세요.');
     }
     if (teamRows.some((t) => t.pmPosition === '')) {
-      return alert('PM 직군을 선택해주세요.');
+      return toast.error('PM 직군을 선택해주세요.');
     }
     if (teamRows.some((t) => t.ideaName === '')) {
-      return alert('아이디어 제목을 입력해주세요.');
+      return toast.error('아이디어 제목을 입력해주세요.');
     }
 
     if (
@@ -80,7 +86,7 @@ const Create = () => {
 
   return (
     <>
-      <section
+      <form
         className={vstack({
           alignItems: 'stretch',
           width: '100%',
@@ -93,6 +99,7 @@ const Create = () => {
           gap: '80px',
           color: 'gray.5',
         })}
+        onSubmit={handleSubmit}
       >
         <header className={vstack({ alignItems: 'flex-start', gap: '20px' })}>
           <div
@@ -114,6 +121,7 @@ const Create = () => {
             </h1>
 
             <button
+              type="button"
               aria-label="홈으로 돌아가기"
               className={css({ cursor: 'pointer' })}
               onClick={() => navigate('/')}
@@ -144,11 +152,16 @@ const Create = () => {
             type="text"
             value={teamBuildingName}
             placeholder="ex) 넥스터즈 23기 팀 빌딩"
+            maxLength={MAX_LENGTH__TEAM_BUILDING_NAME}
             className={css({
               width: '100%',
               maxWidth: '600px',
               padding: '16px',
               margin: '20px 0 8px',
+              border:
+                isClickedSubmit && teamBuildingName === ''
+                  ? '2px solid token(colors.red.60)'
+                  : '2px solid transparent',
               borderRadius: '12px',
               backgroundColor: 'rgba(12, 13, 14, 0.50)',
               textStyle: 'p1',
@@ -156,8 +169,19 @@ const Create = () => {
             })}
             onChange={(e) => setTeamBuildingName(e.target.value)}
           />
-          <p className={css({ textStyle: 'p3', padding: '0 8px' })}>
-            20자 이상의 제목은 입력이 불가능합니다.
+          <p
+            className={css({
+              textStyle: 'p3',
+              padding: '0 8px',
+              color:
+                isClickedSubmit && teamBuildingName === ''
+                  ? 'red.60'
+                  : undefined,
+            })}
+          >
+            {isClickedSubmit && teamBuildingName === ''
+              ? '제목을 입력해주세요.'
+              : '20자 이상의 제목은 입력이 불가능합니다.'}
           </p>
         </section>
 
@@ -214,9 +238,15 @@ const Create = () => {
                         onChange={handleUpdateTeamRow(team.id)}
                         className={css({
                           width: '100%',
+                          height: '56px',
                           padding: '16px 0',
                           backgroundColor: 'transparent',
-                          color: '#fff',
+                          color: 'gray.5',
+                          border:
+                            isClickedSubmit && team.pmName === ''
+                              ? '2px solid token(colors.red.60)'
+                              : '2px solid transparent',
+                          borderRadius: '4px',
                         })}
                       />
                     </td>
@@ -227,9 +257,15 @@ const Create = () => {
                         onChange={handleUpdateTeamRow(team.id)}
                         className={css({
                           width: '100%',
+                          height: '56px',
                           padding: '16px 0',
                           backgroundColor: 'transparent',
-                          color: team.pmPosition === '' ? '#9ca3af' : '#fff',
+                          color: team.pmPosition === '' ? '#9ca3af' : 'gray.5',
+                          border:
+                            isClickedSubmit && team.pmPosition === ''
+                              ? '2px solid token(colors.red.60)'
+                              : '2px solid transparent',
+                          borderRadius: '4px',
                         })}
                       >
                         <option value="" disabled>
@@ -250,14 +286,21 @@ const Create = () => {
                         onChange={handleUpdateTeamRow(team.id)}
                         className={css({
                           width: '100%',
+                          height: '56px',
                           padding: '16px 0',
                           backgroundColor: 'transparent',
-                          color: '#fff',
+                          color: 'gray.5',
+                          border:
+                            isClickedSubmit && team.ideaName === ''
+                              ? '2px solid token(colors.red.60)'
+                              : '2px solid transparent',
+                          borderRadius: '4px',
                         })}
                       />
                     </td>
                     <td>
                       <button
+                        type="button"
                         className={center({
                           width: '56px',
                           height: '56px',
@@ -273,6 +316,7 @@ const Create = () => {
               </tbody>
             </table>
             <button
+              type="button"
               className={css({
                 width: '100%',
                 height: '80px',
@@ -292,6 +336,7 @@ const Create = () => {
 
         <section className={css({ textAlign: 'right' })}>
           <button
+            type="submit"
             className={css({
               width: '320px',
               height: '80px',
@@ -306,12 +351,11 @@ const Create = () => {
               color: 'gray.5',
               cursor: 'pointer',
             })}
-            onClick={handleSubmit}
           >
             팀 빌딩 시작하기
           </button>
         </section>
-      </section>
+      </form>
 
       <section className=""></section>
     </>
