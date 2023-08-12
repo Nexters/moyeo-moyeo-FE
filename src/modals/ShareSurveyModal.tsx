@@ -6,17 +6,17 @@ import { css } from '@/styled-system/css';
 import { hstack } from '@/styled-system/patterns';
 
 export type ShareSurveyModalProps = {
-  roomId: string;
+  teamBuildingUuid: string;
   isOpen: boolean;
   onClose: () => void;
 };
 
 export const ShareSurveyModal = ({
-  roomId,
+  teamBuildingUuid,
   isOpen,
   onClose,
 }: ShareSurveyModalProps) => {
-  const surveyUrl = `${location.origin}/forms/${roomId}`;
+  const surveyUrl = `${location.origin}/forms/${teamBuildingUuid}`;
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(surveyUrl);

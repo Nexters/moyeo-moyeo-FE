@@ -59,10 +59,10 @@ const nextRoundMap: Record<Round, Round> = {
 };
 
 export type AdminProps = {
-  roomId: string;
+  teamBuildingUuid: string;
 };
 
-export const Admin = ({ roomId }: AdminProps) => {
+export const Admin = ({ teamBuildingUuid }: AdminProps) => {
   // @note: 유저 목록을 복사한 이유는 선택된 팀에 대한 정보를 반영하기 위함
   const [users, setUsers] = useState(mockUsers);
   const [selectedRound, setSelectedRound] = useState<Round>('1지망');
@@ -71,7 +71,7 @@ export const Admin = ({ roomId }: AdminProps) => {
   const shareSurveyModalProps = useDisclosure();
 
   const [isRunning, setIsRunning] = useState(false);
-  const query = useGetTotalInfo({ teamBuildingUuid: 'g8qzA4w79BgG4Nm2mBFKMQ' });
+  const query = useGetTotalInfo({ teamBuildingUuid });
 
   const allMemberByTeam = useMemo(() => {
     const allMemberByTeam: Record<Team['pmName'], User[]> = {};
@@ -504,7 +504,7 @@ export const Admin = ({ roomId }: AdminProps) => {
         onSelect={handleSelectTeam}
       />
       <ShareSurveyModal
-        roomId={roomId}
+        teamBuildingUuid={teamBuildingUuid}
         isOpen={shareSurveyModalProps.isOpen}
         onClose={shareSurveyModalProps.onClose}
       />
