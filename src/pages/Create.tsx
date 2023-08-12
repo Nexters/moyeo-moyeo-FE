@@ -314,6 +314,9 @@ const Create = () => {
                           width: '56px',
                           height: '56px',
                           cursor: 'pointer',
+                          '& svg path': {
+                            fill: '#FFFFFF29',
+                          },
                         })}
                         onClick={handleDeleteTeamRow(team.id)}
                       >
