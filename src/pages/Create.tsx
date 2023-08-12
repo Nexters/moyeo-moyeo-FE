@@ -3,8 +3,9 @@ import { ChangeEvent, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import closeIcon from '@/assets/icons/close.svg';
+import { ReactComponent as TrashBinIcon } from '@/assets/icons/trashbin.svg';
 import { css } from '@/styled-system/css';
-import { hstack, vstack } from '@/styled-system/patterns';
+import { center, hstack, vstack } from '@/styled-system/patterns';
 import { POSITION_LIST } from '@/utils/const';
 import { generateId } from '@/utils/user';
 
@@ -86,10 +87,11 @@ const Create = () => {
           maxWidth: '1280px',
           margin: '80px auto 160px',
           padding: '60px',
-          backgroundColor: '#0C0D0E',
+          backgroundColor: 'rgba(255, 255, 255, 0.07)',
+          backdropFilter: 'blur(50px)',
           borderRadius: '40px',
           gap: '80px',
-          color: '#fff',
+          color: 'gray.5',
         })}
       >
         <header className={vstack({ alignItems: 'flex-start', gap: '20px' })}>
@@ -127,7 +129,7 @@ const Create = () => {
             className={css({
               width: '100%',
               fontSize: '20px',
-              color: '#B9BDC5',
+              color: 'gray.30',
             })}
           >
             이번 팀 빌딩의 제목과 진행되는 팀 목록을 모두 입력해주세요.
@@ -137,9 +139,7 @@ const Create = () => {
         </header>
 
         <section>
-          <h2 className={css({ fontSize: '28px', fontWeight: 800 })}>
-            팀 빌딩 제목
-          </h2>
+          <h2 className={css({ textStyle: 'h1' })}>팀 빌딩 제목</h2>
           <input
             type="text"
             value={teamBuildingName}
@@ -148,29 +148,28 @@ const Create = () => {
               width: '100%',
               maxWidth: '600px',
               padding: '16px',
-              margin: '20px 0 12px',
+              margin: '20px 0 8px',
               borderRadius: '12px',
-              border: '1px solid #000',
-              backgroundColor: '#22252A',
-              color: '#fff',
+              backgroundColor: 'rgba(12, 13, 14, 0.50)',
+              textStyle: 'p1',
+              color: 'gray.5',
             })}
             onChange={(e) => setTeamBuildingName(e.target.value)}
           />
-          {/* <p className={css({ fontSize: '14px' })}>
+          <p className={css({ textStyle: 'p3', padding: '0 8px' })}>
             20자 이상의 제목은 입력이 불가능합니다.
-          </p> */}
+          </p>
         </section>
 
         <section className={vstack({ alignItems: 'flex-start', gap: '20px' })}>
-          <h2 className={css({ fontSize: '28px', fontWeight: 800 })}>
-            팀 리스트
-          </h2>
+          <h2 className={css({ textStyle: 'h1' })}>팀 리스트</h2>
           <div
             className={vstack({
               width: '100%',
               padding: '16px',
-              backgroundColor: '#22252A',
-              borderRadius: '28px',
+              backgroundColor: 'rgba(12, 13, 14, 0.40)',
+              borderRadius: '20px',
+              backdropFilter: 'blur(50px)',
               gap: '40px',
             })}
           >
@@ -178,17 +177,17 @@ const Create = () => {
               className={css({
                 width: '100%',
                 fontSize: '16px',
-                color: '#D5D8DC',
+                color: 'gray.20',
                 '& tr': {
                   height: '52px',
-                  borderBottom: '1px solid #2E3138',
+                  borderBottom: '1px solid #FFFFFF47',
                 },
                 '& tbody tr:last-child': {
                   borderBottom: 'none',
                 },
                 '& thead tr': {
                   fontWeight: 'bold',
-                  borderBottom: '1px solid #5C6270',
+                  borderBottom: '1px solid token(colors.gray.30)',
                 },
                 '& th, & td': {
                   textAlign: 'left',
@@ -200,8 +199,8 @@ const Create = () => {
                 <tr>
                   <th className={css({ width: '200px' })}>PM 이름</th>
                   <th className={css({ width: '200px' })}>PM 직군</th>
-                  <th>아이디어 제목</th>
-                  <th className={css({ width: '80px' })}></th>
+                  <th>팀 이름</th>
+                  <th className={css({ width: '56px' })}></th>
                 </tr>
               </thead>
               <tbody>
@@ -246,7 +245,7 @@ const Create = () => {
                     <td>
                       <input
                         name="ideaName"
-                        placeholder="아이디어 제목을 입력해주세요"
+                        placeholder="팀 이름을 입력해주세요"
                         value={team.ideaName}
                         onChange={handleUpdateTeamRow(team.id)}
                         className={css({
@@ -259,20 +258,14 @@ const Create = () => {
                     </td>
                     <td>
                       <button
-                        className={css({
-                          width: '40px',
-                          height: '40px',
-                          borderRadius: '50%',
-                          backgroundColor: '#17191C',
-                          color: '#fff',
-                          fontSize: '24px',
-                          fontWeight: 600,
-                          userSelect: 'none',
+                        className={center({
+                          width: '56px',
+                          height: '56px',
                           cursor: 'pointer',
                         })}
                         onClick={handleDeleteTeamRow(team.id)}
                       >
-                        -
+                        <TrashBinIcon />
                       </button>
                     </td>
                   </tr>
@@ -284,10 +277,9 @@ const Create = () => {
                 width: '100%',
                 height: '80px',
                 borderRadius: '20px',
-                backgroundColor: '#17191C',
-                color: '#fff',
-                fontSize: '24px',
-                fontWeight: 600,
+                backgroundColor: 'rgba(12, 13, 14, 0.50)',
+                color: 'gray.5',
+                textStyle: 'h2',
                 userSelect: 'none',
                 cursor: 'pointer',
               })}
@@ -304,12 +296,14 @@ const Create = () => {
               width: '320px',
               height: '80px',
               padding: '24px',
-              backgroundColor: '#7B5CFE',
+              background: 'linear-gradient(180deg, #8060FF 0%, #5818DF 100%)',
+              boxShadow:
+                '4px 4px 8px 0px rgba(255, 255, 255, 0.25) inset, -4px -4px 8px 0px #441FE2 inset',
               borderRadius: '20px',
               fontSize: '24px',
               fontFamily: 'GmarketSansBold',
               letterSpacing: '-0.48px',
-              color: '#fff',
+              color: 'gray.5',
               cursor: 'pointer',
             })}
             onClick={handleSubmit}
