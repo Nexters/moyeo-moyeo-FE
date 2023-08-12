@@ -471,12 +471,13 @@ export const Admin = ({ roomId }: AdminProps) => {
                 width: '320px',
                 height: '80px',
                 padding: '24px',
-                backgroundColor: '#7B5CFE',
+                background: 'linear-gradient(180deg, #8060FF 0%, #5818DF 100%)',
+                boxShadow:
+                  '4px 4px 8px 0px rgba(255, 255, 255, 0.25) inset, -4px -4px 8px 0px #441FE2 inset',
                 borderRadius: '20px',
                 fontSize: '24px',
                 fontFamily: 'GmarketSansBold',
-                letterSpacing: '-0.48px',
-                color: '#fff',
+                color: 'gray.5',
                 cursor: 'pointer',
               })}
             >

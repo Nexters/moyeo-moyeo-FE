@@ -359,7 +359,6 @@ const Create = () => {
               borderRadius: '20px',
               fontSize: '24px',
               fontFamily: 'GmarketSansBold',
-              letterSpacing: '-0.48px',
               color: 'gray.5',
               cursor: 'pointer',
             })}
