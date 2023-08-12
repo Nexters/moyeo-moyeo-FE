@@ -6,16 +6,13 @@ export type ButtonProps = RecipeVariantProps<typeof button> &
   ButtonHTMLAttributes<HTMLButtonElement>;
 
 export const Button = ({
-  visual,
+  color,
   size,
   className,
   ...restProps
 }: ButtonProps) => {
   return (
-    <button
-      {...restProps}
-      className={cx(className, button({ visual, size }))}
-    />
+    <button {...restProps} className={cx(className, button({ color, size }))} />
   );
 };
 
@@ -23,34 +20,26 @@ const button = cva({
   base: {
     width: '100%',
     cursor: 'pointer',
-    background: 'rgba(23, 25, 28, 0.8)',
     _disabled: {
-      background: 'rgba(23, 25, 28, 0.8) !important',
-      opacity: 0.5,
+      background: 'gray.30 !important',
+      boxShadow:
+        '4px 4px 8px 0px rgba(255, 255, 255, 0.25) inset, -4px -4px 8px 0px rgba(12, 12, 14, 0.30) inset',
       cursor: 'not-allowed',
     },
   },
   variants: {
-    visual: {
+    color: {
       primary: {
-        background: 'rgba(23, 25, 28, 0.8)',
-        color: '#fff',
-        _hover: {
-          background: 'linear-gradient(180deg, #feb100 0%, #FF7A01 100%)',
-        },
-        _active: {
-          background:
-            'linear-gradient(180deg, rgba(254, 177, 0, 0.5) 0%, rgba(255, 122, 1, 0.5) 100%)',
-        },
+        background: 'linear-gradient(180deg, #8060FF 0%, #5818DF 100%)',
+        color: 'gray.5',
+        boxShadow:
+          '4px 4px 8px 0px rgba(255, 255, 255, 0.25) inset, -4px -4px 8px 0px #441FE2 inset',
       },
       secondary: {
-        background: 'rgba(23, 25, 28, 0.8)',
-        color: '#fff',
-        border: '1px solid transparent',
-        transition: 'border 0.3s ease-in-out',
-        _hover: {
-          border: '1px solid #0F83F7',
-        },
+        background: 'linear-gradient(180deg, #FFAA05 0%, #FF7A00 100%)',
+        color: 'gray.5',
+        boxShadow:
+          '4px 4px 8px 0px rgba(255, 255, 255, 0.25) inset, -4px -4px 8px 0px #A13A00 inset',
       },
       green: {
         background: '#27af49',
@@ -61,28 +50,36 @@ const button = cva({
         color: '#fff',
       },
       blue: {
-        background: '#0099ff',
+        background: 'blue.60',
         color: '#fff',
       },
     },
     size: {
+      small: {
+        height: '48px',
+        padding: '14px',
+        borderRadius: '12px',
+        fontSize: '20px',
+        fontFamily: 'GmarketSansMedium',
+      },
       medium: {
-        height: '50px',
-        padding: '0 20px',
+        height: '80px',
+        padding: '24px',
         borderRadius: '10px',
-        fontSize: '15px',
-        fontWeight: 900,
+        fontSize: '24px',
+        fontFamily: 'GmarketSansBold',
       },
       large: {
-        height: '80px',
+        height: '180px',
         borderRadius: '20px',
-        fontSize: '23px',
-        fontWeight: 900,
+        fontSize: '28px',
+        padding: '24px',
+        fontWeight: 800,
       },
     },
   },
   defaultVariants: {
-    visual: 'primary',
+    color: 'primary',
     size: 'medium',
   },
 });
