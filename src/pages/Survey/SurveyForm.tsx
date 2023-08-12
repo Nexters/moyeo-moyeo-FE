@@ -26,7 +26,8 @@ export const SurveyForm = ({
   teamBuildingUuid,
   onAfterSubmit,
 }: SurveyFormProps) => {
-  const query = useGetTotalInfoForSurvey(teamBuildingUuid);
+  const { data: totalInfoForSurvey } =
+    useGetTotalInfoForSurvey(teamBuildingUuid);
   const mutation = useCreateUser();
 
   const [inputs, setInputs] = useState({
@@ -105,7 +106,7 @@ export const SurveyForm = ({
             marginBottom: '8px',
           })}
         >
-          {query.data?.teamBuildingInfo.teamBuildingName}
+          {totalInfoForSurvey?.teamBuildingInfo.teamBuildingName}
         </h1>
 
         <p
@@ -200,7 +201,7 @@ export const SurveyForm = ({
                   validation.hasEmptyChoices &&
                   inputs.choices[round] === ''
                 }
-                options={query.data?.teamInfoList.map((team) => ({
+                options={totalInfoForSurvey?.teamInfoList.map((team) => ({
                   value: team.uuid,
                   label: `${team.pmName} - ${team.teamName}`,
                 }))}

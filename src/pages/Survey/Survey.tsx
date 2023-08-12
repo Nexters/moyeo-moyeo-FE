@@ -11,14 +11,15 @@ import { SurveyResult } from './SurveyResult';
 const Survey = () => {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const { teamBuildingUuid } = useParams();
-  const query = useGetTotalInfoForSurvey(teamBuildingUuid);
+  const { isLoading, data: totalInfoForSurvey } =
+    useGetTotalInfoForSurvey(teamBuildingUuid);
 
   const handleSubmit = () => {
     setIsSubmitted(true);
   };
 
-  if (!query.isFetched) return 'loading...';
-  if (!teamBuildingUuid || !query.data) return <NotFound />;
+  if (isLoading) return 'loading...';
+  if (!teamBuildingUuid || !totalInfoForSurvey) return <NotFound />;
   return !isSubmitted ? (
     <SurveyForm
       teamBuildingUuid={teamBuildingUuid}
