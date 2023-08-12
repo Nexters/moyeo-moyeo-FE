@@ -8,13 +8,14 @@ import { ReactComponent as TrashBinIcon } from '@/assets/icons/trashbin.svg';
 import { css } from '@/styled-system/css';
 import { center, hstack, vstack } from '@/styled-system/patterns';
 import { MAX_LENGTH__TEAM_BUILDING_NAME, POSITION_LIST } from '@/utils/const';
+import { isTrulyEmptyString } from '@/utils/string';
 import { generateId } from '@/utils/user';
 
 type TeamRow = {
   id: string;
   pmName: string;
   pmPosition: string;
-  ideaName: string;
+  teamName: string;
 };
 
 const Create = () => {
@@ -28,7 +29,7 @@ const Create = () => {
       id: generateId(), // <- 임시. 서버에 보낼때는 제거해야함
       pmName: '',
       pmPosition: '',
-      ideaName: '',
+      teamName: '',
     };
     setTeamRows((prev) => prev.concat(newTeam));
   };
@@ -57,20 +58,20 @@ const Create = () => {
 
     setIsClickedSubmit(true);
 
-    if (teamBuildingName === '') {
+    if (isTrulyEmptyString(teamBuildingName)) {
       return toast.error('팀 빌딩 제목을 입력해주세요.');
     }
     if (teamRows.length === 0) {
       return toast.error('팀 리스트를 입력해주세요.');
     }
-    if (teamRows.some((t) => t.pmName === '')) {
+    if (teamRows.some((t) => isTrulyEmptyString(t.pmName))) {
       return toast.error('PM 이름을 입력해주세요.');
     }
-    if (teamRows.some((t) => t.pmPosition === '')) {
+    if (teamRows.some((t) => isTrulyEmptyString(t.pmPosition))) {
       return toast.error('PM 직군을 선택해주세요.');
     }
-    if (teamRows.some((t) => t.ideaName === '')) {
-      return toast.error('아이디어 제목을 입력해주세요.');
+    if (teamRows.some((t) => isTrulyEmptyString(t.teamName))) {
+      return toast.error('팀 이름을 입력해주세요.');
     }
 
     if (
@@ -159,7 +160,7 @@ const Create = () => {
               padding: '16px',
               margin: '20px 0 8px',
               border:
-                isClickedSubmit && teamBuildingName === ''
+                isClickedSubmit && isTrulyEmptyString(teamBuildingName)
                   ? '2px solid token(colors.red.60)'
                   : '2px solid transparent',
               borderRadius: '12px',
@@ -174,12 +175,12 @@ const Create = () => {
               textStyle: 'p3',
               padding: '0 8px',
               color:
-                isClickedSubmit && teamBuildingName === ''
+                isClickedSubmit && isTrulyEmptyString(teamBuildingName)
                   ? 'red.60'
                   : undefined,
             })}
           >
-            {isClickedSubmit && teamBuildingName === ''
+            {isClickedSubmit && isTrulyEmptyString(teamBuildingName)
               ? '제목을 입력해주세요.'
               : '20자 이상의 제목은 입력이 불가능합니다.'}
           </p>
@@ -243,7 +244,7 @@ const Create = () => {
                           backgroundColor: 'transparent',
                           color: 'gray.5',
                           border:
-                            isClickedSubmit && team.pmName === ''
+                            isClickedSubmit && isTrulyEmptyString(team.pmName)
                               ? '2px solid token(colors.red.60)'
                               : '2px solid transparent',
                           borderRadius: '4px',
@@ -262,7 +263,8 @@ const Create = () => {
                           backgroundColor: 'transparent',
                           color: team.pmPosition === '' ? '#9ca3af' : 'gray.5',
                           border:
-                            isClickedSubmit && team.pmPosition === ''
+                            isClickedSubmit &&
+                            isTrulyEmptyString(team.pmPosition)
                               ? '2px solid token(colors.red.60)'
                               : '2px solid transparent',
                           borderRadius: '4px',
@@ -280,9 +282,9 @@ const Create = () => {
                     </td>
                     <td>
                       <input
-                        name="ideaName"
+                        name="teamName"
                         placeholder="팀 이름을 입력해주세요"
-                        value={team.ideaName}
+                        value={team.teamName}
                         onChange={handleUpdateTeamRow(team.id)}
                         className={css({
                           width: '100%',
@@ -291,7 +293,7 @@ const Create = () => {
                           backgroundColor: 'transparent',
                           color: 'gray.5',
                           border:
-                            isClickedSubmit && team.ideaName === ''
+                            isClickedSubmit && isTrulyEmptyString(team.teamName)
                               ? '2px solid token(colors.red.60)'
                               : '2px solid transparent',
                           borderRadius: '4px',
