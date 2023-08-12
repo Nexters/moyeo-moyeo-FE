@@ -3,19 +3,45 @@ import { useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
 
 import { useGetTotalInfo } from '@/apis/room';
+import { ReactComponent as Face } from '@/assets/icons/face.svg';
+import { ReactComponent as Group } from '@/assets/icons/group.svg';
 import { Button } from '@/components/Button';
 import { Chip } from '@/components/Chip';
 import { ChipWithUser } from '@/components/ChipWithUser';
+import { LinearProgress } from '@/components/LinearProgress';
+import { Step, Stepper } from '@/components/stepper';
 import { useDisclosure } from '@/hooks/useDisclosure';
 import { mockTeams, mockUsers } from '@/mock/data';
 import { SelectTeamModal } from '@/modals/SelectTeamModal';
 import { css } from '@/styled-system/css';
-import { hstack, vstack } from '@/styled-system/patterns';
+import { hstack, stack, vstack } from '@/styled-system/patterns';
 import { Round, Team, User } from '@/types.old';
 import { shakeArray } from '@/utils/array';
 import { delay } from '@/utils/time';
 
-const rounds: Round[] = ['1지망', '2지망', '3지망', '4지망', '자유', '종료'];
+const ROUNDS = [
+  {
+    label: '1지망',
+    Icon: Face,
+  },
+  {
+    label: '2지망',
+    Icon: Face,
+  },
+  {
+    label: '3지망',
+    Icon: Face,
+  },
+  {
+    label: '4지망',
+    Icon: Face,
+  },
+  {
+    label: '팀 구성 조정',
+    Icon: Group,
+  },
+];
+
 const roundIndexMap: Record<string, number> = {
   '1지망': 0,
   '2지망': 1,
@@ -185,9 +211,9 @@ export const Admin = () => {
         })}
       >
         <nav
-          className={hstack({
+          className={stack({
             width: '100%',
-            height: '92px',
+            gap: '12px',
             justifyContent: 'space-between',
             padding: '30px',
             border: '1px solid rgba(255, 255, 255, 0.11)',
@@ -199,14 +225,54 @@ export const Admin = () => {
             zIndex: 2,
           })}
         >
-          <div>
-            <h1>{teamBuildingName}</h1>
-            <div>stepper</div>
-          </div>
+          <header className={hstack()}>
+            <h1 className={css({ flex: '1', textStyle: 'h1' })}>
+              {teamBuildingName}
+            </h1>
+            <div className={hstack({ gap: '12px' })}>
+              <button
+                className={css({
+                  padding: '10px 12px',
+                  borderRadius: '10px',
+                  backgroundColor: 'rgba(255, 255, 255, 0.13)',
+                  textStyle: 'h4',
+                  color: 'gray.20',
+                  cursor: 'pointer',
+                })}
+              >
+                설문 링크 복사하기
+              </button>
+              <button
+                className={css({
+                  padding: '10px 12px',
+                  borderRadius: '10px',
+                  backgroundColor: 'rgba(255, 255, 255, 0.13)',
+                  textStyle: 'h4',
+                  color: 'gray.20',
+                  cursor: 'pointer',
+                })}
+              >
+                참여 링크 복사하기
+              </button>
+            </div>
+          </header>
 
-          <div>
-            <h3>선택 완료 현황</h3>
-            <div>progress</div>
+          <div className={hstack({ justifyContent: 'space-between' })}>
+            <div className={hstack()}>
+              <h3 className={css({ textStyle: 'h3' })}>현재 라운드</h3>
+              <Stepper activeStep={1}>
+                {ROUNDS.map(({ label, Icon }, index) => (
+                  <Step key={label} id={index}>
+                    <Icon className={css({ marginRight: '8px' })} />
+                    <span className={css({ textStyle: 'h3' })}>{label}</span>
+                  </Step>
+                ))}
+              </Stepper>
+            </div>
+            <div className={hstack()}>
+              <h3 className={css({ textStyle: 'h3' })}>현 라운드 완료율</h3>
+              <LinearProgress value={1} total={10} />
+            </div>
           </div>
         </nav>
 
@@ -221,7 +287,7 @@ export const Admin = () => {
             borderRadius: '20px',
           })}
         >
-          <header
+          <div
             className={hstack({
               width: '100%',
               gap: '24px',
@@ -244,7 +310,7 @@ export const Admin = () => {
               팀원 이름을 마우스로 호버하면 팀 재배정하거나, 해당 인원을 팀에서
               제거할 수 있습니다.
             </p>
-          </header>
+          </div>
 
           <section
             className={vstack({
