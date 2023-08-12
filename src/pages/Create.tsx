@@ -7,7 +7,12 @@ import closeIcon from '@/assets/icons/close.svg';
 import { ReactComponent as TrashBinIcon } from '@/assets/icons/trashbin.svg';
 import { css } from '@/styled-system/css';
 import { center, hstack, vstack } from '@/styled-system/patterns';
-import { MAX_LENGTH__TEAM_BUILDING_NAME, POSITION_LIST } from '@/utils/const';
+import {
+  MAX_LENGTH__TEAM_BUILDING_NAME,
+  MAX_LENGTH__TEAM_NAME,
+  MAX_LENGTH__USER_NAME,
+  POSITION_LIST,
+} from '@/utils/const';
 import { isTrulyEmptyString } from '@/utils/string';
 import { generateId } from '@/utils/user';
 
@@ -236,6 +241,7 @@ const Create = () => {
                         name="pmName"
                         placeholder="PM 이름을 입력해주세요"
                         value={team.pmName}
+                        maxLength={MAX_LENGTH__USER_NAME}
                         onChange={handleUpdateTeamRow(team.id)}
                         className={css({
                           width: '100%',
@@ -285,6 +291,7 @@ const Create = () => {
                         name="teamName"
                         placeholder="팀 이름을 입력해주세요"
                         value={team.teamName}
+                        maxLength={MAX_LENGTH__TEAM_NAME}
                         onChange={handleUpdateTeamRow(team.id)}
                         className={css({
                           width: '100%',
