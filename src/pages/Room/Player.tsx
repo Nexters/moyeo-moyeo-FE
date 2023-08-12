@@ -1,17 +1,20 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import { toast } from 'react-hot-toast';
 
-import arrowUp from '@/assets/icons/arrowUp.svg';
+import { ReactComponent as ArrowUpIcon } from '@/assets/icons/arrowUp.svg';
 import { ReactComponent as FaceIcon } from '@/assets/icons/face.svg';
 import { ReactComponent as GroupIcon } from '@/assets/icons/group.svg';
+import { ReactComponent as InfoIcon } from '@/assets/icons/info.svg';
 import { Button } from '@/components/Button';
 import { Card } from '@/components/Card';
 import { LinearProgress } from '@/components/LinearProgress';
 import { Step, Stepper } from '@/components/stepper';
 import { useDisclosure } from '@/hooks/useDisclosure';
 import { mockUsers } from '@/mock/data';
-import RoundFinishModal from '@/modals/RoundFinishModal';
+import AgreementModal from '@/modals/AgreementModal';
+import RoundFinishModal from '@/modals/RoundStartModal';
+import SelectConfirmModal from '@/modals/SelectConfirmModal';
 import { css } from '@/styled-system/css';
 import { grid, hstack, stack, vstack } from '@/styled-system/patterns';
 import { Choice } from '@/types';
@@ -70,11 +73,36 @@ export const Player = ({ teamId }: PlayerProps) => {
   const { isOpen: isOpenSelectList, onToggle: setIsOpenSelectList } =
     useDisclosure();
   const {
-    isOpen: isOpenModal,
-    onClose: closeModal,
-    onOpen: openModal,
+    isOpen: isOpenRoundStartModal,
+    onClose: closeRoundStartModal,
+    onOpen: openRoundStartModal,
   } = useDisclosure();
-  const [playerState, setPlayerState] = useState<PlayerState>('selecting');
+  const {
+    isOpen: isOpenSelectConfirmModal,
+    onClose: closeSelectConfirmModal,
+    onOpen: openSelectConfirmModal,
+  } = useDisclosure();
+  const {
+    isOpen: isOpenAgreementModal,
+    onClose: closeAgreementModal,
+    onOpen: openAgreementModal,
+  } = useDisclosure();
+  const [playerState, setPlayerState] = useState<PlayerState>('wait');
+
+  useEffect(() => {
+    openAgreementModal();
+  }, []);
+
+  useEffect(() => {
+    // FIXME: SSE로 라운드 시작 이벤트를 받아서 처리
+    if (playerState !== 'selecting') return;
+    openRoundStartModal();
+    const delay = setTimeout(() => {
+      closeRoundStartModal();
+    }, 5000);
+
+    return () => clearTimeout(delay);
+  }, [currentRound, playerState]);
 
   const filteredSelectedUsers = useMemo(() => {
     // @note: 현재 PM 팀에 속해 있는 사람들과 이번 라운드에서 선택된 사람들을 보여준다.
@@ -119,7 +147,6 @@ export const Player = ({ teamId }: PlayerProps) => {
       if (currentRound === ROUNDS.length - 2) {
         setPlayerState('wait');
       } else setPlayerState('selecting');
-      openModal();
       setSelectedTeamCount(0);
 
       setUsers((prev) =>
@@ -135,6 +162,10 @@ export const Player = ({ teamId }: PlayerProps) => {
       );
       setSelectedUsers([]);
     }, 3000);
+  };
+
+  const onClickAgreement = () => {
+    setPlayerState('selecting');
   };
 
   return (
@@ -263,6 +294,24 @@ export const Player = ({ teamId }: PlayerProps) => {
               />
             ))}
           </div>
+          {filteredSelectedUsers.length === 0 && (
+            <span
+              className={hstack({
+                width: '384px',
+                padding: '16px 24px',
+                gap: '16px',
+                border: '1px solid rgba(255, 255, 255, 0.11)',
+                borderRadius: '10px',
+                background: 'rgba(255, 255, 255, 0.07)',
+                whiteSpace: 'nowrap',
+                textStyle: 'h2',
+                color: 'gray.5',
+              })}
+            >
+              <InfoIcon />
+              선택이 확정된 팀원이 없습니다
+            </span>
+          )}
         </section>
         <section
           className={css({
@@ -294,7 +343,7 @@ export const Player = ({ teamId }: PlayerProps) => {
               position: 'absolute',
               bottom: '0',
               gap: '0',
-              transition: 'all 0.3s ease-in-out',
+              transition: 'height 0.3s ease-in-out',
               zIndex: '1',
             })}
           >
@@ -322,8 +371,7 @@ export const Player = ({ teamId }: PlayerProps) => {
                   onClick={toggleSelectList}
                 >
                   {isOpenSelectList ? '접기' : '펼치기'}
-                  <img
-                    src={arrowUp}
+                  <ArrowUpIcon
                     className={css({
                       transform: isOpenSelectList
                         ? 'rotate(180deg)'
@@ -366,6 +414,24 @@ export const Player = ({ teamId }: PlayerProps) => {
                 />
               ))}
             </div>
+            {filteredUsersByRound.length === 0 && (
+              <span
+                className={hstack({
+                  width: '425px',
+                  padding: '16px 24px',
+                  gap: '16px',
+                  border: '1px solid rgba(255, 255, 255, 0.11)',
+                  borderRadius: '10px',
+                  background: 'rgba(255, 255, 255, 0.07)',
+                  whiteSpace: 'nowrap',
+                  textStyle: 'h2',
+                  color: 'gray.5',
+                })}
+              >
+                <InfoIcon />
+                이번 라운드에는 지망자가 없습니다
+              </span>
+            )}
           </div>
           <div
             className={css({
@@ -380,7 +446,7 @@ export const Player = ({ teamId }: PlayerProps) => {
               size="large"
               className={css({ height: '100%' })}
               disabled={playerState !== 'selecting'}
-              onClick={handleTeamSelectionComplete}
+              onClick={openSelectConfirmModal}
             >
               {ROUNDS[currentRound].label}
               <br />
@@ -390,9 +456,19 @@ export const Player = ({ teamId }: PlayerProps) => {
         </section>
       </div>
       <RoundFinishModal
-        isOpen={isOpenModal}
-        onClose={closeModal}
+        isOpen={isOpenRoundStartModal}
+        onClose={closeRoundStartModal}
         round={currentRound}
+      />
+      <SelectConfirmModal
+        isOpen={isOpenSelectConfirmModal}
+        onClose={closeSelectConfirmModal}
+        selectionConfirm={handleTeamSelectionComplete}
+      />
+      <AgreementModal
+        isOpen={isOpenAgreementModal}
+        onClose={closeAgreementModal}
+        onAgree={onClickAgreement}
       />
     </>
   );
