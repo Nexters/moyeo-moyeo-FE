@@ -168,6 +168,15 @@ export const Admin = ({ roomId }: AdminProps) => {
     );
   };
 
+  const handleClickShareSurvey = () => {
+    shareSurveyModalProps.onOpen();
+  };
+
+  const handleClickShareLink = () => {
+    navigator.clipboard.writeText(location.href);
+    toast.success('참여 링크가 복사되었습니다');
+  };
+
   const renderUser = (selectUser: User) => {
     return (
       <ChipWithUser
@@ -246,7 +255,7 @@ export const Admin = ({ roomId }: AdminProps) => {
                   color: 'gray.20',
                   cursor: 'pointer',
                 })}
-                onClick={shareSurveyModalProps.onOpen}
+                onClick={handleClickShareSurvey}
               >
                 설문 링크 복사하기
               </button>
@@ -259,6 +268,7 @@ export const Admin = ({ roomId }: AdminProps) => {
                   color: 'gray.20',
                   cursor: 'pointer',
                 })}
+                onClick={handleClickShareLink}
               >
                 참여 링크 복사하기
               </button>
