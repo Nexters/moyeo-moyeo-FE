@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 
 import toast from 'react-hot-toast';
 
-import { useGetTotalInfo } from '@/apis/room';
+// import { useGetTotalInfo } from '@/apis/room';
 import { ReactComponent as Face } from '@/assets/icons/face.svg';
 import { ReactComponent as Group } from '@/assets/icons/group.svg';
 import { Button } from '@/components/Button';
