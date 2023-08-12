@@ -267,7 +267,9 @@ const Create = () => {
                           height: '56px',
                           padding: '16px 0',
                           backgroundColor: 'transparent',
-                          color: team.pmPosition === '' ? '#9ca3af' : 'gray.5',
+                          color: isTrulyEmptyString(team.pmPosition)
+                            ? '#9ca3af'
+                            : 'gray.5',
                           border:
                             isClickedSubmit &&
                             isTrulyEmptyString(team.pmPosition)
