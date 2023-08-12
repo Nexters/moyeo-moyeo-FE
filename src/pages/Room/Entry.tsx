@@ -1,82 +1,79 @@
-import { type ChangeEvent, useState } from 'react';
-
 import { Button } from '@/components/Button';
+import { Select } from '@/components/Select';
 import { mockTeams } from '@/mock/data';
 import { css } from '@/styled-system/css';
-import { container, vstack } from '@/styled-system/patterns';
+import { vstack } from '@/styled-system/patterns';
 import { Team } from '@/types.old';
 
 type EntryProps = {
   setRole: (role: 'admin' | 'player') => void;
+  teamId?: Team['id'] | null;
   setTeamId: (teamId: Team['id']) => void;
 };
 
 const ROOM_NAME = 'NEXTERS 23기 팀 빌딩 - 방 제목';
 
-export const Entry = ({ setRole, setTeamId }: EntryProps) => {
-  const [selectedTeam, setSelectedTeam] = useState<
-    Team['pmName'] | undefined
-  >();
-
-  const handleChangeSelect = (e: ChangeEvent<HTMLSelectElement>) => {
-    e.preventDefault();
-    setSelectedTeam(e.target.value);
-    setTeamId(e.target.value);
-  };
-
+export const Entry = ({ setRole, teamId, setTeamId }: EntryProps) => {
   return (
     <section
-      className={container({
-        width: '400px',
-        backgroundColor: 'rgba(12, 13, 14, 0.6)',
-        borderRadius: '40px',
-        color: 'white',
-        padding: '30px',
+      className={vstack({
+        width: '590px',
+        backgroundColor: 'rgba(255, 255, 255, 0.07)',
+        borderRadius: '20px',
+        padding: '60px 60px 80px 60px',
+        backdropFilter: 'blur(50px)',
+        gap: '70px',
       })}
     >
-      <div>
-        <h1 className={css({ fontSize: '40px', fontWeight: '900' })}>
-          전략적 팀 빌딩 참가
-        </h1>
-        <div
+      <div className={vstack({ gap: '20px' })}>
+        <h1
           className={css({
-            fontSize: '17px',
-            fontWeight: '600',
-            color: 'rgba(255, 255, 255, 0.8)',
+            fontFamily: 'GmarketSansBold',
+            fontSize: '48px',
+            fontWeight: '400',
+            textAlign: 'center',
+            lineHeight: '1',
+            color: 'gray.5',
           })}
         >
           {ROOM_NAME}
-        </div>
-      </div>
-      <div
-        className={css({
-          width: '100%',
-          marginTop: '80px',
-        })}
-      >
-        <h2 className={css({ fontSize: '17px', fontWeight: '800' })}>
-          자신의 팀을 선택해주세요
-        </h2>
-        <select
-          onChange={handleChangeSelect}
-          className={selectClassName}
-          value={selectedTeam}
+        </h1>
+        <span
+          className={css({
+            textStyle: 'p1',
+            color: 'gray.10',
+          })}
         >
-          <option value="">팀 선택</option>
-          {mockTeams.map((team) => (
-            <option key={team.id} label={team.pmName} value={team.id}>
-              {team.pmName}
-            </option>
-          ))}
-        </select>
+          자신에게 해당하는 아이디어를 선택해주세요
+        </span>
       </div>
       <div
         className={vstack({
-          width: '100%',
-          gap: '20px',
-          marginTop: '60px',
+          width: '330px',
+          margin: '0 auto',
+          gap: '0',
         })}
       >
+        <div className={css({ width: '100%' })}>
+          <Select
+            placeholder="본인의 아이디어를 선택해주세요"
+            options={mockTeams.map((team) => ({
+              value: team.id,
+              label: team.id,
+            }))}
+            onChange={(e) => {
+              setTeamId(e?.value || '');
+            }}
+          />
+        </div>
+        <Button
+          disabled={!teamId}
+          size="medium"
+          onClick={() => setRole('player')}
+          className={css({ marginTop: '120px' })}
+        >
+          PM으로 입장하기
+        </Button>
         <button
           type="button"
           onClick={() => setRole('admin')}
@@ -85,35 +82,13 @@ export const Entry = ({ setRole, setTeamId }: EntryProps) => {
             fontWeight: '600',
             cursor: 'pointer',
             color: 'rgba(255, 255, 255, 0.8)',
+            padding: '20px',
+            marginTop: '20px',
           })}
         >
-          관리자로 참여
+          운영진으로 참여하기
         </button>
-        <Button
-          disabled={!selectedTeam}
-          size="large"
-          onClick={() => setRole('player')}
-        >
-          전략적 팀 빌딩 시작
-        </Button>
       </div>
     </section>
   );
 };
-
-const selectClassName = css({
-  fontSize: '23px',
-  padding: '26px',
-  background: '#17191C',
-  color: 'white',
-  borderRadius: '20px',
-  boxSizing: 'border-box',
-  cursor: 'pointer',
-  width: '100%',
-  border: '2px solid rgba(255, 255, 255, 0.1)',
-  fontWeight: '900',
-  marginTop: '20px',
-  _hover: {
-    border: '2px solid #0F83F7',
-  },
-});
