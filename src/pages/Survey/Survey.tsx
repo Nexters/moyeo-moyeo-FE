@@ -1,18 +1,29 @@
 import { useState } from 'react';
 
+import { useParams } from 'react-router-dom';
+
+import { useGetTotalInfoForSurvey } from '@/apis/survey/queries';
+
+import NotFound from '../NotFound';
 import { SurveyForm } from './SurveyForm';
 import { SurveyResult } from './SurveyResult';
 
 const Survey = () => {
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const { teamBuildingUuid } = useParams();
+  const query = useGetTotalInfoForSurvey(teamBuildingUuid);
 
   const handleSubmit = () => {
     setIsSubmitted(true);
   };
 
-  // @todo: url에서 room-id로 방정보를 가져온 뒤 방이 존재하지 않으면 NotFound를 띄우기
+  if (!query.isFetched) return 'loading...';
+  if (!teamBuildingUuid || !query.data) return <NotFound />;
   return !isSubmitted ? (
-    <SurveyForm onAfterSubmit={handleSubmit} />
+    <SurveyForm
+      teamBuildingUuid={teamBuildingUuid}
+      onAfterSubmit={handleSubmit}
+    />
   ) : (
     <SurveyResult />
   );

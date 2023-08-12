@@ -2,34 +2,33 @@ import { useMemo, useState } from 'react';
 
 import { toast } from 'react-hot-toast';
 
+import { useCreateUser } from '@/apis/survey/mutations';
+import { useGetTotalInfoForSurvey } from '@/apis/survey/queries';
 import { Select } from '@/components/Select';
-import { mockTeams } from '@/mock/data';
 import { css } from '@/styled-system/css';
 import { stack } from '@/styled-system/patterns';
+import { Position } from '@/types';
 import {
   MAX_LENGTH__USER_NAME,
   MAX_LENGTH__USER_PROFILE,
   MAX_ROUND,
-  POSITION,
+  POSITION_LIST,
 } from '@/utils/const';
 
 const ROUND_ARRAY = Array.from({ length: MAX_ROUND }, (_, i) => i);
 
-const positionOption = Object.entries(POSITION).map(([value, label]) => ({
-  value,
-  label,
-}));
-
-const choicesOption = mockTeams.map((team) => ({
-  value: team.id,
-  label: team.id,
-}));
-
 export type SurveyFormProps = {
+  teamBuildingUuid: string;
   onAfterSubmit: () => void;
 };
 
-export const SurveyForm = ({ onAfterSubmit }: SurveyFormProps) => {
+export const SurveyForm = ({
+  teamBuildingUuid,
+  onAfterSubmit,
+}: SurveyFormProps) => {
+  const query = useGetTotalInfoForSurvey(teamBuildingUuid);
+  const mutation = useCreateUser();
+
   const [inputs, setInputs] = useState({
     userName: '',
     userProfile: '',
@@ -49,19 +48,17 @@ export const SurveyForm = ({ onAfterSubmit }: SurveyFormProps) => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+
     setIsClickedSubmit(true);
-    // FIXME
+
     if (validation.isEmptyUserName) {
-      toast.error('이름을 입력해주세요');
-      return;
+      return toast.error('이름을 입력해주세요');
     }
     if (validation.isEmptyPosition) {
-      toast.error('직군을 선택해주세요');
-      return;
+      return toast.error('직군을 선택해주세요');
     }
     if (validation.hasEmptyChoices) {
-      toast.error('지망을 모두 선택해주세요');
-      return;
+      return toast.error('지망을 모두 선택해주세요');
     }
     if (
       validation.isDuplicatedChoices &&
@@ -70,9 +67,23 @@ export const SurveyForm = ({ onAfterSubmit }: SurveyFormProps) => {
       return;
     }
 
-    console.log(inputs);
-    toast.success('설문조사가 제출되었습니다');
-    onAfterSubmit();
+    mutation.mutate(
+      {
+        teamBuildingUuid,
+        body: {
+          name: inputs.userName,
+          position: inputs.position as Position,
+          profileLink: inputs.userProfile,
+          choices: inputs.choices,
+        },
+      },
+      {
+        onSuccess: () => {
+          toast.success('설문조사가 제출되었습니다');
+          onAfterSubmit();
+        },
+      },
+    );
   };
 
   return (
@@ -94,7 +105,7 @@ export const SurveyForm = ({ onAfterSubmit }: SurveyFormProps) => {
             marginBottom: '8px',
           })}
         >
-          넥스터즈 23기 팀 빌딩
+          {query.data?.teamBuildingInfo.teamBuildingName}
         </h1>
 
         <p
@@ -173,7 +184,7 @@ export const SurveyForm = ({ onAfterSubmit }: SurveyFormProps) => {
           <Select
             isError={isClickedSubmit && validation.isEmptyPosition}
             placeholder="포지션을 선택해주세요"
-            options={positionOption}
+            options={POSITION_LIST}
             onChange={(e) => {
               setInputs({ ...inputs, position: e?.value || '' });
             }}
@@ -189,7 +200,10 @@ export const SurveyForm = ({ onAfterSubmit }: SurveyFormProps) => {
                   validation.hasEmptyChoices &&
                   inputs.choices[round] === ''
                 }
-                options={choicesOption}
+                options={query.data?.teamInfoList.map((team) => ({
+                  value: team.uuid,
+                  label: `${team.pmName} - ${team.teamName}`,
+                }))}
                 placeholder={`${round + 1}지망을 선택해주세요`}
                 onChange={(e) => {
                   if (!e) return;
