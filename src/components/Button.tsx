@@ -50,7 +50,7 @@ const button = cva({
         color: '#fff',
       },
       blue: {
-        background: '#0099ff',
+        background: 'blue.60',
         color: '#fff',
       },
     },
