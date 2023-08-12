@@ -346,15 +346,13 @@ export const Player = ({ teamId }: PlayerProps) => {
               </h2>
               <div className={css({ width: '123px', height: '44px' })}>
                 <Button
-                  color="blue"
                   size="small"
+                  color="secondary"
                   className={hstack({
-                    whiteSpace: 'nowrap',
                     justifyContent: 'center',
                     alignItems: 'center',
-                    fontWeight: 600,
+                    boxShadow: 'none',
                     gap: '15px',
-                    fontFamily: 'Pretendard',
                   })}
                   onClick={toggleSelectList}
                 >
