@@ -5,20 +5,16 @@ import toast from 'react-hot-toast';
 import { useGetTotalInfo } from '@/apis/team-building/queries';
 import { ReactComponent as Face } from '@/assets/icons/face.svg';
 import { ReactComponent as Group } from '@/assets/icons/group.svg';
-import { Button } from '@/components/Button';
 import { Chip } from '@/components/Chip';
 import { ChipWithUser } from '@/components/ChipWithUser';
 import { LinearProgress } from '@/components/LinearProgress';
 import { Step, Stepper } from '@/components/stepper';
 import { useDisclosure } from '@/hooks/useDisclosure';
-import { mockTeams, mockUsers } from '@/mock/data';
 import { SelectTeamModal } from '@/modals/SelectTeamModal';
 import { ShareSurveyModal } from '@/modals/ShareSurveyModal';
 import { css } from '@/styled-system/css';
 import { hstack, stack, vstack } from '@/styled-system/patterns';
-import { Round, Team, User } from '@/types.old';
-import { shakeArray } from '@/utils/array';
-import { delay } from '@/utils/time';
+import { Round, Team, User } from '@/types';
 
 const ROUNDS = [
   {
@@ -43,19 +39,13 @@ const ROUNDS = [
   },
 ];
 
-const roundIndexMap: Record<string, number> = {
-  '1지망': 0,
-  '2지망': 1,
-  '3지망': 2,
-  '4지망': 3,
-};
-const nextRoundMap: Record<Round, Round> = {
-  '1지망': '2지망',
-  '2지망': '3지망',
-  '3지망': '4지망',
-  '4지망': '자유',
-  자유: '종료',
-  종료: '종료',
+const roundIndexMap: Record<Round, number> = {
+  FIRST_ROUND: 0,
+  SECOND_ROUND: 1,
+  THIRD_ROUND: 2,
+  FOURTH_ROUND: 3,
+  ADJUSTED_ROUND: 4,
+  COMPLETE: 5, // @note: 해당 값으로 넘어가면 stepper는 선택된게 없다.
 };
 
 export type AdminProps = {
@@ -64,108 +54,78 @@ export type AdminProps = {
 
 export const Admin = ({ teamBuildingUuid }: AdminProps) => {
   // @note: 유저 목록을 복사한 이유는 선택된 팀에 대한 정보를 반영하기 위함
-  const [users, setUsers] = useState(mockUsers);
-  const [selectedRound, setSelectedRound] = useState<Round>('1지망');
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const selectTeamModalProps = useDisclosure();
   const shareSurveyModalProps = useDisclosure();
 
-  const [isRunning, setIsRunning] = useState(false);
-  const query = useGetTotalInfo({ teamBuildingUuid });
+  const { data } = useGetTotalInfo(teamBuildingUuid);
+  const { teamBuildingInfo, teamInfoList, userInfoList } = data ?? {};
+
+  const activeStep =
+    roundIndexMap[teamBuildingInfo?.teamBuildingStatus ?? 'FIRST_ROUND'];
+  const processValue = (teamInfoList ?? []).reduce(
+    (acc, team) => (acc += team.selectDone ? 1 : 0),
+    0,
+  );
 
   const allMemberByTeam = useMemo(() => {
     const allMemberByTeam: Record<Team['pmName'], User[]> = {};
 
-    mockTeams.forEach((team) => {
-      allMemberByTeam[team.pmName] = [
+    teamInfoList?.forEach((team) => {
+      const key = `${team.pmName} - ${team.teamName}`;
+
+      allMemberByTeam[key] = [
         {
-          id: 'pm',
-          name: team.pmName,
-          position: '프론트엔드',
+          uuid: 'pm',
+          userName: team.pmName,
+          position: team.pmPosition,
           choices: [],
-          joinedTeamId: team.id,
-        },
+          joinedTeamUuid: team.uuid,
+          profileLink: '',
+          selectedTeam: true,
+        } as User,
+        ...(userInfoList ?? []).filter(
+          (user) => user.joinedTeamUuid === team.uuid,
+        ),
       ];
-      allMemberByTeam[team.pmName] = allMemberByTeam[team.pmName].concat(
-        users.filter((user) => user.joinedTeamId === team.id),
-      );
     });
-    allMemberByTeam['남은 인원'] = users.filter(
-      (user) => user.joinedTeamId === null,
+
+    allMemberByTeam['남은 인원'] = (userInfoList ?? []).filter(
+      (user) => user.joinedTeamUuid === null,
     );
 
     return Object.entries(allMemberByTeam);
-  }, [users]);
-
-  // @note: UT를 위해 라운드에 맞게 임의 배정
-  const select = async () => {
-    setIsRunning(true);
-
-    // 현재 팀 + 포지션별 인원수를 체크한다
-    const countByTeamPosition: Record<string, number> = {};
-    users.forEach((user) => {
-      if (user.joinedTeamId === null) return;
-
-      const key = `${user.joinedTeamId}-${user.position}`;
-      countByTeamPosition[key] = (countByTeamPosition[key] ?? 0) + 1;
-    });
-
-    for (const team of shakeArray(mockTeams)) {
-      // 특정 팀마다 임의 인원 배정
-      users.forEach((user) => {
-        if (user.joinedTeamId !== null) return;
-        // 현재 라운드가 1지망~4지망이면, 희망하는 팀인지 확인
-        // 현재 라운드가 자유면, 배정되지 않았는지만 확인
-        if (
-          selectedRound !== '자유' &&
-          user.choices[roundIndexMap[selectedRound]] !== team.id
-        )
-          return;
-
-        const key = `${team.id}-${user.position}`;
-        const currentPositionCount = countByTeamPosition[key] ?? 0;
-
-        if (currentPositionCount >= 2) return;
-        countByTeamPosition[key] = currentPositionCount + 1;
-        user.joinedTeamId = team.id;
-      });
-
-      setUsers(users.slice());
-
-      await delay(1000);
-    }
-
-    const nextRound = nextRoundMap[selectedRound];
-    setSelectedRound(nextRound);
-    toast.success(`${nextRound} 라운드로 변경되었습니다.`);
-
-    await delay(1000);
-
-    setIsRunning(false);
-  };
+  }, [teamInfoList, userInfoList]);
 
   const handleCloseModal = () => {
     setSelectedUser(null);
     selectTeamModalProps.onClose();
   };
 
-  const handleSelectTeam = (teamId: Team['id'] | null) => {
+  const handleSelectTeam = (teamUuid: Team['uuid'] | null) => {
     if (!selectedUser) return;
 
-    setUsers((prev) =>
-      prev.map((user) => {
-        if (user.id !== selectedUser.id) return user;
-        return {
-          ...user,
-          joinedTeamId: teamId,
-        };
-      }),
-    );
-    toast.success(
-      teamId !== null
-        ? `${selectedUser.name}님을 ${teamId}팀으로 배정했습니다.`
-        : `${selectedUser.name}님의 팀 배정을 해제했습니다.`,
-    );
+    // setUsers((prev) =>
+    //   prev.map((user) => {
+    //     if (user.id !== selectedUser.id) return user;
+    //     return {
+    //       ...user,
+    //       joinedTeamId: teamId,
+    //     };
+    //   }),
+    // );
+    if (teamUuid === null) {
+      return toast.success(
+        `${selectedUser.userName}님의 팀 배정을 해제했습니다.`,
+      );
+    }
+
+    const team = teamInfoList?.find((team) => team.uuid === teamUuid);
+    if (team) {
+      return toast.success(
+        `${selectedUser.userName}님을 ${team.pmName}팀으로 배정했습니다.`,
+      );
+    }
   };
 
   const handleClickShareSurvey = () => {
@@ -180,7 +140,7 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
   const renderUser = (selectUser: User) => {
     return (
       <ChipWithUser
-        key={selectUser.id}
+        key={selectUser.uuid}
         user={selectUser}
         onClickReassign={() => {
           setSelectedUser(selectUser);
@@ -188,35 +148,21 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
           // 이후 로직은 handleSelectTeam에서 처리됨.
         }}
         onClickDelete={() => {
-          if (confirm(`${selectUser.name}님을 삭제하시겠습니까?`)) {
+          if (confirm(`${selectUser.userName}님을 삭제하시겠습니까?`)) {
             // @todo: api 호출
-            // 아래는 임시 로직
-            setUsers((prev) =>
-              prev.filter((user) => user.id !== selectUser.id),
-            );
-            toast.success(`${selectUser.name}님을 삭제했습니다.`);
+            // // 아래는 임시 로직
+            // setUsers((prev) =>
+            //   prev.filter((user) => user.id !== selectUser.id),
+            // );
+            toast.success(`${selectUser.userName}님을 삭제했습니다.`);
           }
         }}
       />
     );
   };
 
-  const teamBuildingName = 'NEXTERS 23기 팀 빌딩';
-
   return (
     <>
-      <section
-        className={css({
-          position: 'fixed',
-          top: 0,
-          right: 0,
-        })}
-      >
-        <Button disabled={isRunning} onClick={select}>
-          (임)배치 로직 실행(시)
-        </Button>
-      </section>
-
       <section
         className={vstack({
           flex: 1,
@@ -243,7 +189,7 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
         >
           <header className={hstack()}>
             <h1 className={css({ flex: '1', textStyle: 'h1' })}>
-              {teamBuildingName}
+              {teamBuildingInfo?.teamBuildingName}
             </h1>
             <div className={hstack({ gap: '12px' })}>
               <button
@@ -278,7 +224,7 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
           <div className={hstack({ justifyContent: 'space-between' })}>
             <div className={hstack()}>
               <h3 className={css({ textStyle: 'h3' })}>현재 라운드</h3>
-              <Stepper activeStep={1}>
+              <Stepper activeStep={activeStep}>
                 {ROUNDS.map(({ label, Icon }, index) => (
                   <Step key={label} id={index}>
                     <Icon className={css({ marginRight: '8px' })} />
@@ -289,7 +235,10 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
             </div>
             <div className={hstack()}>
               <h3 className={css({ textStyle: 'h3' })}>현 라운드 완료율</h3>
-              <LinearProgress value={1} total={10} />
+              <LinearProgress
+                value={processValue}
+                total={teamInfoList?.length ?? 0}
+              />
             </div>
           </div>
         </nav>
@@ -408,7 +357,7 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
                           })}
                         >
                           {members
-                            .filter((user) => user.position === '디자이너')
+                            .filter((user) => user.position === 'DESIGNER')
                             .map(renderUser)}
                         </div>
                       </td>
@@ -422,7 +371,7 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
                           })}
                         >
                           {members
-                            .filter((user) => user.position === '프론트엔드')
+                            .filter((user) => user.position === 'FRONT_END')
                             .map(renderUser)}
                         </div>
                       </td>
@@ -436,7 +385,7 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
                           })}
                         >
                           {members
-                            .filter((user) => user.position === '백엔드')
+                            .filter((user) => user.position === 'BACK_END')
                             .map(renderUser)}
                         </div>
                       </td>
@@ -450,7 +399,7 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
                           })}
                         >
                           {members
-                            .filter((user) => user.position === 'iOS')
+                            .filter((user) => user.position === 'IOS')
                             .map(renderUser)}
                         </div>
                       </td>
@@ -464,7 +413,7 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
                           })}
                         >
                           {members
-                            .filter((user) => user.position === '안드로이드')
+                            .filter((user) => user.position === 'ANDROID')
                             .map(renderUser)}
                         </div>
                       </td>
@@ -499,7 +448,7 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
 
       <SelectTeamModal
         isOpen={selectTeamModalProps.isOpen}
-        teams={mockTeams}
+        teams={teamInfoList ?? []}
         onClose={handleCloseModal}
         onSelect={handleSelectTeam}
       />

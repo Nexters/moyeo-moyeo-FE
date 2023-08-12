@@ -1,12 +1,12 @@
 import { Modal } from '@/components/Modal';
 import { css } from '@/styled-system/css';
-import { Team } from '@/types.old';
+import { Team } from '@/types';
 
 export type SelectTeamModalProps = {
   isOpen: boolean;
   teams: Team[];
   onClose: () => void;
-  onSelect: (teamId: Team['id'] | null) => void;
+  onSelect: (teamId: Team['uuid'] | null) => void;
 };
 
 export const SelectTeamModal = ({
@@ -34,7 +34,7 @@ export const SelectTeamModal = ({
             },
           })}
           onChange={(e) => {
-            const teamId = e.target.value as Team['id'] | 'unselect';
+            const teamId = e.target.value as Team['uuid'] | 'unselect';
             if (!teamId) return;
             onSelect?.(teamId === 'unselect' ? null : teamId);
             onClose();
@@ -42,7 +42,7 @@ export const SelectTeamModal = ({
         >
           <option value="">팀 선택</option>
           {teams.map((team) => (
-            <option key={team.id} value={team.id}>
+            <option key={team.uuid} value={team.uuid}>
               {team.pmName} 팀
             </option>
           ))}
