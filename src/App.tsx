@@ -13,7 +13,13 @@ import NotFound from '@/pages/NotFound';
 import Room from '@/pages/Room';
 import Survey from '@/pages/Survey';
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 0,
+    },
+  },
+});
 
 function App() {
   return (
@@ -23,11 +29,11 @@ function App() {
           <Route element={<CommonLayout />}>
             <Route path="/" element={<Home />} />
             <Route path="/create" element={<Create />} />
-            <Route path="/:roomId" element={<Room />} />
+            <Route path="/:teamBuildingUuid" element={<Room />} />
             <Route path="*" element={<NotFound />} />
           </Route>
           <Route element={<MobileLayout />}>
-            <Route path="/survey" element={<Survey />} />
+            <Route path="/forms/:teamBuildingUuid" element={<Survey />} />
           </Route>
         </Routes>
       </BrowserRouter>

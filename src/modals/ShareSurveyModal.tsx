@@ -6,17 +6,17 @@ import { css } from '@/styled-system/css';
 import { hstack } from '@/styled-system/patterns';
 
 export type ShareSurveyModalProps = {
-  roomId: string;
+  teamBuildingUuid: string;
   isOpen: boolean;
   onClose: () => void;
 };
 
 export const ShareSurveyModal = ({
-  roomId,
+  teamBuildingUuid,
   isOpen,
   onClose,
 }: ShareSurveyModalProps) => {
-  const surveyUrl = `${location.origin}/forms/${roomId}`;
+  const surveyUrl = `${location.origin}/forms/${teamBuildingUuid}`;
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(surveyUrl);
@@ -61,7 +61,12 @@ export const ShareSurveyModal = ({
           가능합니다.
         </p>
 
-        <div className={hstack({ justifyContent: 'space-between' })}>
+        <div
+          className={hstack({
+            justifyContent: 'space-between',
+            alignItems: 'flex-end',
+          })}
+        >
           <div>
             <h2 className={css({ textStyle: 'h1' })}>설문지 주소</h2>
             <p
@@ -69,7 +74,7 @@ export const ShareSurveyModal = ({
                 padding: '16px',
                 backgroundColor: 'rgba(12, 13, 14, 0.50)',
                 borderRadius: '12px',
-                textStyle: 'p1',
+                textStyle: 'p2',
                 color: 'rgba(255, 255, 255, 0.59)',
               })}
             >
@@ -77,26 +82,24 @@ export const ShareSurveyModal = ({
             </p>
           </div>
 
-          <div className={hstack({ alignItems: 'flex-end' })}>
-            <button
-              className={css({
-                width: '320px',
-                height: '80px',
-                padding: '24px',
-                background: 'linear-gradient(180deg, #8060FF 0%, #5818DF 100%)',
-                boxShadow:
-                  '4px 4px 8px 0px rgba(255, 255, 255, 0.25) inset, -4px -4px 8px 0px #441FE2 inset',
-                borderRadius: '20px',
-                fontSize: '24px',
-                fontFamily: 'GmarketSansBold',
-                color: 'gray.5',
-                cursor: 'pointer',
-              })}
-              onClick={copyToClipboard}
-            >
-              설문 링크 복사하기
-            </button>
-          </div>
+          <button
+            className={css({
+              width: '320px',
+              height: '80px',
+              padding: '24px',
+              background: 'linear-gradient(180deg, #8060FF 0%, #5818DF 100%)',
+              boxShadow:
+                '4px 4px 8px 0px rgba(255, 255, 255, 0.25) inset, -4px -4px 8px 0px #441FE2 inset',
+              borderRadius: '20px',
+              fontSize: '24px',
+              fontFamily: 'GmarketSansBold',
+              color: 'gray.5',
+              cursor: 'pointer',
+            })}
+            onClick={copyToClipboard}
+          >
+            설문 링크 복사하기
+          </button>
         </div>
       </section>
     </Modal>

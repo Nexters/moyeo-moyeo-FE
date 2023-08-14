@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react';
 
 import { useParams, useSearchParams } from 'react-router-dom';
 
-import { Team } from '@/types.old';
-import { isValidRoomId } from '@/utils/room';
+import { useGetTotalInfo } from '@/apis/team-building/queries';
+import { Team } from '@/types';
 
 import NotFound from '../NotFound';
 import { Admin } from './Admin';
@@ -11,16 +11,11 @@ import { Entry } from './Entry';
 import { Player } from './Player';
 
 const Room = () => {
-  const [role, setRole] = useState<'admin' | 'player' | null>();
-  const [exist, setExist] = useState<boolean>();
-  const [teamId, setTeamId] = useState<Team['id'] | null>();
-  const { roomId } = useParams();
+  const [role, setRole] = useState<'admin' | 'player' | null>(null);
+  const [teamUuid, setTeamUuid] = useState<Team['uuid'] | null>(null);
   const [searchParams, setSearchParams] = useSearchParams();
-
-  useEffect(() => {
-    if (!roomId) return;
-    setExist(isValidRoomId(roomId));
-  }, [roomId]);
+  const { teamBuildingUuid } = useParams();
+  const { isLoading, data: totalInfo } = useGetTotalInfo(teamBuildingUuid);
 
   useEffect(() => {
     if (searchParams.get('role') === 'admin') {
@@ -31,14 +26,22 @@ const Room = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // @todo: room id로 방정보를 불러온 뒤에도 존재하지 않으면 그때 NotFound를 띄우기
-  if (!roomId || !exist) return <NotFound />;
+  if (isLoading) return 'loading...';
+  if (!teamBuildingUuid || !totalInfo) return <NotFound />;
   if (!role)
-    return <Entry setRole={setRole} teamId={teamId} setTeamId={setTeamId} />;
-  return role === 'player' && !!teamId ? (
-    <Player teamId={teamId} />
+    return (
+      <Entry
+        teamBuildingUuid={teamBuildingUuid}
+        teamUuid={teamUuid}
+        setRole={setRole}
+        setTeamUuid={setTeamUuid}
+      />
+    );
+  return role === 'player' && !!teamUuid ? (
+    // @fixme: 플레이어 페이지 api 연동 시 teamId는 teamUuid로 변경하면 좋을 듯
+    <Player teamId={teamUuid} />
   ) : (
-    <Admin roomId={roomId} />
+    <Admin teamBuildingUuid={teamBuildingUuid} />
   );
 };
 

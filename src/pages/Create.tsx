@@ -3,10 +3,12 @@ import { ChangeEvent, useState } from 'react';
 import { toast } from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 
+import { useCreateTeamBuilding } from '@/apis/admin/mutations';
 import closeIcon from '@/assets/icons/close.svg';
 import { ReactComponent as TrashBinIcon } from '@/assets/icons/trashbin.svg';
 import { css } from '@/styled-system/css';
 import { center, hstack, vstack } from '@/styled-system/patterns';
+import { Position } from '@/types';
 import {
   MAX_LENGTH__TEAM_BUILDING_NAME,
   MAX_LENGTH__TEAM_NAME,
@@ -27,6 +29,7 @@ const Create = () => {
   const [teamBuildingName, setTeamBuildingName] = useState('');
   const [teamRows, setTeamRows] = useState<TeamRow[]>([]);
   const [isClickedSubmit, setIsClickedSubmit] = useState(false);
+  const mutation = useCreateTeamBuilding();
   const navigate = useNavigate();
 
   const handleAddTeamRow = () => {
@@ -84,9 +87,24 @@ const Create = () => {
         '입력된 정보를 토대로 생성되며, 이후 팀 정보 수정이 어렵습니다.\n팀 빌딩을 시작하시겠습니까?',
       )
     ) {
-      console.log(teamBuildingName, teamRows);
-      // @todo: rest api 호출 후 /room-id 로 이동
-      // navigate('/room?role=admin');
+      // rest api 호출 후 /room-id 로 이동
+      mutation.mutate(
+        {
+          body: {
+            name: teamBuildingName,
+            teams: teamRows.map((t) => ({
+              name: t.teamName,
+              pmName: t.pmName,
+              pmPosition: t.pmPosition as Position,
+            })),
+          },
+        },
+        {
+          onSuccess: ({ teamBuildingInfo }) => {
+            navigate(`/${teamBuildingInfo.teamBuildingUrl}?role=admin`);
+          },
+        },
+      );
     }
   };
 

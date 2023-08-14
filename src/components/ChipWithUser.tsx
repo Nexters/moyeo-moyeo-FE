@@ -3,7 +3,7 @@ import { useMemo } from 'react';
 import { ReactComponent as TrashBinIcon } from '@/assets/icons/trashbin.svg';
 import { css } from '@/styled-system/css';
 import { center, hstack } from '@/styled-system/patterns';
-import { User } from '@/types.old';
+import { User } from '@/types';
 
 import { Chip } from './Chip';
 
@@ -21,11 +21,11 @@ export const ChipWithUser = ({
 }: ChipWithUserProps) => {
   const visual = useMemo(() => {
     // @fixme: 여기 로직 수정
-    if (user.id === 'pm') return 'pm';
-    if (user.joinedTeamId == null) return 'none';
-    return indexRoundMap[user.choices.indexOf(user.joinedTeamId)] ?? 'extra';
-  }, [user.choices, user.id, user.joinedTeamId]);
-  const isPm = user.id === 'pm';
+    if (user.uuid === 'pm') return 'pm';
+    if (user.joinedTeamUuid == null) return 'none';
+    return indexRoundMap[user.choices.indexOf(user.joinedTeamUuid)] ?? 'extra';
+  }, [user.choices, user.uuid, user.joinedTeamUuid]);
+  const isPm = user.uuid === 'pm';
 
   return (
     <div
@@ -39,7 +39,7 @@ export const ChipWithUser = ({
       })}
     >
       {/* @fixme: 일단 타입 체크 피하기 위해 any 잠시 사용... */}
-      <Chip visual={visual as any} label={user.name} />
+      <Chip visual={visual as any} label={user.userName} />
 
       {!isPm && (
         <div
