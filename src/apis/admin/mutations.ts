@@ -33,6 +33,18 @@ export const useAdjustUser = () => {
   );
 };
 
+export const useDeleteUser = () => {
+  type Response = API['deleteUser']['response'];
+
+  return useMutation(
+    async ({ teamBuildingUuid, userUuid }: API['deleteUser']['request']) => {
+      return await httpClient.delete<Response>(
+        `/api/admin/team-building/${teamBuildingUuid}/users/${userUuid}`,
+      );
+    },
+  );
+};
+
 export const useFinishTeamBuilding = () => {
   type Response = API['finishTeamBuilding']['response'];
 

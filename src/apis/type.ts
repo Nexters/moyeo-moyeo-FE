@@ -60,6 +60,13 @@ export type API = {
     };
     response: TotalInfo;
   };
+  deleteUser: {
+    request: {
+      teamBuildingUuid: string;
+      userUuid: string;
+    };
+    response: unknown;
+  };
   // 조정 단계 팀원 수정(단일 유저)
   adjustUser: {
     request: {

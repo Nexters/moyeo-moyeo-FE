@@ -2,7 +2,11 @@ import { useMemo, useState } from 'react';
 
 import toast from 'react-hot-toast';
 
-import { useAdjustUser, useFinishTeamBuilding } from '@/apis/admin/mutations';
+import {
+  useAdjustUser,
+  useDeleteUser,
+  useFinishTeamBuilding,
+} from '@/apis/admin/mutations';
 import { useGetTotalInfo } from '@/apis/team-building/queries';
 import { ReactComponent as Face } from '@/assets/icons/face.svg';
 import { ReactComponent as Group } from '@/assets/icons/group.svg';
@@ -62,6 +66,7 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
   const { teamBuildingInfo, teamInfoList, userInfoList } = data ?? {};
 
   const { mutate: adjustUser } = useAdjustUser();
+  const { mutate: deleteUser } = useDeleteUser();
   const { mutate: finishTeamBuilding } = useFinishTeamBuilding();
 
   const activeStep =
@@ -188,8 +193,14 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
         }}
         onClickDelete={() => {
           if (confirm(`${selectUser.userName}님을 삭제하시겠습니까?`)) {
-            // @todo: api 호출
-            toast.success(`${selectUser.userName}님을 삭제했습니다.`);
+            deleteUser(
+              { teamBuildingUuid, userUuid: selectUser.uuid },
+              {
+                onSuccess: () => {
+                  toast.success(`${selectUser.userName}님을 삭제했습니다.`);
+                },
+              },
+            );
           }
         }}
       />
