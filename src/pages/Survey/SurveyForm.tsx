@@ -1,13 +1,14 @@
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 
 import { toast } from 'react-hot-toast';
 
 import { useCreateUser } from '@/apis/survey/mutations';
 import { useGetTotalInfoForSurvey } from '@/apis/survey/queries';
+import { Button } from '@/components/Button';
 import { Select } from '@/components/Select';
 import { css } from '@/styled-system/css';
 import { stack } from '@/styled-system/patterns';
-import { Position } from '@/types';
+import { Position, SurveyFormInputs, SurveyFormResult, Team } from '@/types';
 import {
   MAX_LENGTH__USER_NAME,
   MAX_LENGTH__USER_PROFILE,
@@ -19,7 +20,7 @@ const ROUND_ARRAY = Array.from({ length: MAX_ROUND }, (_, i) => i);
 
 export type SurveyFormProps = {
   teamBuildingUuid: string;
-  onAfterSubmit: () => void;
+  onAfterSubmit: (result: SurveyFormResult) => void;
 };
 
 export const SurveyForm = ({
@@ -30,7 +31,7 @@ export const SurveyForm = ({
     useGetTotalInfoForSurvey(teamBuildingUuid);
   const mutation = useCreateUser();
 
-  const [inputs, setInputs] = useState({
+  const [inputs, setInputs] = useState<SurveyFormInputs>({
     userName: '',
     userProfile: '',
     position: '',
@@ -81,45 +82,68 @@ export const SurveyForm = ({
       {
         onSuccess: () => {
           toast.success('설문조사가 제출되었습니다');
-          onAfterSubmit();
+          const result: SurveyFormResult = [
+            { field: '이름', value: inputs.userName },
+            { field: '소개 페이지 (선택)', value: inputs.userProfile },
+            {
+              field: '직군',
+              value:
+                POSITION_LIST.find((v) => v.value === inputs.position)?.label ||
+                '',
+            },
+            ...inputs.choices.map((choice, i) => {
+              const team = totalInfoForSurvey?.teamInfoList.find(
+                (team) => team.uuid === choice,
+              );
+              return {
+                field: `${i + 1}지망`,
+                value: team ? getLabelByTeam(team) : '',
+              };
+            }),
+          ];
+          onAfterSubmit(result);
         },
       },
     );
   };
 
+  const getLabelByTeam = useCallback((team: Team) => {
+    return `${team.pmName} - ${team.teamName}`;
+  }, []);
+
   return (
-    <section
+    <form
       className={stack({
         flex: '1',
         width: '100%',
         maxWidth: '520px',
-        padding: '120px 30px 130px',
+        padding: '120px 20px',
         color: 'gray.5',
         wordBreak: 'keep-all',
-        gap: '50px',
+        gap: '0',
       })}
+      onSubmit={handleSubmit}
     >
-      <header>
-        <h1
-          className={css({
-            textStyle: 'h1',
-            marginBottom: '8px',
-          })}
-        >
-          {totalInfoForSurvey?.teamBuildingInfo.teamBuildingName}
-        </h1>
+      <h1
+        className={css({
+          textStyle: 'h1',
+          marginBottom: '8px',
+        })}
+      >
+        {totalInfoForSurvey?.teamBuildingInfo.teamBuildingName}
+      </h1>
 
-        <p
-          className={css({
-            textStyle: 'p2',
-          })}
-        >
-          한 번 제출한 설문은 변경할 수 없습니다. <br />
-          안내된 시간을 엄수해주세요.
-        </p>
-      </header>
+      <p
+        className={css({
+          textStyle: 'p2',
+          marginBottom: '50px',
+        })}
+      >
+        한 번 제출한 설문은 변경할 수 없습니다. <br />
+        안내된 시간을 엄수해주세요.
+      </p>
 
-      <form className={stack({ gap: '36px' })} onSubmit={handleSubmit}>
+      <section className={stack({ gap: '36px', marginBottom: '70px' })}>
         <FormControl label="이름">
           <input
             name="userName"
@@ -220,26 +244,12 @@ export const SurveyForm = ({
             </FormControl>
           );
         })}
+      </section>
 
-        <button
-          type="submit"
-          className={css({
-            marginTop: '34px', // 70px만큼 떨어트리기 위함 (36 + 34)
-            padding: '14px 0',
-            borderRadius: '20px',
-            backgroundColor: 'yellow.80',
-            fontSize: '20px',
-            fontFamily: 'GmarketSansBold',
-            color: 'gray.5',
-            boxShadow:
-              '2px 2px 6px 0px rgba(255, 255, 255, 0.25) inset, -2px -2px 6px 0px #A13A00 inset',
-            cursor: 'pointer',
-          })}
-        >
-          설문 제출하기
-        </button>
-      </form>
-    </section>
+      <Button type="submit" size="medium" color="secondary">
+        설문 제출하기
+      </Button>
+    </form>
   );
 };
 
