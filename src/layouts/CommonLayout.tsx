@@ -13,7 +13,6 @@ import { vstack } from '@/styled-system/patterns';
 const CommonLayout = () => {
   const isShowLottieBackground = useAtomValue(isShowLottieBackgroundState);
   const [lottieSize, setLottieSize] = useState({ width: 1280, height: 720 });
-  const isShowLottie = isShowLottieBackground;
 
   useEffect(() => {
     const handleResize = () => {
@@ -58,10 +57,10 @@ const CommonLayout = () => {
           width: '100%',
           height: '100%',
           objectFit: 'cover',
-          opacity: isShowLottie ? 1 : 0,
+          opacity: isShowLottieBackground ? 1 : 0,
         })}
       />
-      {isShowLottie && (
+      {isShowLottieBackground && (
         <div
           className={css({
             position: 'absolute',
@@ -96,7 +95,7 @@ const CommonLayout = () => {
           width: '100%',
           height: '100%',
           objectFit: 'cover',
-          opacity: isShowLottie ? 0 : 1,
+          opacity: isShowLottieBackground ? 0 : 1,
         })}
       />
 
