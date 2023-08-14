@@ -1,6 +1,11 @@
+import { useLayoutEffect } from 'react';
+
+import { useSetAtom } from 'jotai';
+
 import { useGetTotalInfo } from '@/apis/team-building/queries';
 import { Button } from '@/components/Button';
 import { Select } from '@/components/Select';
+import { isShowLottieBackgroundState } from '@/store/atoms';
 import { css } from '@/styled-system/css';
 import { vstack } from '@/styled-system/patterns';
 import { Team } from '@/types';
@@ -19,6 +24,13 @@ export const Entry = ({
   setTeamUuid,
 }: EntryProps) => {
   const { data: totalInfo } = useGetTotalInfo(teamBuildingUuid);
+  const setIsShowLottieBackground = useSetAtom(isShowLottieBackgroundState);
+
+  useLayoutEffect(() => {
+    // @note: 이 페이지에서 lottie background를 보여줘야해서 이렇게 씀
+    setIsShowLottieBackground(true);
+    return () => setIsShowLottieBackground(false);
+  }, [setIsShowLottieBackground]);
 
   return (
     <section

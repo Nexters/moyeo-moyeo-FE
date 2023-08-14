@@ -1,17 +1,19 @@
 import { useEffect, useState } from 'react';
 
 import { Player } from '@lottiefiles/react-lottie-player';
-import { Outlet, useLocation } from 'react-router-dom';
+import { useAtomValue } from 'jotai';
+import { Outlet } from 'react-router-dom';
 
 import BlurBackgroundImage from '@/assets/images/blur.webp';
-import HomeBackgroundImage from '@/assets/images/home2.webp';
+import LottieBackgroundImage from '@/assets/images/lottie.webp';
+import { isShowLottieBackgroundState } from '@/store/atoms';
 import { css } from '@/styled-system/css';
 import { vstack } from '@/styled-system/patterns';
 
 const CommonLayout = () => {
-  const location = useLocation();
-  const isHome = location.pathname === '/';
+  const isShowLottieBackground = useAtomValue(isShowLottieBackgroundState);
   const [lottieSize, setLottieSize] = useState({ width: 1280, height: 720 });
+  const isShowLottie = isShowLottieBackground;
 
   useEffect(() => {
     const handleResize = () => {
@@ -48,7 +50,7 @@ const CommonLayout = () => {
     >
       {/* @note: 두 이미지를 가져오는 이유는 페이지 전환시 깜빡이는 느낌을 제거하기 위함 */}
       <img
-        src={HomeBackgroundImage}
+        src={LottieBackgroundImage}
         className={css({
           position: 'absolute',
           top: '0',
@@ -56,10 +58,10 @@ const CommonLayout = () => {
           width: '100%',
           height: '100%',
           objectFit: 'cover',
-          opacity: isHome ? 1 : 0,
+          opacity: isShowLottie ? 1 : 0,
         })}
       />
-      {isHome && (
+      {isShowLottie && (
         <Player
           autoplay
           loop
@@ -83,7 +85,7 @@ const CommonLayout = () => {
           width: '100%',
           height: '100%',
           objectFit: 'cover',
-          opacity: isHome ? 0 : 1,
+          opacity: isShowLottie ? 0 : 1,
         })}
       />
 
