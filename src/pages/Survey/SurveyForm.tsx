@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 
 import { toast } from 'react-hot-toast';
 
@@ -8,7 +8,7 @@ import { Button } from '@/components/Button';
 import { Select } from '@/components/Select';
 import { css } from '@/styled-system/css';
 import { stack } from '@/styled-system/patterns';
-import { Position } from '@/types';
+import { Position, SurveyFormInputs, SurveyFormResult, Team } from '@/types';
 import {
   MAX_LENGTH__USER_NAME,
   MAX_LENGTH__USER_PROFILE,
@@ -20,7 +20,7 @@ const ROUND_ARRAY = Array.from({ length: MAX_ROUND }, (_, i) => i);
 
 export type SurveyFormProps = {
   teamBuildingUuid: string;
-  onAfterSubmit: () => void;
+  onAfterSubmit: (result: SurveyFormResult) => void;
 };
 
 export const SurveyForm = ({
@@ -31,7 +31,7 @@ export const SurveyForm = ({
     useGetTotalInfoForSurvey(teamBuildingUuid);
   const mutation = useCreateUser();
 
-  const [inputs, setInputs] = useState({
+  const [inputs, setInputs] = useState<SurveyFormInputs>({
     userName: '',
     userProfile: '',
     position: '',
@@ -82,11 +82,34 @@ export const SurveyForm = ({
       {
         onSuccess: () => {
           toast.success('설문조사가 제출되었습니다');
-          onAfterSubmit();
+          const result: SurveyFormResult = [
+            { field: '이름', value: inputs.userName },
+            { field: '소개 페이지 (선택)', value: inputs.userProfile },
+            {
+              field: '직군',
+              value:
+                POSITION_LIST.find((v) => v.value === inputs.position)?.label ||
+                '',
+            },
+            ...inputs.choices.map((choice, i) => {
+              const team = totalInfoForSurvey?.teamInfoList.find(
+                (team) => team.uuid === choice,
+              );
+              return {
+                field: `${i + 1}지망`,
+                value: team ? getLabelByTeam(team) : '',
+              };
+            }),
+          ];
+          onAfterSubmit(result);
         },
       },
     );
   };
+
+  const getLabelByTeam = useCallback((team: Team) => {
+    return `${team.pmName} - ${team.teamName}`;
+  }, []);
 
   return (
     <form
