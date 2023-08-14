@@ -1,13 +1,36 @@
+import { useEffect, useState } from 'react';
+
+import { Player } from '@lottiefiles/react-lottie-player';
 import { Outlet, useLocation } from 'react-router-dom';
 
 import BlurBackgroundImage from '@/assets/images/blur.webp';
-import HomeBackgroundImage from '@/assets/images/home.webp';
+import HomeBackgroundImage from '@/assets/images/home2.webp';
 import { css } from '@/styled-system/css';
 import { vstack } from '@/styled-system/patterns';
 
 const CommonLayout = () => {
   const location = useLocation();
   const isHome = location.pathname === '/';
+  const [lottieSize, setLottieSize] = useState({ width: 1280, height: 720 });
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth / window.innerHeight > 16 / 9) {
+        setLottieSize({
+          width: window.innerWidth,
+          height: window.innerWidth * (9 / 16),
+        });
+      } else {
+        setLottieSize({
+          width: window.innerHeight * (16 / 9),
+          height: window.innerHeight,
+        });
+      }
+    };
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   return (
     <div
@@ -34,6 +57,21 @@ const CommonLayout = () => {
           opacity: isHome ? 1 : 0,
         })}
       />
+      {isHome && (
+        <Player
+          autoplay
+          loop
+          src="/lottie/star-background.json"
+          style={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            width: lottieSize.width,
+            height: lottieSize.height,
+          }}
+        />
+      )}
       <img
         src={BlurBackgroundImage}
         className={css({
