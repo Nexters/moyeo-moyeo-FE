@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useLayoutEffect, useState } from 'react';
 
 import { useParams, useSearchParams } from 'react-router-dom';
 
@@ -17,7 +17,7 @@ const Room = () => {
   const { teamBuildingUuid } = useParams();
   const { isLoading, data: totalInfo } = useGetTotalInfo(teamBuildingUuid);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (searchParams.get('role') === 'admin') {
       setRole('admin');
       setSearchParams(undefined, { replace: true });
