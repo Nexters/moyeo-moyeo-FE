@@ -62,19 +62,30 @@ const CommonLayout = () => {
         })}
       />
       {isShowLottie && (
-        <Player
-          autoplay
-          loop
-          src="/lottie/star-background.json"
-          style={{
+        <div
+          className={css({
             position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            width: lottieSize.width,
-            height: lottieSize.height,
-          }}
-        />
+            top: '0',
+            left: '0',
+            width: '100%',
+            height: '100%',
+            overflow: 'hidden',
+          })}
+        >
+          <Player
+            autoplay
+            loop
+            src="/lottie/star-background.json"
+            style={{
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              width: lottieSize.width,
+              height: lottieSize.height,
+            }}
+          />
+        </div>
       )}
       <img
         src={BlurBackgroundImage}
