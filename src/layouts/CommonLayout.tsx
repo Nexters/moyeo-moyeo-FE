@@ -15,6 +15,8 @@ const CommonLayout = () => {
 
   useEffect(() => {
     const handleResize = () => {
+      // @note: lottie 비율이 16:9.
+      // 화면에 꽉차게(= object-fit: cover)와 같은 효과를 주기 위해 아래 라인을 추가함
       if (window.innerWidth / window.innerHeight > 16 / 9) {
         setLottieSize({
           width: window.innerWidth,
