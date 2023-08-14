@@ -1,14 +1,12 @@
-import ReactModal from 'react-modal';
+import ReactModal, { Props } from 'react-modal';
 
 ReactModal.setAppElement('#root');
 
-export type ModalProps = {
-  isOpen: boolean;
+export type ModalProps = Props & {
   onClose?: () => void;
-  children: React.ReactNode;
 };
 
-export const Modal = ({ isOpen, onClose, children }: ModalProps) => {
+export const Modal = ({ isOpen, onClose, children, ...rest }: ModalProps) => {
   return (
     <ReactModal
       isOpen={isOpen}
@@ -32,6 +30,7 @@ export const Modal = ({ isOpen, onClose, children }: ModalProps) => {
           zIndex: 100,
         },
       }}
+      {...rest}
     >
       {children}
     </ReactModal>

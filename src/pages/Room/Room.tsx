@@ -28,7 +28,8 @@ const Room = () => {
 
   if (isLoading) return 'loading...';
   if (!teamBuildingUuid || !totalInfo) return <NotFound />;
-  if (!role) return <Entry setRole={setRole} setTeamId={setTeamId} />;
+  if (!role)
+    return <Entry setRole={setRole} teamId={teamId} setTeamId={setTeamId} />;
   return role === 'player' && !!teamId ? (
     <Player teamId={teamId} />
   ) : (
