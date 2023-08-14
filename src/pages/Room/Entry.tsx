@@ -1,19 +1,25 @@
+import { useGetTotalInfo } from '@/apis/team-building/queries';
 import { Button } from '@/components/Button';
 import { Select } from '@/components/Select';
-import { mockTeams } from '@/mock/data';
 import { css } from '@/styled-system/css';
 import { vstack } from '@/styled-system/patterns';
-import { Team } from '@/types.old';
+import { Team } from '@/types';
 
 type EntryProps = {
+  teamBuildingUuid: string;
+  teamUuid: Team['uuid'] | null;
   setRole: (role: 'admin' | 'player') => void;
-  teamId?: Team['id'] | null;
-  setTeamId: (teamId: Team['id']) => void;
+  setTeamUuid: (teamUuid: Team['uuid']) => void;
 };
 
-const ROOM_NAME = 'NEXTERS 23기 팀 빌딩 - 방 제목';
+export const Entry = ({
+  teamBuildingUuid,
+  teamUuid,
+  setRole,
+  setTeamUuid,
+}: EntryProps) => {
+  const { data: totalInfo } = useGetTotalInfo(teamBuildingUuid);
 
-export const Entry = ({ setRole, teamId, setTeamId }: EntryProps) => {
   return (
     <section
       className={vstack({
@@ -34,7 +40,7 @@ export const Entry = ({ setRole, teamId, setTeamId }: EntryProps) => {
           color: 'gray.5',
         })}
       >
-        {ROOM_NAME}
+        {totalInfo?.teamBuildingInfo.teamBuildingName}
       </h1>
       <span
         className={css({
@@ -55,17 +61,17 @@ export const Entry = ({ setRole, teamId, setTeamId }: EntryProps) => {
         <div className={css({ width: '100%', marginTop: '12px' })}>
           <Select
             placeholder="본인의 아이디어를 선택해주세요"
-            options={mockTeams.map((team) => ({
-              value: team.id,
-              label: team.id,
+            options={totalInfo?.teamInfoList.map((team) => ({
+              value: team.uuid,
+              label: `${team.pmName} - ${team.teamName}`,
             }))}
             onChange={(e) => {
-              setTeamId(e?.value || '');
+              setTeamUuid(e?.value || '');
             }}
           />
         </div>
         <Button
-          disabled={!teamId}
+          disabled={!teamUuid}
           size="medium"
           onClick={() => setRole('player')}
           className={css({ marginTop: '80px' })}
