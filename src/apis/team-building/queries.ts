@@ -14,6 +14,7 @@ export const useGetTotalInfo = (
       const data = await httpClient.get<API['getTotalInfo']['response']>(
         `/api/team-building/${teamBuildingUuid}`,
       );
+      // @fixme: 제거할 것
       console.log(data);
       return data;
     },
