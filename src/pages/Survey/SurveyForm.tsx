@@ -4,6 +4,7 @@ import { toast } from 'react-hot-toast';
 
 import { useCreateUser } from '@/apis/survey/mutations';
 import { useGetTotalInfoForSurvey } from '@/apis/survey/queries';
+import { Button } from '@/components/Button';
 import { Select } from '@/components/Select';
 import { css } from '@/styled-system/css';
 import { stack } from '@/styled-system/patterns';
@@ -88,38 +89,38 @@ export const SurveyForm = ({
   };
 
   return (
-    <section
+    <form
       className={stack({
         flex: '1',
         width: '100%',
         maxWidth: '520px',
-        padding: '120px 30px 130px',
+        padding: '120px 20px',
         color: 'gray.5',
         wordBreak: 'keep-all',
-        gap: '50px',
+        gap: '0',
       })}
+      onSubmit={handleSubmit}
     >
-      <header>
-        <h1
-          className={css({
-            textStyle: 'h1',
-            marginBottom: '8px',
-          })}
-        >
-          {totalInfoForSurvey?.teamBuildingInfo.teamBuildingName}
-        </h1>
+      <h1
+        className={css({
+          textStyle: 'h1',
+          marginBottom: '8px',
+        })}
+      >
+        {totalInfoForSurvey?.teamBuildingInfo.teamBuildingName}
+      </h1>
 
-        <p
-          className={css({
-            textStyle: 'p2',
-          })}
-        >
-          한 번 제출한 설문은 변경할 수 없습니다. <br />
-          안내된 시간을 엄수해주세요.
-        </p>
-      </header>
+      <p
+        className={css({
+          textStyle: 'p2',
+          marginBottom: '50px',
+        })}
+      >
+        한 번 제출한 설문은 변경할 수 없습니다. <br />
+        안내된 시간을 엄수해주세요.
+      </p>
 
-      <form className={stack({ gap: '36px' })} onSubmit={handleSubmit}>
+      <section className={stack({ gap: '36px', marginBottom: '70px' })}>
         <FormControl label="이름">
           <input
             name="userName"
@@ -220,26 +221,12 @@ export const SurveyForm = ({
             </FormControl>
           );
         })}
+      </section>
 
-        <button
-          type="submit"
-          className={css({
-            marginTop: '34px', // 70px만큼 떨어트리기 위함 (36 + 34)
-            padding: '14px 0',
-            borderRadius: '20px',
-            backgroundColor: 'yellow.80',
-            fontSize: '20px',
-            fontFamily: 'GmarketSansBold',
-            color: 'gray.5',
-            boxShadow:
-              '2px 2px 6px 0px rgba(255, 255, 255, 0.25) inset, -2px -2px 6px 0px #A13A00 inset',
-            cursor: 'pointer',
-          })}
-        >
-          설문 제출하기
-        </button>
-      </form>
-    </section>
+      <Button type="submit" size="medium" color="secondary">
+        설문 제출하기
+      </Button>
+    </form>
   );
 };
 
