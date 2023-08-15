@@ -74,7 +74,7 @@ const ROUNDS = [
 ];
 
 export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
-  const { data } = useGetTotalInfo(teamBuildingUuid);
+  const { data, refetch } = useGetTotalInfo(teamBuildingUuid);
   const { teamBuildingInfo, teamInfoList, userInfoList } = data ?? {};
   const { mutateAsync: selectUsers } = useSelectUsers();
   const eventSource = useAtomValue(eventSourceAtom);
@@ -90,7 +90,6 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
       .map((team) => team.uuid);
   }, [teamInfoList]);
 
-  console.log('SELECT DONE LIST: ', selectDoneList);
   const selectListModalProps = useDisclosure();
   const roundStartModalProps = useDisclosure(); // 라운드 시작 모달
   const selectConfirmModalProps = useDisclosure(); // 선택 확인용 모달
@@ -104,13 +103,14 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
   const handlePickUser = (e: MessageEvent<string>) => {
     const parseData: PickUserEvent = JSON.parse(e.data);
     console.log('PICK USER: ', parseData);
+    refetch();
   };
 
   const handleChangeRound = (e: MessageEvent<Round>) => {
     const parseData: Round = JSON.parse(e.data);
-    console.log('CHANGE ROUND: ', parseData);
     setActiveStep(roundIndexMap[parseData]);
     roundStartModalProps.onOpen();
+    refetch();
 
     const delay = setTimeout(() => {
       roundStartModalProps.onClose();
