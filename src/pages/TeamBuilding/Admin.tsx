@@ -48,7 +48,7 @@ const roundIndexMap: Record<Round, number> = {
   FIRST_ROUND: 0,
   SECOND_ROUND: 1,
   THIRD_ROUND: 2,
-  FOURTH_ROUND: 3,
+  FORTH_ROUND: 3,
   ADJUSTED_ROUND: 4,
   COMPLETE: 5, // @note: 해당 값으로 넘어가면 stepper는 선택된게 없다.
 };
