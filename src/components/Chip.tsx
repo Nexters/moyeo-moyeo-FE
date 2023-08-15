@@ -1,4 +1,4 @@
-import { RecipeVariantProps, cva, cx } from '@/styled-system/css';
+import { RecipeVariantProps, css, cva, cx } from '@/styled-system/css';
 import { center, hstack } from '@/styled-system/patterns';
 
 export type ChipProps = RecipeVariantProps<typeof square> & {
@@ -14,10 +14,13 @@ export const Chip = ({ visual = 'none', label }: ChipProps) => {
         height: '28px',
         gap: '8px',
         textStyle: 'p2',
+        letterSpacing: '-0.32px',
         color: 'gray.5',
       })}
     >
-      <span className={cx(center(), square({ visual }))}>{shortChar}</span>
+      <span className={cx(center({ flexShrink: '0' }), square({ visual }))}>
+        {shortChar}
+      </span>
 
       <span>{label}</span>
     </div>
