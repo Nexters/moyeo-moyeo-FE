@@ -1,8 +1,8 @@
-import { ReactComponent as Logo } from '@/assets/icons/homeLogo.svg';
+import { ReactComponent as InfoIcon } from '@/assets/icons/info.svg';
 import { Button } from '@/components/Button';
 import { Modal } from '@/components/Modal';
 import { css } from '@/styled-system/css';
-import { center, vstack } from '@/styled-system/patterns';
+import { center, hstack, vstack } from '@/styled-system/patterns';
 
 type AgreementModalProps = {
   isOpen: boolean;
@@ -22,17 +22,19 @@ const AgreementModal = ({ isOpen, onClose, onAgree }: AgreementModalProps) => {
           backdropFilter: 'blur(50px)',
         })}
       >
-        <Logo className={css({ width: '300px', height: '200px' })} />
-        <p className={css({ color: 'yellow.60', textStyle: 'h2' })}>
-          다음 안내와 유의사항을 확인한 후 동의해주세요
-        </p>
+        <div className={hstack({ width: '100%' })}>
+          <InfoIcon />
+          <p className={css({ color: 'gray.5', textStyle: 'h1' })}>
+            다음 안내와 유의사항을 확인한 후 동의해주세요
+          </p>
+        </div>
         <div
           className={css({
             borderRadius: '12px',
             background: 'rgba(255, 255, 255, 0.11)',
             width: '100%',
             padding: '24px',
-            marginTop: '36px',
+            marginTop: '24px',
           })}
         >
           <h1 className={css({ textStyle: 'h2', color: 'gray.5' })}>
@@ -42,27 +44,32 @@ const AgreementModal = ({ isOpen, onClose, onAgree }: AgreementModalProps) => {
             className={css({
               color: 'gray.20',
               textStyle: 'p1',
-              marginTop: '12px',
+              marginTop: '10px',
             })}
           >
             1지망부터 4지망까지 선택 라운드가 진행되며, 모든 선택이 끝난 후
             운영진이 최종 점검 및 수정을 진행합니다.
           </p>
         </div>
-
         <div
           className={css({
             borderRadius: '12px',
             background: 'rgba(255, 255, 255, 0.11)',
             width: '100%',
             padding: '24px',
-            marginTop: '20px',
+            marginTop: '12px',
           })}
         >
-          <span className={css({ textStyle: 'h2', color: 'gray.5' })}>
+          <h2 className={css({ textStyle: 'h2', color: 'gray.5' })}>
             유의 사항
-          </span>
-          <ul className={css({ color: 'gray.20', textStyle: 'p1' })}>
+          </h2>
+          <ul
+            className={css({
+              color: 'gray.20',
+              textStyle: 'p1',
+              marginTop: '10px',
+            })}
+          >
             <li>
               1. 실수로 브라우저를 종료해도 전달받은 링크로 재접속할 수 있어요.
             </li>
@@ -93,7 +100,7 @@ const AgreementModal = ({ isOpen, onClose, onAgree }: AgreementModalProps) => {
             있습니다.
           </p>
         </div>
-        <div className={center({ width: '320px', marginTop: '20px' })}>
+        <div className={center({ width: '320px', marginTop: '36px' })}>
           <Button
             onClick={() => {
               onClose();
