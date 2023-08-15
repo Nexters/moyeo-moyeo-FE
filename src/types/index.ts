@@ -16,7 +16,7 @@ export type Position =
 export type TeamBuilding = {
   teamBuildingUrl: string;
   teamBuildingName: string;
-  teamBuildingStatus: Round;
+  roundStatus: Round;
 };
 
 export type Team = {
