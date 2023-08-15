@@ -7,6 +7,7 @@ import HomeLogo from '@/assets/icons/homeLogo.svg';
 import { isShowLottieBackgroundState } from '@/store/atoms';
 import { css } from '@/styled-system/css';
 import { vstack } from '@/styled-system/patterns';
+import { playSound } from '@/utils/sound';
 
 const Home = () => {
   const navigate = useNavigate();
@@ -14,6 +15,7 @@ const Home = () => {
 
   const handleCreateButton = () => {
     navigate('/create');
+    playSound('페이지_전환');
   };
 
   useLayoutEffect(() => {

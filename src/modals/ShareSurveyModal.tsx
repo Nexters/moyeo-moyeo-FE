@@ -1,9 +1,8 @@
-import { toast } from 'react-hot-toast';
-
 import closeIcon from '@/assets/icons/close.svg';
 import { Modal } from '@/components/Modal';
 import { css } from '@/styled-system/css';
 import { hstack } from '@/styled-system/patterns';
+import { toastWithSound } from '@/utils/toast';
 
 export type ShareSurveyModalProps = {
   teamBuildingUuid: string;
@@ -20,7 +19,7 @@ export const ShareSurveyModal = ({
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(surveyUrl);
-    toast.success('설문 링크가 복사되었습니다');
+    toastWithSound.success('설문 링크가 복사되었습니다');
   };
 
   return (

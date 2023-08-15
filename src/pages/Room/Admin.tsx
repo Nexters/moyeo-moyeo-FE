@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import toast from 'react-hot-toast';
 
@@ -7,6 +7,7 @@ import {
   useDeleteUser,
   useFinishTeamBuilding,
 } from '@/apis/admin/mutations';
+import { BASE_URL } from '@/apis/http';
 import { useGetTotalInfo } from '@/apis/team-building/queries';
 import { ReactComponent as Face } from '@/assets/icons/face.svg';
 import { ReactComponent as Group } from '@/assets/icons/group.svg';
@@ -20,6 +21,8 @@ import { ShareSurveyModal } from '@/modals/ShareSurveyModal';
 import { css } from '@/styled-system/css';
 import { hstack, stack, vstack } from '@/styled-system/patterns';
 import { Round, Team, User } from '@/types';
+import { playSound } from '@/utils/sound';
+import { toastWithSound } from '@/utils/toast';
 
 const ROUNDS = [
   {
@@ -129,7 +132,7 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
         {
           onSuccess: () => {
             // @todo: 쿼리 클라이언트 수정
-            toast.success(
+            toastWithSound.success(
               `${selectedUser.userName}님의 팀 배정을 해제했습니다.`,
             );
           },
@@ -150,7 +153,7 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
         {
           onSuccess: () => {
             // @todo: 쿼리 클라이언트 수정
-            toast.success(
+            toastWithSound.success(
               `${selectedUser.userName}님을 ${team.pmName}팀으로 배정했습니다.`,
             );
           },
@@ -165,7 +168,7 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
 
   const handleClickShareLink = () => {
     navigator.clipboard.writeText(location.href);
-    toast.success('참여 링크가 복사되었습니다');
+    toastWithSound.success('참여 링크가 복사되었습니다');
   };
 
   const handleClickFinishTeamBuilding = () => {
@@ -176,10 +179,31 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
       {
         onSuccess: () => {
           toast.success('팀 빌딩을 완료했습니다.');
+          playSound('팀빌딩_완료');
         },
       },
     );
   };
+
+  // useEffect(() => {
+  //   const eventSource = new EventSource(
+  //     `${BASE_URL}/notification/team-building/${teamBuildingUuid}/subscribe`,
+  //   );
+  //   eventSource.onopen = () => {
+  //     console.log('SSE 연결됨');
+  //   };
+  //   eventSource.onerror = (e) => {
+  //     console.log('SSE 에러 발생', e);
+  //   };
+  //   eventSource.onmessage = (event) => {
+  //     const data = JSON.parse(event.data);
+  //     console.log(data);
+  //   };
+
+  //   return () => {
+  //     eventSource.close();
+  //   };
+  // }, [teamBuildingUuid]);
 
   const renderUser = (selectUser: User) => {
     return (
@@ -197,7 +221,9 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
               { teamBuildingUuid, userUuid: selectUser.uuid },
               {
                 onSuccess: () => {
-                  toast.success(`${selectUser.userName}님을 삭제했습니다.`);
+                  toastWithSound.success(
+                    `${selectUser.userName}님을 삭제했습니다.`,
+                  );
                 },
               },
             );

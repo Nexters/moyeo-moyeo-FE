@@ -1,6 +1,5 @@
 import { ChangeEvent, useState } from 'react';
 
-import { toast } from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 
 import { useCreateTeamBuilding } from '@/apis/admin/mutations';
@@ -15,7 +14,9 @@ import {
   MAX_LENGTH__USER_NAME,
   POSITION_LIST,
 } from '@/utils/const';
+import { playSound } from '@/utils/sound';
 import { isTrulyEmptyString } from '@/utils/string';
+import { toastWithSound } from '@/utils/toast';
 import { generateId } from '@/utils/user';
 
 type TeamRow = {
@@ -67,19 +68,19 @@ const Create = () => {
     setIsClickedSubmit(true);
 
     if (isTrulyEmptyString(teamBuildingName)) {
-      return toast.error('팀 빌딩 제목을 입력해주세요.');
+      return toastWithSound.error('팀 빌딩 제목을 입력해주세요.');
     }
     if (teamRows.length === 0) {
-      return toast.error('팀 리스트를 입력해주세요.');
+      return toastWithSound.error('팀 리스트를 입력해주세요.');
     }
     if (teamRows.some((t) => isTrulyEmptyString(t.pmName))) {
-      return toast.error('PM 이름을 입력해주세요.');
+      return toastWithSound.error('PM 이름을 입력해주세요.');
     }
     if (teamRows.some((t) => isTrulyEmptyString(t.pmPosition))) {
-      return toast.error('PM 직군을 선택해주세요.');
+      return toastWithSound.error('PM 직군을 선택해주세요.');
     }
     if (teamRows.some((t) => isTrulyEmptyString(t.teamName))) {
-      return toast.error('팀 이름을 입력해주세요.');
+      return toastWithSound.error('팀 이름을 입력해주세요.');
     }
 
     if (
@@ -102,6 +103,7 @@ const Create = () => {
         {
           onSuccess: ({ teamBuildingInfo }) => {
             navigate(`/${teamBuildingInfo.teamBuildingUrl}?role=admin`);
+            playSound('페이지_전환');
           },
         },
       );

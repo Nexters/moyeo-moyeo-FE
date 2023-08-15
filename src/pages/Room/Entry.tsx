@@ -9,6 +9,7 @@ import { isShowLottieBackgroundState } from '@/store/atoms';
 import { css } from '@/styled-system/css';
 import { vstack } from '@/styled-system/patterns';
 import { Team } from '@/types';
+import { playSound } from '@/utils/sound';
 
 type EntryProps = {
   teamBuildingUuid: string;
@@ -85,14 +86,20 @@ export const Entry = ({
         <Button
           disabled={!teamUuid}
           size="medium"
-          onClick={() => setRole('player')}
+          onClick={() => {
+            setRole('player');
+            playSound('페이지_전환');
+          }}
           className={css({ marginTop: '80px' })}
         >
           PM으로 입장하기
         </Button>
         <button
           type="button"
-          onClick={() => setRole('admin')}
+          onClick={() => {
+            setRole('admin');
+            playSound('페이지_전환');
+          }}
           className={css({
             fontSize: '16px',
             fontWeight: '600',
