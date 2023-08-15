@@ -13,7 +13,7 @@ import { Admin } from './Admin';
 import { Entry } from './Entry';
 import { Player } from './Player';
 
-const Room = () => {
+const TeamBuilding = () => {
   const [role, setRole] = useState<'admin' | 'player' | null>(null);
   const [teamUuid, setTeamUuid] = useState<Team['uuid'] | null>(null);
   const [searchParams, setSearchParams] = useSearchParams();
@@ -51,14 +51,10 @@ const Room = () => {
       />
     );
   return role === 'player' && !!teamUuid ? (
-    <Player
-      teamUuid={teamUuid}
-      teamBuildingUuid={teamBuildingUuid}
-      totalInfo={totalInfo}
-    />
+    <Player teamUuid={teamUuid} teamBuildingUuid={teamBuildingUuid} />
   ) : (
     <Admin teamBuildingUuid={teamBuildingUuid} />
   );
 };
 
-export default Room;
+export default TeamBuilding;
