@@ -1,8 +1,11 @@
-import { useLayoutEffect, useState } from 'react';
+import { useEffect, useLayoutEffect, useState } from 'react';
 
+import { useSetAtom } from 'jotai';
 import { useParams, useSearchParams } from 'react-router-dom';
 
+import { BASE_URL } from '@/apis/http';
 import { useGetTotalInfo } from '@/apis/team-building/queries';
+import { eventSourceAtom } from '@/store/atoms';
 import { Team } from '@/types';
 
 import NotFound from '../NotFound';
@@ -16,6 +19,7 @@ const Room = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const { teamBuildingUuid } = useParams();
   const { isLoading, data: totalInfo } = useGetTotalInfo(teamBuildingUuid);
+  const setEventSource = useSetAtom(eventSourceAtom);
 
   useLayoutEffect(() => {
     if (searchParams.get('role') === 'admin') {
@@ -25,6 +29,15 @@ const Room = () => {
     // @note: 한번만 실행되어야 함
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    // @note: root component에서 EventSource를 생성하고, atom에 저장한다.
+    const eventSource = new EventSource(
+      `${BASE_URL}notification/team-building/${teamBuildingUuid}/subscribe`,
+    );
+    setEventSource(eventSource);
+    return () => eventSource.close();
+  }, [setEventSource, teamBuildingUuid]);
 
   if (isLoading) return 'loading...';
   if (!teamBuildingUuid || !totalInfo) return <NotFound />;
@@ -38,8 +51,11 @@ const Room = () => {
       />
     );
   return role === 'player' && !!teamUuid ? (
-    // @fixme: 플레이어 페이지 api 연동 시 teamId는 teamUuid로 변경하면 좋을 듯
-    <Player teamId={teamUuid} />
+    <Player
+      teamUuid={teamUuid}
+      teamBuildingUuid={teamBuildingUuid}
+      totalInfo={totalInfo}
+    />
   ) : (
     <Admin teamBuildingUuid={teamBuildingUuid} />
   );

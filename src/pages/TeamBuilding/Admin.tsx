@@ -70,15 +70,15 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
   const { mutate: finishTeamBuilding } = useFinishTeamBuilding();
 
   const activeStep =
-    roundIndexMap[teamBuildingInfo?.teamBuildingStatus ?? 'FIRST_ROUND'];
+    roundIndexMap[teamBuildingInfo?.roundStatus ?? 'FIRST_ROUND'];
   const processValue = (teamInfoList ?? []).reduce(
     (acc, team) => (acc += team.selectDone ? 1 : 0),
     0,
   );
   const canFinishTeamBuilding = useMemo(() => {
-    if (teamBuildingInfo?.teamBuildingStatus !== 'ADJUSTED_ROUND') return false;
+    if (teamBuildingInfo?.roundStatus !== 'ADJUSTED_ROUND') return false;
     return teamInfoList?.every((team) => team.selectDone) ?? false;
-  }, [teamBuildingInfo?.teamBuildingStatus, teamInfoList]);
+  }, [teamBuildingInfo?.roundStatus, teamInfoList]);
 
   const allMemberByTeam = useMemo(() => {
     const allMemberByTeam: Record<Team['pmName'], User[]> = {};
