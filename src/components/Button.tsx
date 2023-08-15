@@ -66,7 +66,7 @@ const button = cva({
       medium: {
         height: '80px',
         padding: '24px',
-        borderRadius: '10px',
+        borderRadius: '20px',
         fontSize: '24px',
         lineHeight: '1',
         fontFamily: 'GmarketSansBold',
