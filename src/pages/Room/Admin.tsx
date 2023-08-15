@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useState } from 'react';
 
 import toast from 'react-hot-toast';
 
@@ -185,6 +185,13 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
       },
     );
   };
+
+  useLayoutEffect(() => {
+    if (sessionStorage.getItem('showAdminGuide') === 'true') return;
+    shareSurveyModalProps.onOpen();
+    sessionStorage.setItem('showAdminGuide', 'true');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // useEffect(() => {
   //   const eventSource = new EventSource(
