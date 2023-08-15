@@ -11,6 +11,7 @@ import { BASE_URL } from '@/apis/http';
 import { useGetTotalInfo } from '@/apis/team-building/queries';
 import { ReactComponent as Face } from '@/assets/icons/face.svg';
 import { ReactComponent as Group } from '@/assets/icons/group.svg';
+import { Button } from '@/components/Button';
 import { Chip } from '@/components/Chip';
 import { ChipWithUser } from '@/components/ChipWithUser';
 import { LinearProgress } from '@/components/LinearProgress';
@@ -80,8 +81,8 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
   );
   const canFinishTeamBuilding = useMemo(() => {
     if (teamBuildingInfo?.teamBuildingStatus !== 'ADJUSTED_ROUND') return false;
-    return teamInfoList?.every((team) => team.selectDone) ?? false;
-  }, [teamBuildingInfo?.teamBuildingStatus, teamInfoList]);
+    return userInfoList?.every((user) => user.joinedTeamUuid !== null) ?? false;
+  }, [teamBuildingInfo?.teamBuildingStatus, userInfoList]);
 
   const allMemberByTeam = useMemo(() => {
     const allMemberByTeam: Record<Team['pmName'], User[]> = {};
@@ -497,25 +498,22 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
           </section>
 
           <section className={css({ width: '100%', textAlign: 'right' })}>
-            <button
-              className={css({
-                width: '320px',
-                height: '80px',
-                padding: '24px',
-                background: 'linear-gradient(180deg, #8060FF 0%, #5818DF 100%)',
-                boxShadow:
-                  '4px 4px 8px 0px rgba(255, 255, 255, 0.25) inset, -4px -4px 8px 0px #441FE2 inset',
-                borderRadius: '20px',
-                fontSize: '24px',
-                fontFamily: 'GmarketSansBold',
-                color: 'gray.5',
-                cursor: 'pointer',
-              })}
+            <Button
+              size="medium"
+              color="primary"
+              title={
+                !canFinishTeamBuilding
+                  ? '팀 구성 조정 라운드에서 모든 팀에 인원 배정이 완료되어야 종료할 수 있습니다.'
+                  : undefined
+              }
               disabled={!canFinishTeamBuilding}
               onClick={handleClickFinishTeamBuilding}
+              className={css({
+                width: '320px !important',
+              })}
             >
               팀 빌딩 마치기
-            </button>
+            </Button>
           </section>
         </section>
       </section>
