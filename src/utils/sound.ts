@@ -15,12 +15,11 @@ export const playSound = (name: keyof typeof sounds, loop = false) => {
 
   sound.volume = 0.3;
   sound.loop = loop;
-  sound.play();
+  return sound.play();
+};
 
-  const stopSound = () => {
-    sound.pause();
-    sound.currentTime = 0;
-  };
-
-  return stopSound;
+export const stopSound = (name: keyof typeof sounds) => {
+  const sound = sounds[name];
+  sound.pause();
+  sound.currentTime = 0;
 };
