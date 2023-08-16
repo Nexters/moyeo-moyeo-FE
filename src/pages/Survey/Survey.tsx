@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { useParams } from 'react-router-dom';
 
 import { useGetTotalInfoForSurvey } from '@/apis/survey/queries';
+import Spinner from '@/components/Spinner';
 import { SurveyFormResult } from '@/types';
 
 import NotFound from '../NotFound';
@@ -21,7 +22,7 @@ const Survey = () => {
     setFormResult(result);
   };
 
-  if (isLoading) return 'loading...';
+  if (isLoading) return <Spinner />;
   if (!teamBuildingUuid || !totalInfoForSurvey) return <NotFound />;
   return !isSubmitted ? (
     <SurveyForm

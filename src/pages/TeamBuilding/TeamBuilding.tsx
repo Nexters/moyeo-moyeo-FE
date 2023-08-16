@@ -5,6 +5,7 @@ import { useParams, useSearchParams } from 'react-router-dom';
 
 import { BASE_URL } from '@/apis/http';
 import { useGetTotalInfo } from '@/apis/team-building/queries';
+import Spinner from '@/components/Spinner';
 import { eventSourceAtom } from '@/store/atoms';
 import { Team } from '@/types';
 import { resolveUrl } from '@/utils/url';
@@ -43,7 +44,7 @@ const TeamBuilding = () => {
     return () => eventSource.close();
   }, [setEventSource, teamBuildingUuid]);
 
-  if (isLoading) return 'loading...';
+  if (isLoading) return <Spinner />;
   if (!teamBuildingUuid || !totalInfo) return <NotFound />;
   if (!role)
     return (

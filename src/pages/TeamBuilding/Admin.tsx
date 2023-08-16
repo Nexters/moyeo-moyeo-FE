@@ -7,7 +7,6 @@ import {
   useDeleteUser,
   useFinishTeamBuilding,
 } from '@/apis/admin/mutations';
-// import { BASE_URL } from '@/apis/http';
 import { useGetTotalInfo } from '@/apis/team-building/queries';
 import { ReactComponent as Face } from '@/assets/icons/face.svg';
 import { ReactComponent as Group } from '@/assets/icons/group.svg';
@@ -137,6 +136,11 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
               `${selectedUser.userName}님의 팀 배정을 해제했습니다.`,
             );
           },
+          onError: () => {
+            toastWithSound.error(
+              '팀 배정 해제에 실패했습니다. 잠시 후 다시 시도해주세요.',
+            );
+          },
         },
       );
     }
@@ -156,6 +160,11 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
             // @todo: 쿼리 클라이언트 수정
             toastWithSound.success(
               `${selectedUser.userName}님을 ${team.pmName}팀으로 배정했습니다.`,
+            );
+          },
+          onError: () => {
+            toastWithSound.error(
+              '팀 배정에 실패했습니다. 잠시 후 다시 시도해주세요.',
             );
           },
         },
@@ -181,6 +190,11 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
         onSuccess: () => {
           toast.success('팀 빌딩을 완료했습니다.');
           playSound('팀빌딩_완료');
+        },
+        onError: () => {
+          toastWithSound.error(
+            '팀 빌딩을 완료하는데 실패했습니다. 잠시 후 다시 시도해주세요.',
+          );
         },
       },
     );
