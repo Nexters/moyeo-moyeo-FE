@@ -41,7 +41,7 @@ export const ChipWithUser = ({
       {/* @fixme: 일단 타입 체크 피하기 위해 any 잠시 사용... */}
       <Chip visual={visual as any} label={user.userName} />
 
-      {!isPm && (
+      {!isPm && !!onClickDelete && !!onClickReassign && (
         <div
           className={hstack({
             justifyContent: 'space-between',
