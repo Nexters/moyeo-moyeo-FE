@@ -14,10 +14,13 @@ export const Chip = ({ visual = 'none', label }: ChipProps) => {
         height: '28px',
         gap: '8px',
         textStyle: 'p2',
+        letterSpacing: '-0.32px',
         color: 'gray.5',
       })}
     >
-      <span className={cx(center(), square({ visual }))}>{shortChar}</span>
+      <span className={cx(center({ flexShrink: '0' }), square({ visual }))}>
+        {shortChar}
+      </span>
 
       <span>{label}</span>
     </div>

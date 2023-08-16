@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useLayoutEffect, useMemo, useState } from 'react';
 
 import toast from 'react-hot-toast';
 
@@ -7,9 +7,11 @@ import {
   useDeleteUser,
   useFinishTeamBuilding,
 } from '@/apis/admin/mutations';
+// import { BASE_URL } from '@/apis/http';
 import { useGetTotalInfo } from '@/apis/team-building/queries';
 import { ReactComponent as Face } from '@/assets/icons/face.svg';
 import { ReactComponent as Group } from '@/assets/icons/group.svg';
+import { Button } from '@/components/Button';
 import { Chip } from '@/components/Chip';
 import { ChipWithUser } from '@/components/ChipWithUser';
 import { LinearProgress } from '@/components/LinearProgress';
@@ -20,6 +22,8 @@ import { ShareSurveyModal } from '@/modals/ShareSurveyModal';
 import { css } from '@/styled-system/css';
 import { hstack, stack, vstack } from '@/styled-system/patterns';
 import { Round, Team, User } from '@/types';
+import { playSound } from '@/utils/sound';
+import { toastWithSound } from '@/utils/toast';
 
 const ROUNDS = [
   {
@@ -77,8 +81,8 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
   );
   const canFinishTeamBuilding = useMemo(() => {
     if (teamBuildingInfo?.roundStatus !== 'ADJUSTED_ROUND') return false;
-    return teamInfoList?.every((team) => team.selectDone) ?? false;
-  }, [teamBuildingInfo?.roundStatus, teamInfoList]);
+    return userInfoList?.every((user) => user.joinedTeamUuid !== null) ?? false;
+  }, [teamBuildingInfo?.roundStatus, userInfoList]);
 
   const allMemberByTeam = useMemo(() => {
     const allMemberByTeam: Record<Team['pmName'], User[]> = {};
@@ -129,7 +133,7 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
         {
           onSuccess: () => {
             // @todo: 쿼리 클라이언트 수정
-            toast.success(
+            toastWithSound.success(
               `${selectedUser.userName}님의 팀 배정을 해제했습니다.`,
             );
           },
@@ -150,7 +154,7 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
         {
           onSuccess: () => {
             // @todo: 쿼리 클라이언트 수정
-            toast.success(
+            toastWithSound.success(
               `${selectedUser.userName}님을 ${team.pmName}팀으로 배정했습니다.`,
             );
           },
@@ -165,7 +169,7 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
 
   const handleClickShareLink = () => {
     navigator.clipboard.writeText(location.href);
-    toast.success('참여 링크가 복사되었습니다');
+    toastWithSound.success('참여 링크가 복사되었습니다');
   };
 
   const handleClickFinishTeamBuilding = () => {
@@ -176,10 +180,38 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
       {
         onSuccess: () => {
           toast.success('팀 빌딩을 완료했습니다.');
+          playSound('팀빌딩_완료');
         },
       },
     );
   };
+
+  useLayoutEffect(() => {
+    if (sessionStorage.getItem('showAdminGuide') === 'true') return;
+    shareSurveyModalProps.onOpen();
+    sessionStorage.setItem('showAdminGuide', 'true');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // useEffect(() => {
+  //   const eventSource = new EventSource(
+  //     `${BASE_URL}/notification/team-building/${teamBuildingUuid}/subscribe`,
+  //   );
+  //   eventSource.onopen = () => {
+  //     console.log('SSE 연결됨');
+  //   };
+  //   eventSource.onerror = (e) => {
+  //     console.log('SSE 에러 발생', e);
+  //   };
+  //   eventSource.onmessage = (event) => {
+  //     const data = JSON.parse(event.data);
+  //     console.log(data);
+  //   };
+
+  //   return () => {
+  //     eventSource.close();
+  //   };
+  // }, [teamBuildingUuid]);
 
   const renderUser = (selectUser: User) => {
     return (
@@ -197,7 +229,9 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
               { teamBuildingUuid, userUuid: selectUser.uuid },
               {
                 onSuccess: () => {
-                  toast.success(`${selectUser.userName}님을 삭제했습니다.`);
+                  toastWithSound.success(
+                    `${selectUser.userName}님을 삭제했습니다.`,
+                  );
                 },
               },
             );
@@ -471,25 +505,22 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
           </section>
 
           <section className={css({ width: '100%', textAlign: 'right' })}>
-            <button
-              className={css({
-                width: '320px',
-                height: '80px',
-                padding: '24px',
-                background: 'linear-gradient(180deg, #8060FF 0%, #5818DF 100%)',
-                boxShadow:
-                  '4px 4px 8px 0px rgba(255, 255, 255, 0.25) inset, -4px -4px 8px 0px #441FE2 inset',
-                borderRadius: '20px',
-                fontSize: '24px',
-                fontFamily: 'GmarketSansBold',
-                color: 'gray.5',
-                cursor: 'pointer',
-              })}
+            <Button
+              size="medium"
+              color="primary"
+              title={
+                !canFinishTeamBuilding
+                  ? '팀 구성 조정 라운드에서 모든 팀에 인원 배정이 완료되어야 종료할 수 있습니다.'
+                  : undefined
+              }
               disabled={!canFinishTeamBuilding}
               onClick={handleClickFinishTeamBuilding}
+              className={css({
+                width: '320px !important',
+              })}
             >
               팀 빌딩 마치기
-            </button>
+            </Button>
           </section>
         </section>
       </section>

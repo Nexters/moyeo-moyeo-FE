@@ -9,10 +9,12 @@ import LottieBackgroundImage from '@/assets/images/lottie.webp';
 import { isShowLottieBackgroundState } from '@/store/atoms';
 import { css } from '@/styled-system/css';
 import { vstack } from '@/styled-system/patterns';
+import { playSound, stopSound } from '@/utils/sound';
 
 const CommonLayout = () => {
   const isShowLottieBackground = useAtomValue(isShowLottieBackgroundState);
   const [lottieSize, setLottieSize] = useState({ width: 1280, height: 720 });
+  const [isPlayedBackgroundMusic, setIsPlayedBackgroundMusic] = useState(false);
 
   useEffect(() => {
     const handleResize = () => {
@@ -47,6 +49,29 @@ const CommonLayout = () => {
         backgroundColor: '#290C60',
       })}
     >
+      <button
+        className={css({
+          position: 'fixed',
+          right: 0,
+          bottom: 0,
+          zIndex: 2,
+          cursor: 'pointer',
+          color: 'gray.5',
+          fontSize: '10px',
+          padding: '4px',
+        })}
+        onClick={() => {
+          if (isPlayedBackgroundMusic) {
+            stopSound('배경');
+            setIsPlayedBackgroundMusic(false);
+          } else {
+            playSound('배경', true);
+            setIsPlayedBackgroundMusic(true);
+          }
+        }}
+      >
+        {isPlayedBackgroundMusic ? '브금 끄기' : '브금 켜기'}
+      </button>
       {/* @note: 두 이미지를 가져오는 이유는 페이지 전환시 깜빡이는 느낌을 제거하기 위함 */}
       <img
         src={LottieBackgroundImage}

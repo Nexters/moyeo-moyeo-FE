@@ -7,6 +7,7 @@ import { BASE_URL } from '@/apis/http';
 import { useGetTotalInfo } from '@/apis/team-building/queries';
 import { eventSourceAtom } from '@/store/atoms';
 import { Team } from '@/types';
+import { resolveUrl } from '@/utils/url';
 
 import NotFound from '../NotFound';
 import { Admin } from './Admin';
@@ -33,7 +34,10 @@ const TeamBuilding = () => {
   useEffect(() => {
     // @note: root component에서 EventSource를 생성하고, atom에 저장한다.
     const eventSource = new EventSource(
-      `${BASE_URL}notification/team-building/${teamBuildingUuid}/subscribe`,
+      resolveUrl(
+        BASE_URL,
+        `notification/team-building/${teamBuildingUuid}/subscribe`,
+      ),
     );
     setEventSource(eventSource);
     return () => eventSource.close();

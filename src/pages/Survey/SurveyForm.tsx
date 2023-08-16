@@ -246,7 +246,7 @@ export const SurveyForm = ({
         })}
       </section>
 
-      <Button type="submit" size="medium" color="secondary">
+      <Button type="submit" size="small" color="secondary">
         설문 제출하기
       </Button>
     </form>

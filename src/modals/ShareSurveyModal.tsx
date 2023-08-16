@@ -1,9 +1,9 @@
-import { toast } from 'react-hot-toast';
-
 import closeIcon from '@/assets/icons/close.svg';
+import { Button } from '@/components/Button';
 import { Modal } from '@/components/Modal';
 import { css } from '@/styled-system/css';
 import { hstack } from '@/styled-system/patterns';
+import { toastWithSound } from '@/utils/toast';
 
 export type ShareSurveyModalProps = {
   teamBuildingUuid: string;
@@ -20,7 +20,7 @@ export const ShareSurveyModal = ({
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(surveyUrl);
-    toast.success('설문 링크가 복사되었습니다');
+    toastWithSound.success('설문 링크가 복사되었습니다');
   };
 
   return (
@@ -82,24 +82,16 @@ export const ShareSurveyModal = ({
             </p>
           </div>
 
-          <button
+          <Button
+            color="primary"
+            size="medium"
             className={css({
-              width: '320px',
-              height: '80px',
-              padding: '24px',
-              background: 'linear-gradient(180deg, #8060FF 0%, #5818DF 100%)',
-              boxShadow:
-                '4px 4px 8px 0px rgba(255, 255, 255, 0.25) inset, -4px -4px 8px 0px #441FE2 inset',
-              borderRadius: '20px',
-              fontSize: '24px',
-              fontFamily: 'GmarketSansBold',
-              color: 'gray.5',
-              cursor: 'pointer',
+              width: '320px !important',
             })}
             onClick={copyToClipboard}
           >
             설문 링크 복사하기
-          </button>
+          </Button>
         </div>
       </section>
     </Modal>

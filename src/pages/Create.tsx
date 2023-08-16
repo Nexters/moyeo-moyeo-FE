@@ -1,11 +1,11 @@
 import { ChangeEvent, useState } from 'react';
 
-import { toast } from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 
 import { useCreateTeamBuilding } from '@/apis/admin/mutations';
 import closeIcon from '@/assets/icons/close.svg';
 import { ReactComponent as TrashBinIcon } from '@/assets/icons/trashbin.svg';
+import { Button } from '@/components/Button';
 import { css } from '@/styled-system/css';
 import { center, hstack, vstack } from '@/styled-system/patterns';
 import { Position } from '@/types';
@@ -15,7 +15,9 @@ import {
   MAX_LENGTH__USER_NAME,
   POSITION_LIST,
 } from '@/utils/const';
+import { playSound } from '@/utils/sound';
 import { isTrulyEmptyString } from '@/utils/string';
+import { toastWithSound } from '@/utils/toast';
 import { generateId } from '@/utils/user';
 
 type TeamRow = {
@@ -67,19 +69,19 @@ const Create = () => {
     setIsClickedSubmit(true);
 
     if (isTrulyEmptyString(teamBuildingName)) {
-      return toast.error('팀 빌딩 제목을 입력해주세요.');
+      return toastWithSound.error('팀 빌딩 제목을 입력해주세요.');
     }
     if (teamRows.length === 0) {
-      return toast.error('팀 리스트를 입력해주세요.');
+      return toastWithSound.error('팀 리스트를 입력해주세요.');
     }
     if (teamRows.some((t) => isTrulyEmptyString(t.pmName))) {
-      return toast.error('PM 이름을 입력해주세요.');
+      return toastWithSound.error('PM 이름을 입력해주세요.');
     }
     if (teamRows.some((t) => isTrulyEmptyString(t.pmPosition))) {
-      return toast.error('PM 직군을 선택해주세요.');
+      return toastWithSound.error('PM 직군을 선택해주세요.');
     }
     if (teamRows.some((t) => isTrulyEmptyString(t.teamName))) {
-      return toast.error('팀 이름을 입력해주세요.');
+      return toastWithSound.error('팀 이름을 입력해주세요.');
     }
 
     if (
@@ -102,6 +104,7 @@ const Create = () => {
         {
           onSuccess: ({ teamBuildingInfo }) => {
             navigate(`/${teamBuildingInfo.teamBuildingUrl}?role=admin`);
+            playSound('페이지_전환');
           },
         },
       );
@@ -367,24 +370,16 @@ const Create = () => {
         </section>
 
         <section className={css({ textAlign: 'right' })}>
-          <button
+          <Button
             type="submit"
+            color="primary"
+            size="medium"
             className={css({
-              width: '320px',
-              height: '80px',
-              padding: '24px',
-              background: 'linear-gradient(180deg, #8060FF 0%, #5818DF 100%)',
-              boxShadow:
-                '4px 4px 8px 0px rgba(255, 255, 255, 0.25) inset, -4px -4px 8px 0px #441FE2 inset',
-              borderRadius: '20px',
-              fontSize: '24px',
-              fontFamily: 'GmarketSansBold',
-              color: 'gray.5',
-              cursor: 'pointer',
+              width: '320px !important',
             })}
           >
             팀 빌딩 시작하기
-          </button>
+          </Button>
         </section>
       </form>
     </>
