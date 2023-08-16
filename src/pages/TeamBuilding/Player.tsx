@@ -100,27 +100,32 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
     agreementModalProps.onOpen();
   }, []);
 
-  const handlePickUser = (e: MessageEvent<string>) => {
-    const parseData: PickUserEvent = JSON.parse(e.data);
-    console.log('PICK USER: ', parseData);
-    refetch();
-  };
-
-  const handleChangeRound = (e: MessageEvent<Round>) => {
-    const parseData: Round = JSON.parse(e.data);
-    setActiveStep(roundIndexMap[parseData]);
-    roundStartModalProps.onOpen();
-    refetch();
-
-    const delay = setTimeout(() => {
-      roundStartModalProps.onClose();
-    }, 3000);
-    return () => clearTimeout(delay);
-  };
-
   useEffect(() => {
+    const handlePickUser = (e: MessageEvent<string>) => {
+      const parseData: PickUserEvent = JSON.parse(e.data);
+      console.log('PICK USER: ', parseData);
+      refetch();
+    };
+
+    const handleChangeRound = (e: MessageEvent<Round>) => {
+      const parseData: Round = JSON.parse(e.data);
+      setActiveStep(roundIndexMap[parseData]);
+      roundStartModalProps.onOpen();
+      refetch();
+
+      const delay = setTimeout(() => {
+        roundStartModalProps.onClose();
+      }, 3000);
+      return () => clearTimeout(delay);
+    };
+
     eventSource?.addEventListener('pick-user', handlePickUser);
     eventSource?.addEventListener('change-round', handleChangeRound);
+
+    return () => {
+      eventSource?.removeEventListener('pick-user', handlePickUser);
+      eventSource?.removeEventListener('change-round', handleChangeRound);
+    };
   }, [eventSource]);
 
   const filteredSelectedUsers = useMemo(() => {
