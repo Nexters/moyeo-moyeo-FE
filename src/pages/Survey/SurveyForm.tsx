@@ -256,7 +256,7 @@ export const SurveyForm = ({
         color="secondary"
         disabled={mutation.isLoading}
       >
-        설문 제출하기
+        {mutation.isLoading ? '제출 중...' : '설문 제출하기'}
       </Button>
     </form>
   );
