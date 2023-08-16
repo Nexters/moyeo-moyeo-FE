@@ -106,6 +106,11 @@ const Create = () => {
             navigate(`/${teamBuildingInfo.teamBuildingUrl}?role=admin`);
             playSound('페이지_전환');
           },
+          onError: () => {
+            toastWithSound.error(
+              '팀 빌딩 생성에 실패했습니다. 잠시 후 다시 시도해주세요.',
+            );
+          },
         },
       );
     }
@@ -374,11 +379,12 @@ const Create = () => {
             type="submit"
             color="primary"
             size="medium"
+            disabled={mutation.isLoading}
             className={css({
               width: '320px !important',
             })}
           >
-            팀 빌딩 시작하기
+            {mutation.isLoading ? '팀 빌딩 생성 중...' : '팀 빌딩 시작하기'}
           </Button>
         </section>
       </form>
