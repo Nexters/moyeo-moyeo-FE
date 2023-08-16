@@ -81,7 +81,8 @@ export const SurveyForm = ({
       },
       {
         onSuccess: () => {
-          toast.success('설문조사가 제출되었습니다');
+          toast.success('설문이 제출되었습니다');
+
           const result: SurveyFormResult = [
             { field: '이름', value: inputs.userName },
             { field: '소개 페이지 (선택)', value: inputs.userProfile },
@@ -102,6 +103,9 @@ export const SurveyForm = ({
             }),
           ];
           onAfterSubmit(result);
+        },
+        onError: () => {
+          toast.error('제출에 실패했습니다. 잠시 후 다시 시도해주세요.');
         },
       },
     );
@@ -246,7 +250,12 @@ export const SurveyForm = ({
         })}
       </section>
 
-      <Button type="submit" size="small" color="secondary">
+      <Button
+        type="submit"
+        size="small"
+        color="secondary"
+        disabled={mutation.isLoading}
+      >
         설문 제출하기
       </Button>
     </form>
