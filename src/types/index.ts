@@ -2,7 +2,7 @@ export type Round =
   | 'FIRST_ROUND'
   | 'SECOND_ROUND'
   | 'THIRD_ROUND'
-  | 'FOURTH_ROUND'
+  | 'FORTH_ROUND'
   | 'ADJUSTED_ROUND'
   | 'COMPLETE';
 
@@ -16,7 +16,7 @@ export type Position =
 export type TeamBuilding = {
   teamBuildingUrl: string;
   teamBuildingName: string;
-  teamBuildingStatus: Round;
+  roundStatus: Round;
 };
 
 export type Team = {

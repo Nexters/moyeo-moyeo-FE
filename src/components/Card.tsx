@@ -26,6 +26,7 @@ const choiceRecipe = cva({
     height: '100%',
     width: '54px',
     borderRadius: '8px',
+    boxShadow: '0px 0px 6px 0px rgba(34, 34, 42, 0.10)',
   },
   variants: {
     choice: {

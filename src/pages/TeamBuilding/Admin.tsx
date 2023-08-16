@@ -52,7 +52,7 @@ const roundIndexMap: Record<Round, number> = {
   FIRST_ROUND: 0,
   SECOND_ROUND: 1,
   THIRD_ROUND: 2,
-  FOURTH_ROUND: 3,
+  FORTH_ROUND: 3,
   ADJUSTED_ROUND: 4,
   COMPLETE: 5, // @note: 해당 값으로 넘어가면 stepper는 선택된게 없다.
 };
@@ -74,15 +74,15 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
   const { mutate: finishTeamBuilding } = useFinishTeamBuilding();
 
   const activeStep =
-    roundIndexMap[teamBuildingInfo?.teamBuildingStatus ?? 'FIRST_ROUND'];
+    roundIndexMap[teamBuildingInfo?.roundStatus ?? 'FIRST_ROUND'];
   const processValue = (teamInfoList ?? []).reduce(
     (acc, team) => (acc += team.selectDone ? 1 : 0),
     0,
   );
   const canFinishTeamBuilding = useMemo(() => {
-    if (teamBuildingInfo?.teamBuildingStatus !== 'ADJUSTED_ROUND') return false;
+    if (teamBuildingInfo?.roundStatus !== 'ADJUSTED_ROUND') return false;
     return userInfoList?.every((user) => user.joinedTeamUuid !== null) ?? false;
-  }, [teamBuildingInfo?.teamBuildingStatus, userInfoList]);
+  }, [teamBuildingInfo?.roundStatus, userInfoList]);
 
   const allMemberByTeam = useMemo(() => {
     const allMemberByTeam: Record<Team['pmName'], User[]> = {};
