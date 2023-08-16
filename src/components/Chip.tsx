@@ -1,4 +1,4 @@
-import { RecipeVariantProps, css, cva, cx } from '@/styled-system/css';
+import { RecipeVariantProps, cva, cx } from '@/styled-system/css';
 import { center, hstack } from '@/styled-system/patterns';
 
 export type ChipProps = RecipeVariantProps<typeof square> & {

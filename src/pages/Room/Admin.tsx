@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useMemo, useState } from 'react';
+import { useLayoutEffect, useMemo, useState } from 'react';
 
 import toast from 'react-hot-toast';
 
@@ -7,7 +7,7 @@ import {
   useDeleteUser,
   useFinishTeamBuilding,
 } from '@/apis/admin/mutations';
-import { BASE_URL } from '@/apis/http';
+// import { BASE_URL } from '@/apis/http';
 import { useGetTotalInfo } from '@/apis/team-building/queries';
 import { ReactComponent as Face } from '@/assets/icons/face.svg';
 import { ReactComponent as Group } from '@/assets/icons/group.svg';
