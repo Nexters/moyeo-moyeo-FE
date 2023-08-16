@@ -10,8 +10,8 @@ import MobileLayout from '@/layouts/MobileLayout';
 import Create from '@/pages/Create';
 import Home from '@/pages/Home';
 import NotFound from '@/pages/NotFound';
-import Room from '@/pages/Room';
 import Survey from '@/pages/Survey';
+import TeamBuilding from '@/pages/TeamBuilding';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -29,7 +29,7 @@ function App() {
           <Route element={<CommonLayout />}>
             <Route path="/" element={<Home />} />
             <Route path="/create" element={<Create />} />
-            <Route path="/:teamBuildingUuid" element={<Room />} />
+            <Route path="/:teamBuildingUuid" element={<TeamBuilding />} />
             <Route path="*" element={<NotFound />} />
           </Route>
           <Route element={<MobileLayout />}>

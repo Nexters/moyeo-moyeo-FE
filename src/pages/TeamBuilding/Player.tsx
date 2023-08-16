@@ -1,7 +1,10 @@
 import { useEffect, useMemo, useState } from 'react';
 
+import { useAtomValue } from 'jotai';
 import { toast } from 'react-hot-toast';
 
+import { useSelectUsers } from '@/apis/team-building/mutations';
+import { useGetTotalInfo } from '@/apis/team-building/queries';
 import { ReactComponent as ArrowUpIcon } from '@/assets/icons/arrowUp.svg';
 import { ReactComponent as FaceIcon } from '@/assets/icons/face.svg';
 import { ReactComponent as GroupIcon } from '@/assets/icons/group.svg';
@@ -11,20 +14,33 @@ import { Card } from '@/components/Card';
 import { LinearProgress } from '@/components/LinearProgress';
 import { Step, Stepper } from '@/components/stepper';
 import { useDisclosure } from '@/hooks/useDisclosure';
-import { mockUsers } from '@/mock/data';
 import AgreementModal from '@/modals/AgreementModal';
 import RoundFinishModal from '@/modals/RoundStartModal';
 import SelectConfirmModal from '@/modals/SelectConfirmModal';
+import { eventSourceAtom } from '@/store/atoms';
 import { css } from '@/styled-system/css';
 import { grid, hstack, stack, vstack } from '@/styled-system/patterns';
-import { Choice } from '@/types';
-import { Team, User } from '@/types.old';
+import { Choice, Round, Team, User } from '@/types';
 
 type PlayerProps = {
-  teamId: Team['id'];
+  teamUuid: Team['uuid'];
+  teamBuildingUuid: string;
 };
 
-type PlayerState = 'selecting' | 'selected' | 'wait';
+type PickUserEvent = {
+  teamUuid: Team['uuid'];
+  teamName: string;
+  pickUserUuids: string[];
+};
+
+const roundIndexMap: Record<Round, number> = {
+  FIRST_ROUND: 0,
+  SECOND_ROUND: 1,
+  THIRD_ROUND: 2,
+  FORTH_ROUND: 3,
+  ADJUSTED_ROUND: 4,
+  COMPLETE: 5, // @note: 해당 값으로 넘어가면 stepper는 선택된게 없다.
+};
 
 const ChoiceMap: Record<number, Choice> = {
   0: '1지망',
@@ -32,12 +48,6 @@ const ChoiceMap: Record<number, Choice> = {
   2: '3지망',
   3: '4지망',
   4: '팀 구성 조정',
-};
-
-const PlayerStateMap: Record<PlayerState, string> = {
-  selecting: '선택',
-  selected: '선택 완료',
-  wait: '대기중',
 };
 
 const ROUNDS = [
@@ -63,97 +73,110 @@ const ROUNDS = [
   },
 ];
 
-const TOTAL_TEAM_COUNT = 10;
+export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
+  const { data, refetch } = useGetTotalInfo(teamBuildingUuid);
+  const { teamBuildingInfo, teamInfoList, userInfoList } = data ?? {};
+  const { mutateAsync: selectUsers } = useSelectUsers();
+  const eventSource = useAtomValue(eventSourceAtom);
 
-export const Player = ({ teamId }: PlayerProps) => {
-  const [users, setUsers] = useState(mockUsers);
-  const [selectedUsers, setSelectedUsers] = useState<User['id'][]>([]);
-  const [currentRound, setCurrentRound] = useState(0);
-  const [selectedTeamCount, setSelectedTeamCount] = useState(0);
-  const { isOpen: isOpenSelectList, onToggle: setIsOpenSelectList } =
-    useDisclosure();
-  const roundStartModalProps = useDisclosure();
-  const selectConfirmModalProps = useDisclosure();
-  const agreementModalProps = useDisclosure();
-  const [playerState, setPlayerState] = useState<PlayerState>('wait');
+  const [activeStep, setActiveStep] = useState(
+    roundIndexMap[teamBuildingInfo?.roundStatus ?? 'FIRST_ROUND'],
+  );
+  const [selectedUsers, setSelectedUsers] = useState<User['uuid'][]>([]); // 현재 라운드에 PM이 선택한 사람
+
+  const selectDoneList = useMemo(() => {
+    return teamInfoList
+      ?.filter((team) => team.selectDone)
+      .map((team) => team.uuid);
+  }, [teamInfoList]);
+
+  const selectListModalProps = useDisclosure();
+  const roundStartModalProps = useDisclosure(); // 라운드 시작 모달
+  const selectConfirmModalProps = useDisclosure(); // 선택 확인용 모달
+  const agreementModalProps = useDisclosure(); // 동의서 모달
 
   useEffect(() => {
+    if (localStorage.getItem('agreement') === 'true') return;
     agreementModalProps.onOpen();
   }, []);
 
   useEffect(() => {
-    // FIXME: SSE로 라운드 시작 이벤트를 받아서 처리
-    if (playerState !== 'selecting') return;
-    roundStartModalProps.onOpen();
-    const delay = setTimeout(() => {
-      roundStartModalProps.onClose();
-    }, 5000);
+    const handlePickUser = (e: MessageEvent<string>) => {
+      const parseData: PickUserEvent = JSON.parse(e.data);
+      console.log('PICK USER: ', parseData);
+      refetch();
+    };
 
-    return () => clearTimeout(delay);
-  }, [currentRound, playerState]);
+    const handleChangeRound = (e: MessageEvent<Round>) => {
+      const parseData: Round = JSON.parse(e.data);
+      setActiveStep(roundIndexMap[parseData]);
+      roundStartModalProps.onOpen();
+      refetch();
+
+      const delay = setTimeout(() => {
+        roundStartModalProps.onClose();
+      }, 3000);
+      return () => clearTimeout(delay);
+    };
+
+    eventSource?.addEventListener('pick-user', handlePickUser);
+    eventSource?.addEventListener('change-round', handleChangeRound);
+
+    return () => {
+      eventSource?.removeEventListener('pick-user', handlePickUser);
+      eventSource?.removeEventListener('change-round', handleChangeRound);
+    };
+  }, [eventSource]);
 
   const filteredSelectedUsers = useMemo(() => {
     // @note: 현재 PM 팀에 속해 있는 사람들과 이번 라운드에서 선택된 사람들을 보여준다.
-    return users.filter(
-      (user) => user.joinedTeamId === teamId || selectedUsers.includes(user.id),
+    return userInfoList?.filter(
+      (user) =>
+        user.joinedTeamUuid === teamUuid || selectedUsers.includes(user.uuid),
     );
-  }, [users, teamId, selectedUsers]);
+  }, [userInfoList, teamUuid, selectedUsers]);
 
   const filteredUsersByRound = useMemo(() => {
     // @note: 이번 라운드에서 선택할 수 있는 사람들을 보여준다.
-    return users.filter((user) => {
-      if (currentRound === 4) return true;
+    return userInfoList?.filter((user) => {
+      if (activeStep === 4) return user.joinedTeamUuid === null;
       else
         return (
-          user.choices[currentRound] === teamId && user.joinedTeamId === null
+          user.choices[activeStep] === teamUuid && user.joinedTeamUuid === null
         );
     });
-  }, [currentRound, teamId, users]);
-
-  const toggleSelectList = () => {
-    setIsOpenSelectList();
-  };
+  }, [activeStep, teamUuid, userInfoList]);
 
   const toggleCard = (selectUser: User) => {
-    if (playerState !== 'selecting')
+    // 이미 선택 완료 버튼을 눌렀다면 선택할 수 없음
+    if (selectDoneList?.includes(teamUuid))
       return toast.error('선택할 수 없는 상태입니다.');
+    // 조정 라운드에서는 선택할 수 없음
+    if (activeStep >= 4) return toast.error('선택할 수 없는 상태입니다.');
 
-    const isSelected = !!selectedUsers.find((id) => id === selectUser.id);
+    const isSelected = !!selectedUsers.find((id) => id === selectUser.uuid);
     if (isSelected ? confirm(isSelected && '선택해제 하시겠습니까?') : true) {
       setSelectedUsers((prev) =>
         isSelected
-          ? prev.filter((id) => id !== selectUser.id)
-          : [...prev, selectUser.id],
+          ? prev.filter((id) => id !== selectUser.uuid)
+          : [...prev, selectUser.uuid],
       );
     }
   };
 
   const handleTeamSelectionComplete = () => {
-    setPlayerState('selected');
-    setTimeout(() => {
-      setCurrentRound((prev) => prev + 1);
-      if (currentRound === ROUNDS.length - 2) {
-        setPlayerState('wait');
-      } else setPlayerState('selecting');
-      setSelectedTeamCount(0);
-
-      setUsers((prev) =>
-        prev.map((user) => {
-          if (selectedUsers.includes(user.id)) {
-            return {
-              ...user,
-              joinedTeamId: teamId,
-            };
-          }
-          return user;
-        }),
-      );
-      setSelectedUsers([]);
-    }, 3000);
+    selectUsers({
+      teamBuildingUuid,
+      teamUuid,
+      body: {
+        userUuids: selectedUsers,
+      },
+    });
   };
 
   const onClickAgreement = () => {
-    setPlayerState('selecting');
+    localStorage.setItem('agreement', 'true');
+    roundStartModalProps.onOpen();
   };
 
   return (
@@ -215,7 +238,7 @@ export const Player = ({ teamId }: PlayerProps) => {
               <span className={css({ textStyle: 'h3', color: 'gray.5' })}>
                 현재 라운드
               </span>
-              <Stepper activeStep={currentRound}>
+              <Stepper activeStep={activeStep}>
                 {ROUNDS.map(({ label, Icon }, index) => (
                   <Step key={label} id={index}>
                     <Icon className={css({ marginRight: '8px' })} />
@@ -229,8 +252,8 @@ export const Player = ({ teamId }: PlayerProps) => {
                 현 라운드 완료율
               </span>
               <LinearProgress
-                value={selectedTeamCount}
-                total={TOTAL_TEAM_COUNT}
+                value={selectDoneList?.length ?? 0}
+                total={teamInfoList?.length ?? 0}
               />
             </div>
           </div>
@@ -266,23 +289,21 @@ export const Player = ({ teamId }: PlayerProps) => {
               },
             })}
           >
-            {filteredSelectedUsers.map((user) => (
+            {filteredSelectedUsers?.map((user) => (
               <Card
-                key={user.id}
-                name={user.name}
-                border={selectedUsers.includes(user.id) ? 'yellow' : 'default'}
-                position={user.position}
-                choice={
-                  ChoiceMap[
-                    user.choices.findIndex((choice) => choice === teamId)
-                  ]
+                key={user.uuid}
+                name={user.userName}
+                border={
+                  selectedUsers.includes(user.uuid) ? 'yellow' : 'default'
                 }
-                link="temp"
+                position={user.position}
+                choice={ChoiceMap[activeStep]}
+                link={user.profileLink}
                 selected={false}
               />
             ))}
           </div>
-          {filteredSelectedUsers.length === 0 && (
+          {filteredSelectedUsers?.length === 0 && (
             <span
               className={hstack({
                 width: '384px',
@@ -310,7 +331,7 @@ export const Player = ({ teamId }: PlayerProps) => {
               position: 'fixed',
               top: '0',
               left: '0',
-              width: isOpenSelectList ? '100%' : '0',
+              width: selectListModalProps.isOpen ? '100%' : '0',
               height: '100%',
               background: 'rgba(0, 0, 0, 0.8)',
             },
@@ -319,8 +340,8 @@ export const Player = ({ teamId }: PlayerProps) => {
           <div
             className={stack({
               width: '1030px',
-              height: isOpenSelectList ? '650px' : '332px',
-              background: isOpenSelectList
+              height: selectListModalProps.isOpen ? '650px' : '332px',
+              background: selectListModalProps.isOpen
                 ? 'rgba(255, 255, 255, 0.07)'
                 : 'rgba(0, 0, 0, 0.07)',
               backdropFilter: 'blur(50px)',
@@ -342,7 +363,7 @@ export const Player = ({ teamId }: PlayerProps) => {
                   color: 'gray.5',
                 })}
               >
-                {ROUNDS[currentRound].label} 리스트
+                {ROUNDS[activeStep].label} 리스트
               </h2>
               <div className={css({ width: '123px', height: '44px' })}>
                 <Button
@@ -354,12 +375,12 @@ export const Player = ({ teamId }: PlayerProps) => {
                     boxShadow: 'none',
                     gap: '15px',
                   })}
-                  onClick={toggleSelectList}
+                  onClick={() => selectListModalProps.onToggle()}
                 >
-                  {isOpenSelectList ? '접기' : '펼치기'}
+                  {selectListModalProps.isOpen ? '접기' : '펼치기'}
                   <ArrowUpIcon
                     className={css({
-                      transform: isOpenSelectList
+                      transform: selectListModalProps.isOpen
                         ? 'rotate(180deg)'
                         : 'rotate(0deg)',
                     })}
@@ -382,7 +403,7 @@ export const Player = ({ teamId }: PlayerProps) => {
                 },
               })}
             >
-              {filteredUsersByRound.map((user) => (
+              {filteredUsersByRound?.map((user) => (
                 <Card
                   className={css({
                     cursor: 'pointer',
@@ -390,17 +411,17 @@ export const Player = ({ teamId }: PlayerProps) => {
                       border: '1px solid rgba(255, 255, 255, 0.8)',
                     },
                   })}
-                  key={user.id}
-                  name={user.name}
+                  key={user.uuid}
+                  name={user.userName}
                   position={user.position}
-                  link="temp"
-                  choice={ChoiceMap[currentRound]}
-                  selected={selectedUsers.includes(user.id)}
+                  link={user.profileLink}
+                  choice={ChoiceMap[activeStep]}
+                  selected={selectedUsers.includes(user.uuid)}
                   onClick={() => toggleCard(user)}
                 />
               ))}
             </div>
-            {filteredUsersByRound.length === 0 && (
+            {filteredUsersByRound?.length === 0 && (
               <span
                 className={hstack({
                   width: '425px',
@@ -431,12 +452,14 @@ export const Player = ({ teamId }: PlayerProps) => {
               color="secondary"
               size="large"
               className={css({ height: '100%' })}
-              disabled={playerState !== 'selecting'}
+              disabled={selectDoneList?.includes(teamUuid) || activeStep > 3}
               onClick={selectConfirmModalProps.onOpen}
             >
-              {ROUNDS[currentRound].label}
+              {ROUNDS[activeStep].label}
               <br />
-              {PlayerStateMap[playerState]}
+              {selectDoneList?.includes(teamUuid) || activeStep > 3
+                ? '대기중'
+                : '선택 완료하기'}
             </Button>
           </div>
         </section>
@@ -444,7 +467,7 @@ export const Player = ({ teamId }: PlayerProps) => {
       <RoundFinishModal
         isOpen={roundStartModalProps.isOpen}
         onClose={roundStartModalProps.onClose}
-        round={currentRound}
+        round={activeStep}
       />
       <SelectConfirmModal
         isOpen={selectConfirmModalProps.isOpen}
