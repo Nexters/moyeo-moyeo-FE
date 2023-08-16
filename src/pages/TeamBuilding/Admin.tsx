@@ -218,6 +218,7 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
       <ChipWithUser
         key={selectUser.uuid}
         user={selectUser}
+        isShowButton={selectUser.uuid !== 'pm'}
         onClickReassign={() => {
           setSelectedUser(selectUser);
           selectTeamModalProps.onOpen();

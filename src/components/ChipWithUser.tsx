@@ -9,7 +9,7 @@ import { Chip } from './Chip';
 
 export type ChipWithUserProps = {
   user: User;
-  isPm?: boolean;
+  isShowButton: boolean;
   onClickReassign?: () => void;
   onClickDelete?: () => void;
 };
@@ -17,6 +17,7 @@ export type ChipWithUserProps = {
 export const ChipWithUser = ({
   user,
   onClickReassign,
+  isShowButton,
   onClickDelete,
 }: ChipWithUserProps) => {
   const visual = useMemo(() => {
@@ -25,7 +26,6 @@ export const ChipWithUser = ({
     if (user.joinedTeamUuid == null) return 'none';
     return indexRoundMap[user.choices.indexOf(user.joinedTeamUuid)] ?? 'extra';
   }, [user.choices, user.uuid, user.joinedTeamUuid]);
-  const isPm = user.uuid === 'pm';
 
   return (
     <div
@@ -41,7 +41,7 @@ export const ChipWithUser = ({
       {/* @fixme: 일단 타입 체크 피하기 위해 any 잠시 사용... */}
       <Chip visual={visual as any} label={user.userName} />
 
-      {!isPm && (
+      {isShowButton && (
         <div
           className={hstack({
             justifyContent: 'space-between',
