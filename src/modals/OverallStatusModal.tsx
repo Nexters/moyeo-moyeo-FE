@@ -53,7 +53,13 @@ export const OverallStatusModal = ({
   }, [teamInfoList, userInfoList]);
 
   const renderUser = (selectUser: User) => {
-    return <ChipWithUser key={selectUser.uuid} user={selectUser} />;
+    return (
+      <ChipWithUser
+        key={selectUser.uuid}
+        user={selectUser}
+        isShowButton={false}
+      />
+    );
   };
 
   return (
