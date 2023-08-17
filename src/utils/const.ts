@@ -42,7 +42,7 @@ export const POSITION_LIST = Object.entries(POSITION).map(([key, value]) => ({
 
 // max length
 export const MAX_LENGTH__USER_NAME = 20;
-export const MAX_LENGTH__USER_PROFILE = 50;
+export const MAX_LENGTH__USER_PROFILE = 255;
 
 export const MAX_LENGTH__TEAM_BUILDING_NAME = 20;
 export const MAX_LENGTH__TEAM_NAME = 50;
