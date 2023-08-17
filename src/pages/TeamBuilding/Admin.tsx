@@ -269,7 +269,7 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
     if (!eventSource) return;
 
     const handleChangeRound = (e: MessageEvent<string>) => {
-      const data = e.data as ChangeRoundEvent;
+      const data: ChangeRoundEvent = JSON.parse(e.data);
       console.log('change round', data);
 
       // @note: 라운드 변경시 초기화가 필요해서 refetch로 대체
