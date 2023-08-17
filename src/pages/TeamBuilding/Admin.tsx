@@ -67,6 +67,14 @@ const roundIndexMap: Record<Round, number> = {
   ADJUSTED_ROUND: 4,
   COMPLETE: 5, // @note: 해당 값으로 넘어가면 stepper는 선택된게 없다.
 };
+const roundLabelMap: Record<Round, string> = {
+  FIRST_ROUND: '1지망',
+  SECOND_ROUND: '2지망',
+  THIRD_ROUND: '3지망',
+  FORTH_ROUND: '4지망',
+  ADJUSTED_ROUND: '팀 구성 조정',
+  COMPLETE: '팀 빌딩 완료',
+};
 
 export type AdminProps = {
   teamBuildingUuid: string;
@@ -78,8 +86,12 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
   const shareSurveyModalProps = useDisclosure();
   const eventSource = useAtomValue(eventSourceAtom);
 
-  const { data, refetch: refetchTotalInfo } = useGetTotalInfo(teamBuildingUuid);
-  const { teamBuildingInfo, teamInfoList, userInfoList } = data ?? {};
+  const {
+    data: totalInfo,
+    refetch: refetchTotalInfo,
+    setTotalInfo,
+  } = useGetTotalInfo(teamBuildingUuid);
+  const { teamBuildingInfo, teamInfoList, userInfoList } = totalInfo ?? {};
 
   const { mutate: adjustUser } = useAdjustUser();
   const { mutate: deleteUser } = useDeleteUser();
@@ -144,7 +156,22 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
         },
         {
           onSuccess: () => {
-            // @todo: 쿼리 클라이언트 수정
+            setTotalInfo((prev) => {
+              if (!prev) return prev;
+              return {
+                ...prev,
+                userInfoList: prev.userInfoList.map((user) => {
+                  if (user.uuid === selectedUser.uuid) {
+                    return {
+                      ...user,
+                      joinedTeamUuid: null,
+                    };
+                  }
+                  return user;
+                }),
+              };
+            });
+
             toastWithSound.success(
               `${selectedUser.userName}님의 팀 배정을 해제했습니다.`,
             );
@@ -170,7 +197,22 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
         },
         {
           onSuccess: () => {
-            // @todo: 쿼리 클라이언트 수정
+            setTotalInfo((prev) => {
+              if (!prev) return prev;
+              return {
+                ...prev,
+                userInfoList: prev.userInfoList.map((user) => {
+                  if (user.uuid === selectedUser.uuid) {
+                    return {
+                      ...user,
+                      joinedTeamUuid: team.uuid,
+                    };
+                  }
+                  return user;
+                }),
+              };
+            });
+
             toastWithSound.success(
               `${selectedUser.userName}님을 ${team.pmName}팀으로 배정했습니다.`,
             );
@@ -201,6 +243,7 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
       },
       {
         onSuccess: () => {
+          refetchTotalInfo();
           toast.success('팀 빌딩을 완료했습니다.');
           playSound('팀빌딩_완료');
         },
@@ -223,37 +266,83 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
   useEffect(() => {
     if (!eventSource) return;
 
-    const handlePickUser = (e: MessageEvent<string>) => {
-      const data: PickUserEvent = JSON.parse(e.data);
-      console.log('pick user', data);
-      refetchTotalInfo();
-    };
-
     const handleChangeRound = (e: MessageEvent<string>) => {
       const data = e.data as ChangeRoundEvent;
       console.log('change round', data);
+
+      // @note: 라운드 변경시 초기화가 필요해서 refetch로 대체
       refetchTotalInfo();
+
+      if (data === 'COMPLETE') {
+        toastWithSound.success('팀 빌딩이 완료되었습니다.');
+      } else {
+        toastWithSound.success(
+          `${roundLabelMap[data]} 라운드가 시작되었습니다.`,
+        );
+      }
     };
 
-    const handleDeleteUser = (e: MessageEvent<string>) => {
-      const data = e.data as DeleteUserEvent;
-      console.log('delete user', data);
-      refetchTotalInfo();
-      // @todo: 쿼리 클라이언트 수정
+    const handlePickUser = (e: MessageEvent<string>) => {
+      const data: PickUserEvent = JSON.parse(e.data);
+      console.log('pick user', data);
+
+      // @note: refetch 대신 쿼리 클라이언트 수정
+      setTotalInfo((prev) => {
+        if (!prev) return prev;
+        return {
+          ...prev,
+          teamInfoList: prev.teamInfoList.map((team) => {
+            if (team.uuid === data.teamUuid) {
+              return {
+                ...team,
+                selectDone: true,
+              };
+            }
+            return team;
+          }),
+          userInfoList: prev.userInfoList.map((user) => {
+            if (data.pickUserUuids.includes(user.uuid)) {
+              return {
+                ...user,
+                selectedTeam: true,
+                joinedTeamUuid: data.teamUuid,
+              };
+            }
+            return user;
+          }),
+        };
+      });
+      toastWithSound.success(`${data.teamName}팀이 팀원 선택을 완료했습니다.`);
     };
 
     const handleCreateUser = (e: MessageEvent<string>) => {
       const data: CreateUserEvent = JSON.parse(e.data);
       console.log('create user', data);
-      refetchTotalInfo();
-      // @todo: 쿼리 클라이언트 수정
+
+      // @note: refetch 대신 쿼리 클라이언트 수정
+      setTotalInfo((prev) => {
+        if (!prev) return prev;
+        return {
+          ...prev,
+          userInfoList: [...prev.userInfoList, data],
+        };
+      });
+      toastWithSound.success(
+        `${data.userName}님의 설문 응답이 등록되었습니다.`,
+      );
     };
 
+    const handleDeleteUser = (e: MessageEvent<string>) => {
+      const deletedUserUuid = e.data as DeleteUserEvent;
+      console.log('delete user', deletedUserUuid);
+      // 자신이 삭제하지 않은 경우도 있을 수 있어 일단 refetch만
+      refetchTotalInfo();
+    };
     const handleAdjustUser = (e: MessageEvent<string>) => {
       const data: AdjustUserEvent = JSON.parse(e.data);
       console.log('adjust user', data);
+      // 자신이 조정하지 않은 경우도 있을 수 있어 일단 refetch만
       refetchTotalInfo();
-      // @todo: 쿼리 클라이언트 수정
     };
 
     eventSource.addEventListener('create-user', handleCreateUser);
@@ -269,7 +358,7 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
       eventSource.removeEventListener('delete-user', handleDeleteUser);
       eventSource.removeEventListener('adjust-user', handleAdjustUser);
     };
-  }, [eventSource, refetchTotalInfo]);
+  }, [eventSource, refetchTotalInfo, setTotalInfo]);
 
   const renderTeamTitle = (teamUuid: Team['uuid']) => {
     const team = teamInfoList?.find((team) => team.uuid === teamUuid);
@@ -332,6 +421,16 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
               { teamBuildingUuid, userUuid: selectUser.uuid },
               {
                 onSuccess: () => {
+                  setTotalInfo((prev) =>
+                    prev
+                      ? {
+                          ...prev,
+                          userInfoList: prev.userInfoList.filter(
+                            (user) => user.uuid !== selectUser.uuid,
+                          ),
+                        }
+                      : prev,
+                  );
                   toastWithSound.success(
                     `${selectUser.userName}님을 삭제했습니다.`,
                   );
