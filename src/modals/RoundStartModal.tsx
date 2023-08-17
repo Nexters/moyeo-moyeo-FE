@@ -14,6 +14,8 @@ type RoundFinishModalProps = {
   round: number;
 };
 
+const DURATION = 3000;
+
 const modalLogo = [
   <FirstRound />,
   <SecondRound />,
@@ -28,7 +30,7 @@ const RoundStartModal = ({ isOpen, onClose, round }: RoundFinishModalProps) => {
     if (!isOpen) return;
     const delay = setTimeout(() => {
       onClose();
-    }, 3000);
+    }, DURATION);
     return () => clearTimeout(delay);
   }, [isOpen, onClose]);
 
