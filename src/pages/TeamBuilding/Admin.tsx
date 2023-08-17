@@ -9,6 +9,7 @@ import {
   useFinishTeamBuilding,
 } from '@/apis/admin/mutations';
 import { useGetTotalInfo } from '@/apis/team-building/queries';
+import { ReactComponent as CheckWithoutCircleIcon } from '@/assets/icons/checkWithoutCircle.svg';
 import { ReactComponent as Face } from '@/assets/icons/face.svg';
 import { ReactComponent as Group } from '@/assets/icons/group.svg';
 import { Button } from '@/components/Button';
@@ -21,7 +22,7 @@ import { SelectTeamModal } from '@/modals/SelectTeamModal';
 import { ShareSurveyModal } from '@/modals/ShareSurveyModal';
 import { eventSourceAtom } from '@/store/atoms';
 import { css } from '@/styled-system/css';
-import { hstack, stack, vstack } from '@/styled-system/patterns';
+import { center, hstack, stack, vstack } from '@/styled-system/patterns';
 import {
   AdjustUserEvent,
   ChangeRoundEvent,
@@ -98,12 +99,10 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
   }, [teamBuildingInfo?.roundStatus, userInfoList]);
 
   const allMemberByTeam = useMemo(() => {
-    const allMemberByTeam: Record<Team['pmName'], User[]> = {};
+    const allMemberByTeam: Record<Team['uuid'], User[]> = {};
 
     teamInfoList?.forEach((team) => {
-      const key = `${team.pmName} - ${team.teamName}`;
-
-      allMemberByTeam[key] = [
+      allMemberByTeam[team.uuid] = [
         {
           uuid: 'pm',
           userName: team.pmName,
@@ -119,7 +118,7 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
       ];
     });
 
-    allMemberByTeam['남은 인원'] = (userInfoList ?? []).filter(
+    allMemberByTeam['others'] = (userInfoList ?? []).filter(
       (user) => user.joinedTeamUuid === null,
     );
 
@@ -271,6 +270,37 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
       eventSource.removeEventListener('adjust-user', handleAdjustUser);
     };
   }, [eventSource, refetchTotalInfo]);
+
+  const renderTeamTitle = (teamUuid: Team['uuid']) => {
+    const team = teamInfoList?.find((team) => team.uuid === teamUuid);
+    const teamTitle = team
+      ? `${team.pmName}팀 - ${team.teamName}`
+      : '남은 인원';
+    const showCheck = team?.selectDone ?? false;
+
+    return (
+      <div className={hstack()}>
+        {teamTitle}
+        {showCheck && (
+          <div
+            className={center({
+              width: '28px',
+              height: '28px',
+              borderRadius: '50%',
+              flexShrink: 0,
+              backgroundColor: 'green.70',
+              '& svg': {
+                width: '20px',
+                height: '20px',
+              },
+            })}
+          >
+            <CheckWithoutCircleIcon />
+          </div>
+        )}
+      </div>
+    );
+  };
 
   const renderUser = (selectUser: User) => {
     return (
@@ -496,9 +526,9 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
                   </tr>
                 </thead>
                 <tbody>
-                  {allMemberByTeam.map(([teamName, members]) => (
-                    <tr key={teamName}>
-                      <td>{teamName}</td>
+                  {allMemberByTeam.map(([teamUuid, members]) => (
+                    <tr key={teamUuid}>
+                      <td>{renderTeamTitle(teamUuid)}</td>
 
                       <td>
                         <div
