@@ -1,5 +1,6 @@
-import { useLayoutEffect, useMemo, useState } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useState } from 'react';
 
+import { useAtomValue } from 'jotai';
 import toast from 'react-hot-toast';
 
 import {
@@ -18,9 +19,19 @@ import { Step, Stepper } from '@/components/stepper';
 import { useDisclosure } from '@/hooks/useDisclosure';
 import { SelectTeamModal } from '@/modals/SelectTeamModal';
 import { ShareSurveyModal } from '@/modals/ShareSurveyModal';
+import { eventSourceAtom } from '@/store/atoms';
 import { css } from '@/styled-system/css';
 import { hstack, stack, vstack } from '@/styled-system/patterns';
-import { Round, Team, User } from '@/types';
+import {
+  AdjustUserEvent,
+  ChangeRoundEvent,
+  CreateUserEvent,
+  DeleteUserEvent,
+  PickUserEvent,
+  Round,
+  Team,
+  User,
+} from '@/types';
 import { playSound } from '@/utils/sound';
 import { toastWithSound } from '@/utils/toast';
 
@@ -64,8 +75,9 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const selectTeamModalProps = useDisclosure();
   const shareSurveyModalProps = useDisclosure();
+  const eventSource = useAtomValue(eventSourceAtom);
 
-  const { data } = useGetTotalInfo(teamBuildingUuid);
+  const { data, refetch: refetchTotalInfo } = useGetTotalInfo(teamBuildingUuid);
   const { teamBuildingInfo, teamInfoList, userInfoList } = data ?? {};
 
   const { mutate: adjustUser } = useAdjustUser();
@@ -207,25 +219,56 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // useEffect(() => {
-  //   const eventSource = new EventSource(
-  //     `${BASE_URL}/notification/team-building/${teamBuildingUuid}/subscribe`,
-  //   );
-  //   eventSource.onopen = () => {
-  //     console.log('SSE 연결됨');
-  //   };
-  //   eventSource.onerror = (e) => {
-  //     console.log('SSE 에러 발생', e);
-  //   };
-  //   eventSource.onmessage = (event) => {
-  //     const data = JSON.parse(event.data);
-  //     console.log(data);
-  //   };
+  useEffect(() => {
+    if (!eventSource) return;
 
-  //   return () => {
-  //     eventSource.close();
-  //   };
-  // }, [teamBuildingUuid]);
+    const handlePickUser = (e: MessageEvent<string>) => {
+      const data: PickUserEvent = JSON.parse(e.data);
+      console.log('pick user', data);
+      refetchTotalInfo();
+    };
+
+    const handleChangeRound = (e: MessageEvent<string>) => {
+      const data = e.data as ChangeRoundEvent;
+      console.log('change round', data);
+      refetchTotalInfo();
+    };
+
+    const handleDeleteUser = (e: MessageEvent<string>) => {
+      const data = e.data as DeleteUserEvent;
+      console.log('delete user', data);
+      refetchTotalInfo();
+      // @todo: 쿼리 클라이언트 수정
+    };
+
+    const handleCreateUser = (e: MessageEvent<string>) => {
+      const data: CreateUserEvent = JSON.parse(e.data);
+      console.log('create user', data);
+      refetchTotalInfo();
+      // @todo: 쿼리 클라이언트 수정
+    };
+
+    const handleAdjustUser = (e: MessageEvent<string>) => {
+      const data: AdjustUserEvent = JSON.parse(e.data);
+      console.log('adjust user', data);
+      refetchTotalInfo();
+      // @todo: 쿼리 클라이언트 수정
+    };
+
+    eventSource.addEventListener('create-user', handleCreateUser);
+    eventSource.addEventListener('pick-user', handlePickUser);
+    eventSource.addEventListener('change-round', handleChangeRound);
+    eventSource.addEventListener('delete-user', handleDeleteUser);
+    eventSource.addEventListener('adjust-user', handleAdjustUser);
+
+    return () => {
+      eventSource.removeEventListener('create-user', handleCreateUser);
+      eventSource.removeEventListener('pick-user', handlePickUser);
+      eventSource.removeEventListener('change-round', handleChangeRound);
+      eventSource.removeEventListener('delete-user', handleDeleteUser);
+      eventSource.removeEventListener('adjust-user', handleAdjustUser);
+    };
+  }, [eventSource, refetchTotalInfo]);
 
   const renderUser = (selectUser: User) => {
     return (

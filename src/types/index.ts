@@ -56,3 +56,23 @@ export type SurveyFormResult = Array<{
   field: string;
   value: string;
 }>;
+
+// sse
+// pick-user
+export type PickUserEvent = {
+  teamUuid: Team['uuid'];
+  teamName: string;
+  pickUserUuids: User['uuid'][];
+};
+
+// change-round
+export type ChangeRoundEvent = Round;
+
+// create-user
+export type CreateUserEvent = User;
+
+// delete-user
+export type DeleteUserEvent = User['uuid'];
+
+// adjust-user
+export type AdjustUserEvent = User;
