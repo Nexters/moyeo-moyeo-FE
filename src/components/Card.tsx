@@ -1,17 +1,20 @@
+import BackEndIcon from '@/assets/icons/character/backend.svg';
+import DesignerIcon from '@/assets/icons/character/designer.svg';
+import FrontEndIcon from '@/assets/icons/character/frontend.svg';
 import checkIcon from '@/assets/icons/check.svg';
 import { ReactComponent as LinkIcon } from '@/assets/icons/link.svg';
 import { ReactComponent as NoLinkIcon } from '@/assets/icons/noLink.svg';
 import { css, cva, cx } from '@/styled-system/css';
 import { center, hstack, vstack } from '@/styled-system/patterns';
-import { Choice } from '@/types';
+import { Choice, Position } from '@/types';
+import { playSound } from '@/utils/sound';
 
 export type CardProps = {
   name: string;
-  position: string;
+  position: Position;
   choice: Choice;
   border?: 'default' | 'yellow' | 'selected';
   link?: string;
-  imageUrl?: string;
   selected?: boolean;
   onClick?: () => void;
   className?: string;
@@ -77,7 +80,6 @@ export const Card = ({
   choice,
   link,
   border,
-  imageUrl = 'https://framerusercontent.com/images/Eq9Flp2bXD1AeW4UzqLfZffzM.png',
   selected = false,
   onClick,
   className,
@@ -109,6 +111,7 @@ export const Card = ({
             target={link ? '_blank' : undefined}
             onClick={(e) => {
               e.stopPropagation();
+              playSound('버튼_클릭');
             }}
           >
             {link ? (
@@ -146,7 +149,7 @@ export const Card = ({
             objectFit: 'cover',
             borderRadius: '10px',
           })}
-          src={imageUrl}
+          src={imageUrl(position)}
         />
       </div>
       {selected && (
@@ -173,4 +176,25 @@ export const Card = ({
       )}
     </button>
   );
+};
+
+// @FIXME: 캐릭터 나오면 변경하기
+const imageUrl = (position: Position) => {
+  switch (position) {
+    case 'FRONT_END':
+      return FrontEndIcon;
+      break;
+    case 'BACK_END':
+      return BackEndIcon;
+      break;
+    case 'DESIGNER':
+      return DesignerIcon;
+      break;
+    case 'ANDROID':
+      return FrontEndIcon;
+      break;
+    case 'IOS':
+      return FrontEndIcon;
+      break;
+  }
 };
