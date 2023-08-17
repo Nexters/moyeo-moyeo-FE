@@ -27,6 +27,12 @@ const __fetch = async <T, D>(method: string, path: string, body?: D) => {
     throw error;
   }
 
-  const data = await response.json();
-  return data as T;
+  try {
+    const data = await response.json();
+    return data as T;
+  } catch (error) {
+    console.error('JSON Parsing Error: ', error);
+    const data = await response.text();
+    return data as T;
+  }
 };
