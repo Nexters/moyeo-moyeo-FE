@@ -82,7 +82,8 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
 
   const { mutate: adjustUser } = useAdjustUser();
   const { mutate: deleteUser } = useDeleteUser();
-  const { mutate: finishTeamBuilding } = useFinishTeamBuilding();
+  const { mutate: finishTeamBuilding, isLoading: isLoadingToFinish } =
+    useFinishTeamBuilding();
 
   const activeStep =
     roundIndexMap[teamBuildingInfo?.roundStatus ?? 'FIRST_ROUND'];
@@ -90,9 +91,10 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
     (acc, team) => (acc += team.selectDone ? 1 : 0),
     0,
   );
-  const canFinishTeamBuilding = useMemo(() => {
-    if (teamBuildingInfo?.roundStatus !== 'ADJUSTED_ROUND') return false;
-    return userInfoList?.every((user) => user.joinedTeamUuid !== null) ?? false;
+  const isFinishedTeamBuilding = teamBuildingInfo?.roundStatus === 'COMPLETE';
+  const isDisabledFinishTeamBuildingButton = useMemo(() => {
+    if (teamBuildingInfo?.roundStatus !== 'ADJUSTED_ROUND') return true;
+    return userInfoList?.some((user) => user.joinedTeamUuid === null) ?? false;
   }, [teamBuildingInfo?.roundStatus, userInfoList]);
 
   const allMemberByTeam = useMemo(() => {
@@ -579,17 +581,19 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
               size="medium"
               color="primary"
               title={
-                !canFinishTeamBuilding
+                !isFinishedTeamBuilding && isDisabledFinishTeamBuildingButton
                   ? '팀 구성 조정 라운드에서 모든 팀에 인원 배정이 완료되어야 종료할 수 있습니다.'
                   : undefined
               }
-              disabled={!canFinishTeamBuilding}
+              disabled={isLoadingToFinish || isDisabledFinishTeamBuildingButton}
               onClick={handleClickFinishTeamBuilding}
               className={css({
                 width: '320px !important',
               })}
             >
-              팀 빌딩 마치기
+              {isFinishedTeamBuilding
+                ? '팀 빌딩이 완료되었습니다'
+                : '팀 빌딩 마치기'}
             </Button>
           </section>
         </section>
