@@ -399,7 +399,7 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
       <ChipWithUser
         key={selectUser.uuid}
         user={selectUser}
-        isShowButton={selectUser.uuid !== 'pm'}
+        isShowButton={selectUser.uuid !== 'pm' && !isFinishedTeamBuilding}
         onClickReassign={() => {
           if (teamBuildingInfo?.roundStatus !== 'ADJUSTED_ROUND') {
             return toastWithSound.error(
