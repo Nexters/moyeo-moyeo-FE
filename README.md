@@ -9,88 +9,22 @@
 
 모여모여는 넥스터즈 회원들을 위한 팀빌딩 서비스입니다.
 
-## 팀원
+### 팀원
 
 <table>
   <tbody>
     <tr>
-      <td align="center">
-        <a href="https://github.com/young-do">
-          <img
-            src="https://avatars.githubusercontent.com/u/22021344?v=4"
-            width="100px"
-            style="aspect-ratio: 1; object-fit: cover"
-            alt=""
-          />
-          <br />
-          <sub><b>FE & PM : 조영도</b></sub>
-        </a>
-      </td>
-      <td align="center">
-        <a href="https://github.com/haryung-lee">
-          <img
-            src="https://avatars.githubusercontent.com/u/64428916?v=4"
-            width="100px"
-            style="aspect-ratio: 1; object-fit: cover"
-            alt=""
-          />
-          <br />
-          <sub><b>FE : 이하령</b></sub>
-        </a>
-      </td>
-      <td align="center">
-        <a href="https://github.com/parkdaye">
-          <img
-            src="https://github.com/Nexters/moyeo-moyeo-FE/assets/64428916/0769237d-170c-4621-b7be-e166e0b2e387"
-            width="100px"
-            style="aspect-ratio: 1; object-fit: cover"
-            alt=""
-          />
-          <br />
-          <sub><b>BE : 박다예</b></sub>
-        </a>
-      </td>
-      <td align="center">
-        <a href="https://github.com/her0807">
-          <img
-            src="https://avatars.githubusercontent.com/u/26570275?v=4"
-            width="100px"
-            style="aspect-ratio: 1; object-fit: cover"
-            alt=""
-          />
-          <br />
-          <sub><b>BE : 허수진</b></sub>
-        </a>
-      </td>
-      <td align="center">
-        <a href="https://www.linkedin.com/in/minhyeongkim98/">
-          <img
-            src="https://media.licdn.com/dms/image/D5603AQGJUcZh8l4Mug/profile-displayphoto-shrink_400_400/0/1690543966012?e=1697673600&v=beta&t=HPqm_NfsNTFb0jKCRdl200Ci395J_9X4TrfQh0jErBo"
-            width="100px"
-            style="aspect-ratio: 1; object-fit: cover"
-            alt=""
-          />
-          <br />
-          <sub><b>DE : 김민형</b></sub>
-        </a>
-      </td>
-      <td align="center">
-        <a href="https://www.linkedin.com/in/seongin-hong/">
-          <img
-            src="https://media.licdn.com/dms/image/D5635AQHa5MjDGr-f_w/profile-framedphoto-shrink_400_400/0/1682042613604?e=1692716400&v=beta&t=Ez7J7ykzq5maQ6jL-TmAG3JIfrpc9-qSNCTqEmHqtso"
-            width="100px"
-            style="aspect-ratio: 1; object-fit: cover"
-            alt=""
-          />
-          <br />
-          <sub><b>DE : 홍성인</b></sub>
-        </a>
-      </td>
+      <td align="center"><a href="https://github.com/young-do"><img src="https://avatars.githubusercontent.com/u/22021344?v=4" width="100px;" alt=""/><br /><sub><b>FE & PM : 조영도</b></sub></a><br /></td>
+      <td align="center"><a href="https://github.com/haryung-lee"><img src="https://avatars.githubusercontent.com/u/64428916?v=4" width="100px;" alt=""/><br /><sub><b>FE : 이하령</b></sub></a><br /></td>
+      <td align="center"><a href="https://github.com/parkdaye"><img src="https://github.com/Nexters/moyeo-moyeo-FE/assets/64428916/0769237d-170c-4621-b7be-e166e0b2e387" width="100px;" height="100px;" alt=""/><br /><sub><b>BE : 박다예</b></sub></a><br /></td>
+      <td align="center"><a href="https://github.com/her0807"><img src="https://avatars.githubusercontent.com/u/26570275?v=4" width="100px;" alt=""/><br /><sub><b>BE : 허수진</b></sub></a><br /></td>
+      <td align="center"><a href="https://www.linkedin.com/in/minhyeongkim98/"><img src="https://media.licdn.com/dms/image/D5603AQGJUcZh8l4Mug/profile-displayphoto-shrink_400_400/0/1690543966012?e=1697673600&v=beta&t=HPqm_NfsNTFb0jKCRdl200Ci395J_9X4TrfQh0jErBo" width="100px;" alt=""/><br /><sub><b>DE : 김민형</b></sub></a><br /></td>
+      <td align="center"><a href="https://www.linkedin.com/in/seongin-hong/"><img src="https://media.licdn.com/dms/image/D5635AQHa5MjDGr-f_w/profile-framedphoto-shrink_400_400/0/1682042613604?e=1692716400&v=beta&t=Ez7J7ykzq5maQ6jL-TmAG3JIfrpc9-qSNCTqEmHqtso" width="100px;" alt=""/><br /><sub><b>DE : 홍성인</b></sub></a><br /></td>
     </tr>
   </tbody>
 </table>
 
-## 프로젝트 세팅
+### 프로젝트 세팅
 
 1. 환경변수
 
@@ -105,7 +39,7 @@ pnpm i
 pnpm run dev
 ```
 
-## 기술스택
+### 기술스택
 
 ![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)
 ![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB) ![ReactQuery](https://img.shields.io/badge/React--Query-FF4154?style=for-the-badge&logo=ReactQuery&logoColor=61DAFB)
