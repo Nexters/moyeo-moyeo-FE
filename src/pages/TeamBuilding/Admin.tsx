@@ -1,5 +1,6 @@
-import { useLayoutEffect, useMemo, useState } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useState } from 'react';
 
+import { useAtomValue } from 'jotai';
 import toast from 'react-hot-toast';
 
 import {
@@ -8,6 +9,7 @@ import {
   useFinishTeamBuilding,
 } from '@/apis/admin/mutations';
 import { useGetTotalInfo } from '@/apis/team-building/queries';
+import { ReactComponent as CheckWithoutCircleIcon } from '@/assets/icons/checkWithoutCircle.svg';
 import { ReactComponent as Face } from '@/assets/icons/face.svg';
 import { ReactComponent as Group } from '@/assets/icons/group.svg';
 import { Button } from '@/components/Button';
@@ -18,9 +20,19 @@ import { Step, Stepper } from '@/components/stepper';
 import { useDisclosure } from '@/hooks/useDisclosure';
 import { SelectTeamModal } from '@/modals/SelectTeamModal';
 import { ShareSurveyModal } from '@/modals/ShareSurveyModal';
+import { eventSourceAtom } from '@/store/atoms';
 import { css } from '@/styled-system/css';
-import { hstack, stack, vstack } from '@/styled-system/patterns';
-import { Round, Team, User } from '@/types';
+import { center, hstack, stack, vstack } from '@/styled-system/patterns';
+import {
+  AdjustUserEvent,
+  ChangeRoundEvent,
+  CreateUserEvent,
+  DeleteUserEvent,
+  PickUserEvent,
+  Round,
+  Team,
+  User,
+} from '@/types';
 import { playSound } from '@/utils/sound';
 import { toastWithSound } from '@/utils/toast';
 
@@ -55,6 +67,14 @@ const roundIndexMap: Record<Round, number> = {
   ADJUSTED_ROUND: 4,
   COMPLETE: 5, // @note: 해당 값으로 넘어가면 stepper는 선택된게 없다.
 };
+const roundLabelMap: Record<Round, string> = {
+  FIRST_ROUND: '1지망',
+  SECOND_ROUND: '2지망',
+  THIRD_ROUND: '3지망',
+  FORTH_ROUND: '4지망',
+  ADJUSTED_ROUND: '팀 구성 조정',
+  COMPLETE: '팀 빌딩 완료',
+};
 
 export type AdminProps = {
   teamBuildingUuid: string;
@@ -64,13 +84,19 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const selectTeamModalProps = useDisclosure();
   const shareSurveyModalProps = useDisclosure();
+  const eventSource = useAtomValue(eventSourceAtom);
 
-  const { data } = useGetTotalInfo(teamBuildingUuid);
-  const { teamBuildingInfo, teamInfoList, userInfoList } = data ?? {};
+  const {
+    data: totalInfo,
+    refetch: refetchTotalInfo,
+    setTotalInfo,
+  } = useGetTotalInfo(teamBuildingUuid);
+  const { teamBuildingInfo, teamInfoList, userInfoList } = totalInfo ?? {};
 
   const { mutate: adjustUser } = useAdjustUser();
   const { mutate: deleteUser } = useDeleteUser();
-  const { mutate: finishTeamBuilding } = useFinishTeamBuilding();
+  const { mutate: finishTeamBuilding, isLoading: isLoadingToFinish } =
+    useFinishTeamBuilding();
 
   const activeStep =
     roundIndexMap[teamBuildingInfo?.roundStatus ?? 'FIRST_ROUND'];
@@ -78,18 +104,17 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
     (acc, team) => (acc += team.selectDone ? 1 : 0),
     0,
   );
-  const canFinishTeamBuilding = useMemo(() => {
-    if (teamBuildingInfo?.roundStatus !== 'ADJUSTED_ROUND') return false;
-    return userInfoList?.every((user) => user.joinedTeamUuid !== null) ?? false;
+  const isFinishedTeamBuilding = teamBuildingInfo?.roundStatus === 'COMPLETE';
+  const isDisabledFinishTeamBuildingButton = useMemo(() => {
+    if (teamBuildingInfo?.roundStatus !== 'ADJUSTED_ROUND') return true;
+    return userInfoList?.some((user) => user.joinedTeamUuid === null) ?? false;
   }, [teamBuildingInfo?.roundStatus, userInfoList]);
 
   const allMemberByTeam = useMemo(() => {
-    const allMemberByTeam: Record<Team['pmName'], User[]> = {};
+    const allMemberByTeam: Record<Team['uuid'], User[]> = {};
 
     teamInfoList?.forEach((team) => {
-      const key = `${team.pmName} - ${team.teamName}`;
-
-      allMemberByTeam[key] = [
+      allMemberByTeam[team.uuid] = [
         {
           uuid: 'pm',
           userName: team.pmName,
@@ -105,7 +130,7 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
       ];
     });
 
-    allMemberByTeam['남은 인원'] = (userInfoList ?? []).filter(
+    allMemberByTeam['others'] = (userInfoList ?? []).filter(
       (user) => user.joinedTeamUuid === null,
     );
 
@@ -131,7 +156,23 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
         },
         {
           onSuccess: () => {
-            // @todo: 쿼리 클라이언트 수정
+            setTotalInfo((prev) => {
+              if (!prev) return prev;
+              return {
+                ...prev,
+                userInfoList: prev.userInfoList.map((user) => {
+                  if (user.uuid === selectedUser.uuid) {
+                    return {
+                      ...user,
+                      selectedTeam: false,
+                      joinedTeamUuid: null,
+                    };
+                  }
+                  return user;
+                }),
+              };
+            });
+
             toastWithSound.success(
               `${selectedUser.userName}님의 팀 배정을 해제했습니다.`,
             );
@@ -157,7 +198,23 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
         },
         {
           onSuccess: () => {
-            // @todo: 쿼리 클라이언트 수정
+            setTotalInfo((prev) => {
+              if (!prev) return prev;
+              return {
+                ...prev,
+                userInfoList: prev.userInfoList.map((user) => {
+                  if (user.uuid === selectedUser.uuid) {
+                    return {
+                      ...user,
+                      selectedTeam: true,
+                      joinedTeamUuid: team.uuid,
+                    };
+                  }
+                  return user;
+                }),
+              };
+            });
+
             toastWithSound.success(
               `${selectedUser.userName}님을 ${team.pmName}팀으로 배정했습니다.`,
             );
@@ -188,6 +245,7 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
       },
       {
         onSuccess: () => {
+          refetchTotalInfo();
           toast.success('팀 빌딩을 완료했습니다.');
           playSound('팀빌딩_완료');
         },
@@ -207,43 +265,180 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // useEffect(() => {
-  //   const eventSource = new EventSource(
-  //     `${BASE_URL}/notification/team-building/${teamBuildingUuid}/subscribe`,
-  //   );
-  //   eventSource.onopen = () => {
-  //     console.log('SSE 연결됨');
-  //   };
-  //   eventSource.onerror = (e) => {
-  //     console.log('SSE 에러 발생', e);
-  //   };
-  //   eventSource.onmessage = (event) => {
-  //     const data = JSON.parse(event.data);
-  //     console.log(data);
-  //   };
+  useEffect(() => {
+    // @note: 라운드 변경에 대한 이벤트 감지가 안되는 경우, 토스트가 안뜰 수 있어
+    // 별도의 effect 훅으로 토스트를 띄운다.
+    const roundStatus = teamBuildingInfo?.roundStatus ?? 'FIRST_ROUND';
 
-  //   return () => {
-  //     eventSource.close();
-  //   };
-  // }, [teamBuildingUuid]);
+    if (roundStatus === 'COMPLETE') {
+      toastWithSound.success('팀 빌딩이 완료되었습니다.');
+    } else {
+      toastWithSound.success(
+        `${roundLabelMap[roundStatus]} 라운드가 시작되었습니다.`,
+      );
+    }
+  }, [teamBuildingInfo?.roundStatus]);
+
+  useEffect(() => {
+    if (!eventSource) return;
+
+    const handleChangeRound = (e: MessageEvent<string>) => {
+      const data: ChangeRoundEvent = JSON.parse(e.data);
+      console.log('change round', data);
+
+      // @note: 라운드 변경시 초기화가 필요해서 refetch로 대체
+      refetchTotalInfo();
+    };
+
+    const handlePickUser = (e: MessageEvent<string>) => {
+      const data: PickUserEvent = JSON.parse(e.data);
+      console.log('pick user', data);
+
+      // @note: refetch 대신 쿼리 클라이언트 수정
+      setTotalInfo((prev) => {
+        if (!prev) return prev;
+        return {
+          ...prev,
+          teamInfoList: prev.teamInfoList.map((team) => {
+            if (team.uuid === data.teamUuid) {
+              return {
+                ...team,
+                selectDone: true,
+              };
+            }
+            return team;
+          }),
+          userInfoList: prev.userInfoList.map((user) => {
+            if (data.pickUserUuids.includes(user.uuid)) {
+              return {
+                ...user,
+                selectedTeam: true,
+                joinedTeamUuid: data.teamUuid,
+              };
+            }
+            return user;
+          }),
+        };
+      });
+      toastWithSound.success(`${data.teamName}팀이 팀원 선택을 완료했습니다.`);
+    };
+
+    const handleCreateUser = (e: MessageEvent<string>) => {
+      const data: CreateUserEvent = JSON.parse(e.data);
+      console.log('create user', data);
+
+      // @note: refetch 대신 쿼리 클라이언트 수정
+      setTotalInfo((prev) => {
+        if (!prev) return prev;
+        return {
+          ...prev,
+          userInfoList: [...prev.userInfoList, data],
+        };
+      });
+      toastWithSound.success(
+        `${data.userName}님의 설문 응답이 등록되었습니다.`,
+      );
+    };
+
+    const handleDeleteUser = (e: MessageEvent<string>) => {
+      const deletedUserUuid = e.data as DeleteUserEvent;
+      console.log('delete user', deletedUserUuid);
+      // 자신이 삭제하지 않은 경우도 있을 수 있어 일단 refetch만
+      refetchTotalInfo();
+    };
+    const handleAdjustUser = (e: MessageEvent<string>) => {
+      const data: AdjustUserEvent = JSON.parse(e.data);
+      console.log('adjust user', data);
+      // 자신이 조정하지 않은 경우도 있을 수 있어 일단 refetch만
+      refetchTotalInfo();
+    };
+
+    eventSource.addEventListener('create-user', handleCreateUser);
+    eventSource.addEventListener('pick-user', handlePickUser);
+    eventSource.addEventListener('change-round', handleChangeRound);
+    eventSource.addEventListener('delete-user', handleDeleteUser);
+    eventSource.addEventListener('adjust-user', handleAdjustUser);
+
+    return () => {
+      eventSource.removeEventListener('create-user', handleCreateUser);
+      eventSource.removeEventListener('pick-user', handlePickUser);
+      eventSource.removeEventListener('change-round', handleChangeRound);
+      eventSource.removeEventListener('delete-user', handleDeleteUser);
+      eventSource.removeEventListener('adjust-user', handleAdjustUser);
+    };
+  }, [eventSource, refetchTotalInfo, setTotalInfo]);
+
+  const renderTeamTitle = (teamUuid: Team['uuid']) => {
+    const team = teamInfoList?.find((team) => team.uuid === teamUuid);
+    const teamTitle = team
+      ? `${team.pmName}팀 - ${team.teamName}`
+      : '남은 인원';
+    const showCheck = team?.selectDone ?? false;
+
+    return (
+      <div className={hstack()}>
+        {teamTitle}
+        {showCheck && (
+          <div
+            title="이번 라운드 팀원 선택을 완료했습니다."
+            className={center({
+              width: '28px',
+              height: '28px',
+              borderRadius: '50%',
+              flexShrink: 0,
+              backgroundColor: 'green.70',
+              '& svg': {
+                width: '20px',
+                height: '20px',
+              },
+            })}
+          >
+            <CheckWithoutCircleIcon />
+          </div>
+        )}
+      </div>
+    );
+  };
 
   const renderUser = (selectUser: User) => {
     return (
       <ChipWithUser
         key={selectUser.uuid}
         user={selectUser}
-        isShowButton={selectUser.uuid !== 'pm'}
+        isShowButton={selectUser.uuid !== 'pm' && !isFinishedTeamBuilding}
         onClickReassign={() => {
+          if (teamBuildingInfo?.roundStatus !== 'ADJUSTED_ROUND') {
+            return toastWithSound.error(
+              '팀 구성 조정 라운드에서만 팀 재배정이 가능합니다.',
+            );
+          }
+
           setSelectedUser(selectUser);
           selectTeamModalProps.onOpen();
           // 이후 로직은 handleSelectTeam에서 처리됨.
         }}
         onClickDelete={() => {
+          if (teamBuildingInfo?.roundStatus !== 'FIRST_ROUND') {
+            return toastWithSound.error(
+              '1지망 라운드에서만 유저 정보를 삭제할 수 있습니다.\n배정 해제는 재배정 버튼을 눌러주세요.',
+            );
+          }
+
           if (confirm(`${selectUser.userName}님을 삭제하시겠습니까?`)) {
             deleteUser(
               { teamBuildingUuid, userUuid: selectUser.uuid },
               {
                 onSuccess: () => {
+                  setTotalInfo((prev) =>
+                    prev
+                      ? {
+                          ...prev,
+                          userInfoList: prev.userInfoList.filter(
+                            (user) => user.uuid !== selectUser.uuid,
+                          ),
+                        }
+                      : prev,
+                  );
                   toastWithSound.success(
                     `${selectUser.userName}님을 삭제했습니다.`,
                   );
@@ -439,9 +634,9 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
                   </tr>
                 </thead>
                 <tbody>
-                  {allMemberByTeam.map(([teamName, members]) => (
-                    <tr key={teamName}>
-                      <td>{teamName}</td>
+                  {allMemberByTeam.map(([teamUuid, members]) => (
+                    <tr key={teamUuid}>
+                      <td>{renderTeamTitle(teamUuid)}</td>
 
                       <td>
                         <div
@@ -524,17 +719,19 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
               size="medium"
               color="primary"
               title={
-                !canFinishTeamBuilding
+                !isFinishedTeamBuilding && isDisabledFinishTeamBuildingButton
                   ? '팀 구성 조정 라운드에서 모든 팀에 인원 배정이 완료되어야 종료할 수 있습니다.'
                   : undefined
               }
-              disabled={!canFinishTeamBuilding}
+              disabled={isLoadingToFinish || isDisabledFinishTeamBuildingButton}
               onClick={handleClickFinishTeamBuilding}
               className={css({
                 width: '320px !important',
               })}
             >
-              팀 빌딩 마치기
+              {isFinishedTeamBuilding
+                ? '팀 빌딩이 완료되었습니다'
+                : '팀 빌딩 마치기'}
             </Button>
           </section>
         </section>

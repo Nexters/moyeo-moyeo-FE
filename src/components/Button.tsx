@@ -57,7 +57,7 @@ const button = cva({
     size: {
       small: {
         height: '48px',
-        padding: '14px',
+        padding: '14px 0',
         borderRadius: '12px',
         fontSize: '20px',
         lineHeight: '1',
@@ -65,7 +65,7 @@ const button = cva({
       },
       medium: {
         height: '80px',
-        padding: '24px',
+        padding: '24px 0',
         borderRadius: '20px',
         fontSize: '24px',
         lineHeight: '1',
@@ -73,7 +73,7 @@ const button = cva({
       },
       large: {
         height: '180px',
-        padding: '24px',
+        padding: '24px 0',
         borderRadius: '20px',
         fontSize: '28px',
         lineHeight: '1',

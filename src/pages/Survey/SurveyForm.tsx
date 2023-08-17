@@ -157,7 +157,9 @@ export const SurveyForm = ({
             onChange={(e) =>
               setInputs({
                 ...inputs,
-                userName: e.target.value.replace(/\s/g, ''),
+                userName: e.target.value
+                  .replace(/\s/g, '')
+                  .slice(0, MAX_LENGTH__USER_NAME),
               })
             }
             className={css({
@@ -189,7 +191,9 @@ export const SurveyForm = ({
             onChange={(e) =>
               setInputs({
                 ...inputs,
-                userProfile: e.target.value.replace(/\s/g, ''),
+                userProfile: e.target.value
+                  .replace(/\s/g, '')
+                  .slice(0, MAX_LENGTH__USER_PROFILE),
               })
             }
             className={css({
