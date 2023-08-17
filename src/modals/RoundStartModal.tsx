@@ -21,11 +21,7 @@ const modalLogo = [
   <ExtraRound />,
 ];
 
-const RoundFinishModal = ({
-  isOpen,
-  onClose,
-  round,
-}: RoundFinishModalProps) => {
+const RoundStartModal = ({ isOpen, onClose, round }: RoundFinishModalProps) => {
   useEffect(() => {
     if (!isOpen) return;
     const delay = setTimeout(() => {
@@ -41,4 +37,4 @@ const RoundFinishModal = ({
   );
 };
 
-export default RoundFinishModal;
+export default RoundStartModal;
