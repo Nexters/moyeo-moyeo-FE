@@ -15,7 +15,7 @@ import { Step, Stepper } from '@/components/stepper';
 import { useDisclosure } from '@/hooks/useDisclosure';
 import AgreementModal from '@/modals/AgreementModal';
 import { OverallStatusModal } from '@/modals/OverallStatusModal';
-import RoundFinishModal from '@/modals/RoundStartModal';
+import RoundStartModal from '@/modals/RoundStartModal';
 import SelectConfirmModal from '@/modals/SelectConfirmModal';
 import { eventSourceAtom } from '@/store/atoms';
 import { css } from '@/styled-system/css';
@@ -44,7 +44,16 @@ const roundIndexMap: Record<Round, number> = {
   COMPLETE: 5, // @note: 해당 값으로 넘어가면 stepper는 선택된게 없다.
 };
 
-const ChoiceMap: Record<number, Choice> = {
+const roundLabelMap: Record<Round, string> = {
+  FIRST_ROUND: '1지망',
+  SECOND_ROUND: '2지망',
+  THIRD_ROUND: '3지망',
+  FORTH_ROUND: '4지망',
+  ADJUSTED_ROUND: '팀 구성 조정',
+  COMPLETE: '팀 빌딩 완료',
+};
+
+const choiceMap: Record<number, Choice> = {
   0: '1지망',
   1: '2지망',
   2: '3지망',
@@ -76,14 +85,13 @@ const ROUNDS = [
 ];
 
 export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
-  const { data, refetch } = useGetTotalInfo(teamBuildingUuid);
+  const { data, refetch, setTotalInfo } = useGetTotalInfo(teamBuildingUuid);
   const { teamBuildingInfo, teamInfoList, userInfoList } = data ?? {};
   const { mutateAsync: selectUsers } = useSelectUsers();
   const eventSource = useAtomValue(eventSourceAtom);
 
-  const [activeStep, setActiveStep] = useState(
-    roundIndexMap[teamBuildingInfo?.roundStatus ?? 'FIRST_ROUND'],
-  );
+  const activeStep =
+    roundIndexMap[teamBuildingInfo?.roundStatus ?? 'FIRST_ROUND'];
   const [selectedUsers, setSelectedUsers] = useState<User['uuid'][]>([]); // 현재 라운드에 PM이 선택한 사람
 
   const selectDoneList = useMemo(() => {
@@ -91,6 +99,25 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
       ?.filter((team) => team.selectDone)
       .map((team) => team.uuid);
   }, [teamInfoList]);
+
+  const selectionCompleteButtonName = useMemo(() => {
+    const roundStatus = teamBuildingInfo?.roundStatus ?? 'FIRST_ROUND';
+    if (teamBuildingInfo?.roundStatus === 'COMPLETE') return '팀 빌딩 완료';
+    else if (selectDoneList?.includes(teamUuid) || activeStep > 3)
+      return (
+        <>
+          {roundLabelMap[roundStatus]} <br />
+          대기중
+        </>
+      );
+    else
+      return (
+        <>
+          {roundLabelMap[roundStatus]} <br />
+          선택 완료하기
+        </>
+      );
+  }, [selectDoneList, teamUuid, activeStep, teamBuildingInfo?.roundStatus]);
 
   const selectListModalProps = useDisclosure();
   const roundStartModalProps = useDisclosure(); // 라운드 시작 모달
@@ -104,23 +131,52 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
   }, []);
 
   useEffect(() => {
+    // @note: 라운드 변경에 대한 이벤트 감지가 안되는 경우, 토스트가 안뜰 수 있어
+    // 별도의 effect 훅으로 토스트를 띄운다.
+    if (!localStorage.getItem('agreement')) return;
+
+    if (teamBuildingInfo?.roundStatus === 'COMPLETE') playSound('팀빌딩_완료');
+    else playSound('라운드_변경');
+
+    roundStartModalProps.onOpen();
+  }, [teamBuildingInfo?.roundStatus]);
+
+  useEffect(() => {
     const handlePickUser = (e: MessageEvent<string>) => {
-      const parseData: PickUserEvent = JSON.parse(e.data);
-      console.log('PICK USER: ', parseData);
-      refetch();
+      const data: PickUserEvent = JSON.parse(e.data);
+      console.log('PICK USER: ', data);
+
+      // @note: refetch 대신 쿼리 클라이언트 수정
+      setTotalInfo((prev) => {
+        if (!prev) return prev;
+        return {
+          ...prev,
+          teamInfoList: prev.teamInfoList.map((team) => {
+            if (team.uuid === data.teamUuid) {
+              return {
+                ...team,
+                selectDone: true,
+              };
+            }
+            return team;
+          }),
+          userInfoList: prev.userInfoList.map((user) => {
+            if (data.pickUserUuids.includes(user.uuid)) {
+              return {
+                ...user,
+                selectedTeam: true,
+                joinedTeamUuid: data.teamUuid,
+              };
+            }
+            return user;
+          }),
+        };
+      });
     };
 
     const handleChangeRound = (e: MessageEvent<Round>) => {
-      playSound('라운드_변경');
-      const parseData: Round = JSON.parse(e.data);
-      setActiveStep(roundIndexMap[parseData]);
-      roundStartModalProps.onOpen();
+      console.log('CHANGE ROUND: ', e.data);
       refetch();
-
-      const delay = setTimeout(() => {
-        roundStartModalProps.onClose();
-      }, 3000);
-      return () => clearTimeout(delay);
     };
 
     eventSource?.addEventListener('pick-user', handlePickUser);
@@ -130,7 +186,7 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
       eventSource?.removeEventListener('pick-user', handlePickUser);
       eventSource?.removeEventListener('change-round', handleChangeRound);
     };
-  }, [eventSource]);
+  }, [eventSource, refetch, setTotalInfo]);
 
   const filteredSelectedUsers = useMemo(() => {
     // @note: 현재 PM 팀에 속해 있는 사람들과 이번 라운드에서 선택된 사람들을 보여준다.
@@ -143,6 +199,7 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
   const filteredUsersByRound = useMemo(() => {
     // @note: 이번 라운드에서 선택할 수 있는 사람들을 보여준다.
     return userInfoList?.filter((user) => {
+      // @note: 조정 라운드라면 선택되지 못한 사람들을 전부 보여준다.
       if (activeStep === 4) return user.joinedTeamUuid === null;
       else
         return (
@@ -152,10 +209,10 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
   }, [activeStep, teamUuid, userInfoList]);
 
   const toggleCard = (selectUser: User) => {
-    // 이미 선택 완료 버튼을 눌렀다면 선택할 수 없음
+    // @note: 이미 선택 완료 버튼을 눌렀다면 선택할 수 없다.
     if (selectDoneList?.includes(teamUuid))
       return toastWithSound.error('선택할 수 없는 상태입니다.');
-    // 조정 라운드에서는 선택할 수 없음
+    // @note: 조정 라운드에서는 PM이 선택할 수 없다.
     if (activeStep >= 4)
       return toastWithSound.error('선택할 수 없는 상태입니다.');
 
@@ -170,7 +227,7 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
     }
   };
 
-  const handleTeamSelectionComplete = () => {
+  const handleSelectionComplete = () => {
     selectUsers(
       {
         teamBuildingUuid,
@@ -182,6 +239,12 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
       {
         onSuccess: () => {
           playSound('팀원_확정');
+          setSelectedUsers([]);
+        },
+        onError: () => {
+          toastWithSound.error(
+            '문제가 발생했습니다. 잠시 후 다시 시도해주세요.',
+          );
         },
       },
     );
@@ -310,11 +373,11 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
               <Card
                 key={user.uuid}
                 name={user.userName}
-                border={
-                  selectedUsers.includes(user.uuid) ? 'yellow' : 'default'
-                }
+                border={userInfoList?.includes(user) ? 'default' : 'yellow'}
                 position={user.position}
-                choice={ChoiceMap[activeStep]}
+                choice={
+                  choiceMap[user.choices.indexOf(teamUuid)] ?? '팀 구성 조정' // @FIXME
+                }
                 link={user.profileLink}
                 selected={false}
               />
@@ -342,7 +405,7 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
         <section
           className={css({
             width: '1280px',
-            height: '332px',
+            height: '200px',
             _after: {
               content: '""',
               position: 'fixed',
@@ -357,7 +420,7 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
           <div
             className={stack({
               width: '1030px',
-              height: selectListModalProps.isOpen ? '650px' : '332px',
+              height: selectListModalProps.isOpen ? '650px' : '200px',
               background: selectListModalProps.isOpen
                 ? 'rgba(255, 255, 255, 0.07)'
                 : 'rgba(0, 0, 0, 0.07)',
@@ -380,7 +443,8 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
                   color: 'gray.5',
                 })}
               >
-                {ROUNDS[activeStep].label} 리스트
+                {roundLabelMap[teamBuildingInfo?.roundStatus ?? 'FIRST_ROUND']}{' '}
+                리스트
               </h2>
               <div className={css({ width: '123px', height: '44px' })}>
                 <Button
@@ -435,7 +499,7 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
                   name={user.userName}
                   position={user.position}
                   link={user.profileLink}
-                  choice={ChoiceMap[activeStep]}
+                  choice={choiceMap[activeStep]}
                   selected={selectedUsers.includes(user.uuid)}
                   onClick={() => toggleCard(user)}
                 />
@@ -444,7 +508,7 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
             {filteredUsersByRound?.length === 0 && (
               <span
                 className={hstack({
-                  width: '425px',
+                  width: 'fit-content',
                   padding: '16px 24px',
                   gap: '16px',
                   border: '1px solid rgba(255, 255, 255, 0.11)',
@@ -456,7 +520,9 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
                 })}
               >
                 <InfoIcon />
-                이번 라운드에는 지망자가 없습니다
+                {teamBuildingInfo?.roundStatus === 'COMPLETE'
+                  ? '남은 인원이 없습니다'
+                  : '이번 라운드에는 지망자가 없습니다'}
               </span>
             )}
           </div>
@@ -478,24 +544,15 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
                 selectConfirmModalProps.onOpen();
               }}
             >
-              {ROUNDS[activeStep].label}
-              <br />
-              {selectDoneList?.includes(teamUuid) || activeStep > 3
-                ? '대기중'
-                : '선택 완료하기'}
+              {selectionCompleteButtonName}
             </Button>
           </div>
         </section>
       </div>
-      <RoundFinishModal
-        isOpen={roundStartModalProps.isOpen}
-        onClose={roundStartModalProps.onClose}
-        round={activeStep}
-      />
       <SelectConfirmModal
         isOpen={selectConfirmModalProps.isOpen}
         onClose={selectConfirmModalProps.onClose}
-        selectionConfirm={handleTeamSelectionComplete}
+        selectionConfirm={handleSelectionComplete}
       />
       <AgreementModal
         isOpen={agreementModalProps.isOpen}
@@ -506,6 +563,11 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
         isOpen={overallModalProps.isOpen}
         onClose={overallModalProps.onClose}
         teamBuildingUuid={teamBuildingUuid}
+      />
+      <RoundStartModal
+        isOpen={roundStartModalProps.isOpen}
+        onClose={roundStartModalProps.onClose}
+        round={activeStep}
       />
     </>
   );
