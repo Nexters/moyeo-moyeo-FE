@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 
 import { useAtomValue } from 'jotai';
-import { toast } from 'react-hot-toast';
 
 import { useSelectUsers } from '@/apis/team-building/mutations';
 import { useGetTotalInfo } from '@/apis/team-building/queries';
@@ -22,6 +21,8 @@ import { eventSourceAtom } from '@/store/atoms';
 import { css } from '@/styled-system/css';
 import { grid, hstack, stack, vstack } from '@/styled-system/patterns';
 import { Choice, Round, Team, User } from '@/types';
+import { playSound } from '@/utils/sound';
+import { toastWithSound } from '@/utils/toast';
 
 type PlayerProps = {
   teamUuid: Team['uuid'];
@@ -110,6 +111,7 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
     };
 
     const handleChangeRound = (e: MessageEvent<Round>) => {
+      playSound('라운드_변경');
       const parseData: Round = JSON.parse(e.data);
       setActiveStep(roundIndexMap[parseData]);
       roundStartModalProps.onOpen();
@@ -152,10 +154,12 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
   const toggleCard = (selectUser: User) => {
     // 이미 선택 완료 버튼을 눌렀다면 선택할 수 없음
     if (selectDoneList?.includes(teamUuid))
-      return toast.error('선택할 수 없는 상태입니다.');
+      return toastWithSound.error('선택할 수 없는 상태입니다.');
     // 조정 라운드에서는 선택할 수 없음
-    if (activeStep >= 4) return toast.error('선택할 수 없는 상태입니다.');
+    if (activeStep >= 4)
+      return toastWithSound.error('선택할 수 없는 상태입니다.');
 
+    playSound('팀원_선택');
     const isSelected = !!selectedUsers.find((id) => id === selectUser.uuid);
     if (isSelected ? confirm(isSelected && '선택해제 하시겠습니까?') : true) {
       setSelectedUsers((prev) =>
@@ -167,13 +171,20 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
   };
 
   const handleTeamSelectionComplete = () => {
-    selectUsers({
-      teamBuildingUuid,
-      teamUuid,
-      body: {
-        userUuids: selectedUsers,
+    selectUsers(
+      {
+        teamBuildingUuid,
+        teamUuid,
+        body: {
+          userUuids: selectedUsers,
+        },
       },
-    });
+      {
+        onSuccess: () => {
+          playSound('팀원_확정');
+        },
+      },
+    );
   };
 
   const onClickAgreement = () => {
@@ -226,7 +237,10 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
                 background: 'rgba(255, 255, 255, 0.13)',
                 cursor: 'pointer',
               })}
-              onClick={() => overallModalProps.onOpen()}
+              onClick={() => {
+                playSound('버튼_클릭');
+                overallModalProps.onOpen();
+              }}
             >
               전체 현황 보기
             </button>
@@ -378,7 +392,10 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
                     boxShadow: 'none',
                     gap: '15px',
                   })}
-                  onClick={() => selectListModalProps.onToggle()}
+                  onClick={() => {
+                    playSound('버튼_클릭');
+                    selectListModalProps.onToggle();
+                  }}
                 >
                   {selectListModalProps.isOpen ? '접기' : '펼치기'}
                   <ArrowUpIcon
@@ -456,7 +473,10 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
               size="large"
               className={css({ height: '100%' })}
               disabled={selectDoneList?.includes(teamUuid) || activeStep > 3}
-              onClick={selectConfirmModalProps.onOpen}
+              onClick={() => {
+                playSound('버튼_클릭');
+                selectConfirmModalProps.onOpen();
+              }}
             >
               {ROUNDS[activeStep].label}
               <br />

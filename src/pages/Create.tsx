@@ -35,6 +35,7 @@ const Create = () => {
   const navigate = useNavigate();
 
   const handleAddTeamRow = () => {
+    playSound('버튼_클릭');
     const newTeam: TeamRow = {
       id: generateId(), // <- 임시. 서버에 보낼때는 제거해야함
       pmName: '',
@@ -156,7 +157,10 @@ const Create = () => {
               type="button"
               aria-label="홈으로 돌아가기"
               className={css({ cursor: 'pointer' })}
-              onClick={() => navigate('/')}
+              onClick={() => {
+                playSound('페이지_전환');
+                navigate('/');
+              }}
             >
               <img
                 className={css({ width: '40px', height: '40px' })}
