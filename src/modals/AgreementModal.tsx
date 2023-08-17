@@ -3,6 +3,7 @@ import { Button } from '@/components/Button';
 import { Modal } from '@/components/Modal';
 import { css } from '@/styled-system/css';
 import { center, hstack, vstack } from '@/styled-system/patterns';
+import { playSound } from '@/utils/sound';
 
 type AgreementModalProps = {
   isOpen: boolean;
@@ -103,6 +104,7 @@ const AgreementModal = ({ isOpen, onClose, onAgree }: AgreementModalProps) => {
         <div className={center({ width: '320px', marginTop: '36px' })}>
           <Button
             onClick={() => {
+              playSound('버튼_클릭');
               onClose();
               onAgree();
             }}

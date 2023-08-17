@@ -3,6 +3,7 @@ import { Button } from '@/components/Button';
 import { Modal } from '@/components/Modal';
 import { css } from '@/styled-system/css';
 import { hstack, vstack } from '@/styled-system/patterns';
+import { playSound } from '@/utils/sound';
 
 type SelectConfirmModalProps = {
   isOpen: boolean;
@@ -42,7 +43,10 @@ const SelectConfirmModal = ({
             선택한 팀원을 확정하시겠어요?
           </span>
           <CloseIcon
-            onClick={onClose}
+            onClick={() => {
+              playSound('버튼_클릭');
+              onClose();
+            }}
             className={css({ width: '48px', cursor: 'pointer' })}
           />
         </div>
