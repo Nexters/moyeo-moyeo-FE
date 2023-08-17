@@ -9,7 +9,7 @@
 
 모여모여는 넥스터즈 회원들을 위한 팀빌딩 서비스입니다.
 
-### 팀원
+## 팀원
 
 <table>
   <tbody>
@@ -24,7 +24,7 @@
   </tbody>
 </table>
 
-### 프로젝트 세팅
+## 프로젝트 세팅
 
 1. 환경변수
 
@@ -39,7 +39,7 @@ pnpm i
 pnpm run dev
 ```
 
-### 기술스택
+## 기술스택
 
 ![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)
 ![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB) ![ReactQuery](https://img.shields.io/badge/React--Query-FF4154?style=for-the-badge&logo=ReactQuery&logoColor=61DAFB)
