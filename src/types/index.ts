@@ -32,7 +32,7 @@ export type User = {
   userName: string;
   position: Position;
   choices: Team['uuid'][];
-  joinedTeamUuid: string;
+  joinedTeamUuid: string | null;
   profileLink: string;
   selectedTeam: boolean;
 };
