@@ -1,12 +1,13 @@
 import { useMemo } from 'react';
 
 import { useGetTotalInfo } from '@/apis/team-building/queries';
+import { ReactComponent as CheckWithoutCircleIcon } from '@/assets/icons/checkWithoutCircle.svg';
 import { ReactComponent as CloseIcon } from '@/assets/icons/close.svg';
 import { Chip } from '@/components/Chip';
 import { ChipWithUser } from '@/components/ChipWithUser';
 import { Modal } from '@/components/Modal';
 import { css } from '@/styled-system/css';
-import { hstack, vstack } from '@/styled-system/patterns';
+import { center, hstack, vstack } from '@/styled-system/patterns';
 import { Team, User } from '@/types';
 import { playSound } from '@/utils/sound';
 
@@ -25,12 +26,10 @@ export const OverallStatusModal = ({
   const { teamInfoList, userInfoList } = data ?? {};
 
   const allMemberByTeam = useMemo(() => {
-    const allMemberByTeam: Record<Team['pmName'], User[]> = {};
+    const allMemberByTeam: Record<Team['uuid'], User[]> = {};
 
     teamInfoList?.forEach((team) => {
-      const key = `${team.pmName} - ${team.teamName}`;
-
-      allMemberByTeam[key] = [
+      allMemberByTeam[team.uuid] = [
         {
           uuid: 'pm',
           userName: team.pmName,
@@ -46,12 +45,44 @@ export const OverallStatusModal = ({
       ];
     });
 
-    allMemberByTeam['남은 인원'] = (userInfoList ?? []).filter(
+    allMemberByTeam['others'] = (userInfoList ?? []).filter(
       (user) => user.joinedTeamUuid === null,
     );
 
     return Object.entries(allMemberByTeam);
   }, [teamInfoList, userInfoList]);
+
+  const renderTeamTitle = (teamUuid: Team['uuid']) => {
+    const team = teamInfoList?.find((team) => team.uuid === teamUuid);
+    const teamTitle = team
+      ? `${team.pmName}팀 - ${team.teamName}`
+      : '남은 인원';
+    const showCheck = team?.selectDone ?? false;
+
+    return (
+      <div className={hstack()}>
+        {teamTitle}
+        {showCheck && (
+          <div
+            title="이번 라운드 팀원 선택을 완료했습니다."
+            className={center({
+              width: '28px',
+              height: '28px',
+              borderRadius: '50%',
+              flexShrink: 0,
+              backgroundColor: 'green.70',
+              '& svg': {
+                width: '20px',
+                height: '20px',
+              },
+            })}
+          >
+            <CheckWithoutCircleIcon />
+          </div>
+        )}
+      </div>
+    );
+  };
 
   const renderUser = (selectUser: User) => {
     return (
@@ -169,9 +200,9 @@ export const OverallStatusModal = ({
                 </tr>
               </thead>
               <tbody>
-                {allMemberByTeam.map(([teamName, members]) => (
-                  <tr key={teamName}>
-                    <td>{teamName}</td>
+                {allMemberByTeam.map(([teamUuid, members]) => (
+                  <tr key={teamUuid}>
+                    <td>{renderTeamTitle(teamUuid)}</td>
 
                     <td>
                       <div

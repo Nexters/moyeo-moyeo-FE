@@ -27,6 +27,10 @@ const __fetch = async <T, D>(method: string, path: string, body?: D) => {
     throw error;
   }
 
+  if (response.headers.get('Content-length') === '0') {
+    return {} as T;
+  }
+
   const data = await response.json();
   return data as T;
 };

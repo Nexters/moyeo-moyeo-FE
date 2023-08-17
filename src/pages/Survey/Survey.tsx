@@ -8,6 +8,7 @@ import { SurveyFormResult } from '@/types';
 
 import NotFound from '../NotFound';
 import { SurveyForm } from './SurveyForm';
+import { SurveyNotAvailable } from './SurveyNotAvailable';
 import { SurveyResult } from './SurveyResult';
 
 const Survey = () => {
@@ -24,6 +25,8 @@ const Survey = () => {
 
   if (isLoading) return <Spinner />;
   if (!teamBuildingUuid || !totalInfoForSurvey) return <NotFound />;
+  if (totalInfoForSurvey.teamBuildingInfo.roundStatus !== 'FIRST_ROUND')
+    return <SurveyNotAvailable />;
   return !isSubmitted ? (
     <SurveyForm
       teamBuildingUuid={teamBuildingUuid}
