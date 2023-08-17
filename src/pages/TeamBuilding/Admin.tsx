@@ -266,6 +266,20 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
   }, []);
 
   useEffect(() => {
+    // @note: 라운드 변경에 대한 이벤트 감지가 안되는 경우, 토스트가 안뜰 수 있어
+    // 별도의 effect 훅으로 토스트를 띄운다.
+    const roundStatus = teamBuildingInfo?.roundStatus ?? 'FIRST_ROUND';
+
+    if (roundStatus === 'COMPLETE') {
+      toastWithSound.success('팀 빌딩이 완료되었습니다.');
+    } else {
+      toastWithSound.success(
+        `${roundLabelMap[roundStatus]} 라운드가 시작되었습니다.`,
+      );
+    }
+  }, [teamBuildingInfo?.roundStatus]);
+
+  useEffect(() => {
     if (!eventSource) return;
 
     const handleChangeRound = (e: MessageEvent<string>) => {
@@ -274,14 +288,6 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
 
       // @note: 라운드 변경시 초기화가 필요해서 refetch로 대체
       refetchTotalInfo();
-
-      if (data === 'COMPLETE') {
-        toastWithSound.success('팀 빌딩이 완료되었습니다.');
-      } else {
-        toastWithSound.success(
-          `${roundLabelMap[data]} 라운드가 시작되었습니다.`,
-        );
-      }
     };
 
     const handlePickUser = (e: MessageEvent<string>) => {
