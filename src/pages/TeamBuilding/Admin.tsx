@@ -29,10 +29,10 @@ import {
   CreateUserEvent,
   DeleteUserEvent,
   PickUserEvent,
-  Round,
   Team,
   User,
 } from '@/types';
+import { ROUND_INDEX_MAP, ROUND_LABEL_MAP } from '@/utils/const';
 import { playSound } from '@/utils/sound';
 import { toastWithSound } from '@/utils/toast';
 
@@ -59,23 +59,6 @@ const ROUNDS = [
   },
 ];
 
-const roundIndexMap: Record<Round, number> = {
-  FIRST_ROUND: 0,
-  SECOND_ROUND: 1,
-  THIRD_ROUND: 2,
-  FORTH_ROUND: 3,
-  ADJUSTED_ROUND: 4,
-  COMPLETE: 5, // @note: 해당 값으로 넘어가면 stepper는 선택된게 없다.
-};
-const roundLabelMap: Record<Round, string> = {
-  FIRST_ROUND: '1지망',
-  SECOND_ROUND: '2지망',
-  THIRD_ROUND: '3지망',
-  FORTH_ROUND: '4지망',
-  ADJUSTED_ROUND: '팀 구성 조정',
-  COMPLETE: '팀 빌딩 완료',
-};
-
 export type AdminProps = {
   teamBuildingUuid: string;
 };
@@ -99,7 +82,7 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
     useFinishTeamBuilding();
 
   const activeStep =
-    roundIndexMap[teamBuildingInfo?.roundStatus ?? 'FIRST_ROUND'];
+    ROUND_INDEX_MAP[teamBuildingInfo?.roundStatus ?? 'FIRST_ROUND'];
   const processValue = (teamInfoList ?? []).reduce(
     (acc, team) => (acc += team.selectDone ? 1 : 0),
     0,
@@ -274,7 +257,7 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
       toastWithSound.success('팀 빌딩이 완료되었습니다.');
     } else {
       toastWithSound.success(
-        `${roundLabelMap[roundStatus]} 라운드가 시작되었습니다.`,
+        `${ROUND_LABEL_MAP[roundStatus]} 라운드가 시작되었습니다.`,
       );
     }
   }, [teamBuildingInfo?.roundStatus]);

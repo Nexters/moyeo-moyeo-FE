@@ -21,6 +21,7 @@ import { eventSourceAtom } from '@/store/atoms';
 import { css } from '@/styled-system/css';
 import { grid, hstack, stack, vstack } from '@/styled-system/patterns';
 import { Choice, Round, Team, User } from '@/types';
+import { ROUND_INDEX_MAP, ROUND_LABEL_MAP } from '@/utils/const';
 import { playSound } from '@/utils/sound';
 import { toastWithSound } from '@/utils/toast';
 
@@ -33,24 +34,6 @@ type PickUserEvent = {
   teamUuid: Team['uuid'];
   teamName: string;
   pickUserUuids: string[];
-};
-
-const roundIndexMap: Record<Round, number> = {
-  FIRST_ROUND: 0,
-  SECOND_ROUND: 1,
-  THIRD_ROUND: 2,
-  FORTH_ROUND: 3,
-  ADJUSTED_ROUND: 4,
-  COMPLETE: 5, // @note: 해당 값으로 넘어가면 stepper는 선택된게 없다.
-};
-
-const roundLabelMap: Record<Round, string> = {
-  FIRST_ROUND: '1지망',
-  SECOND_ROUND: '2지망',
-  THIRD_ROUND: '3지망',
-  FORTH_ROUND: '4지망',
-  ADJUSTED_ROUND: '팀 구성 조정',
-  COMPLETE: '팀 빌딩 완료',
 };
 
 const choiceMap: Record<number, Choice> = {
@@ -91,7 +74,7 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
   const eventSource = useAtomValue(eventSourceAtom);
 
   const activeStep =
-    roundIndexMap[teamBuildingInfo?.roundStatus ?? 'FIRST_ROUND'];
+    ROUND_INDEX_MAP[teamBuildingInfo?.roundStatus ?? 'FIRST_ROUND'];
   const [selectedUsers, setSelectedUsers] = useState<User['uuid'][]>([]); // 현재 라운드에 PM이 선택한 사람
 
   const selectDoneList = useMemo(() => {
@@ -106,14 +89,14 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
     else if (selectDoneList?.includes(teamUuid) || activeStep > 3)
       return (
         <>
-          {roundLabelMap[roundStatus]} <br />
+          {ROUND_LABEL_MAP[roundStatus]} <br />
           대기중
         </>
       );
     else
       return (
         <>
-          {roundLabelMap[roundStatus]} <br />
+          {ROUND_LABEL_MAP[roundStatus]} <br />
           선택 완료하기
         </>
       );
@@ -200,20 +183,21 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
     // @note: 이번 라운드에서 선택할 수 있는 사람들을 보여준다.
     return userInfoList?.filter((user) => {
       // @note: 조정 라운드라면 선택되지 못한 사람들을 전부 보여준다.
-      if (activeStep === 4) return user.joinedTeamUuid === null;
+      if (teamBuildingInfo?.roundStatus === 'ADJUSTED_ROUND')
+        return user.joinedTeamUuid === null;
       else
         return (
           user.choices[activeStep] === teamUuid && user.joinedTeamUuid === null
         );
     });
-  }, [activeStep, teamUuid, userInfoList]);
+  }, [activeStep, teamBuildingInfo?.roundStatus, teamUuid, userInfoList]);
 
   const toggleCard = (selectUser: User) => {
     // @note: 이미 선택 완료 버튼을 눌렀다면 선택할 수 없다.
     if (selectDoneList?.includes(teamUuid))
       return toastWithSound.error('선택할 수 없는 상태입니다.');
     // @note: 조정 라운드에서는 PM이 선택할 수 없다.
-    if (activeStep >= 4)
+    if (teamBuildingInfo?.roundStatus === 'ADJUSTED_ROUND')
       return toastWithSound.error('선택할 수 없는 상태입니다.');
 
     playSound('팀원_선택');
@@ -373,7 +357,9 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
               <Card
                 key={user.uuid}
                 name={user.userName}
-                border={userInfoList?.includes(user) ? 'default' : 'yellow'}
+                border={
+                  selectedUsers?.includes(user.uuid) ? 'yellow' : 'default'
+                }
                 position={user.position}
                 choice={
                   choiceMap[user.choices.indexOf(teamUuid)] ?? '팀 구성 조정' // @FIXME
@@ -443,7 +429,11 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
                   color: 'gray.5',
                 })}
               >
-                {roundLabelMap[teamBuildingInfo?.roundStatus ?? 'FIRST_ROUND']}{' '}
+                {
+                  ROUND_LABEL_MAP[
+                    teamBuildingInfo?.roundStatus ?? 'FIRST_ROUND'
+                  ]
+                }{' '}
                 리스트
               </h2>
               <div className={css({ width: '123px', height: '44px' })}>
