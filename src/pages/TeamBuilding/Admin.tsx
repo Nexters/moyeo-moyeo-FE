@@ -164,6 +164,7 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
                   if (user.uuid === selectedUser.uuid) {
                     return {
                       ...user,
+                      selectedTeam: false,
                       joinedTeamUuid: null,
                     };
                   }
@@ -205,6 +206,7 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
                   if (user.uuid === selectedUser.uuid) {
                     return {
                       ...user,
+                      selectedTeam: true,
                       joinedTeamUuid: team.uuid,
                     };
                   }
