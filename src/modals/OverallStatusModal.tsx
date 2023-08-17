@@ -63,6 +63,7 @@ export const OverallStatusModal = ({
         {teamTitle}
         {showCheck && (
           <div
+            title="이번 라운드 팀원 선택을 완료했습니다."
             className={center({
               width: '28px',
               height: '28px',
