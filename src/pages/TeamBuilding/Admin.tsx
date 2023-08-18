@@ -245,6 +245,17 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
       },
       {
         onSuccess: () => {
+          // @note: refetch 되기 전까지 disabled 되어있도록 먼저 반영
+          setTotalInfo((prev) => {
+            if (!prev) return prev;
+            return {
+              ...prev,
+              teamBuildingInfo: {
+                ...prev.teamBuildingInfo,
+                roundStatus: 'COMPLETE',
+              },
+            };
+          });
           refetchTotalInfo();
         },
         onError: () => {
@@ -332,6 +343,8 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
     eventSource.addEventListener('change-round', handleChangeRound);
     eventSource.addEventListener('delete-user', handleDeleteUser);
     eventSource.addEventListener('adjust-user', handleAdjustUser);
+    eventSource.addEventListener('error', console.error);
+    eventSource.addEventListener('message', console.warn);
 
     return () => {
       eventSource.removeEventListener('create-user', handleCreateUser);
