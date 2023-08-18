@@ -3,9 +3,9 @@ import { useMemo } from 'react';
 import { ReactComponent as TrashBinIcon } from '@/assets/icons/trashbin.svg';
 import { css } from '@/styled-system/css';
 import { center, hstack } from '@/styled-system/patterns';
-import { User } from '@/types';
+import { Round, User } from '@/types';
 
-import { Chip } from './Chip';
+import { Chip, ChipVisual } from './Chip';
 
 export type ChipWithUserProps = {
   user: User;
@@ -20,12 +20,15 @@ export const ChipWithUser = ({
   isShowButton,
   onClickDelete,
 }: ChipWithUserProps) => {
-  const visual = useMemo(() => {
-    // @fixme: 여기 로직 수정
+  const visual = useMemo<ChipVisual>(() => {
     if (user.uuid === 'pm') return 'pm';
     if (user.joinedTeamUuid == null) return 'none';
-    return indexRoundMap[user.choices.indexOf(user.joinedTeamUuid)] ?? 'extra';
-  }, [user.choices, user.uuid, user.joinedTeamUuid]);
+    if (user.selectedRound != null) return roundVisualMap[user.selectedRound];
+    const inferredVisual = indexRoundMap[
+      user.choices.indexOf(user.joinedTeamUuid)
+    ] as ChipVisual;
+    return inferredVisual ?? 'adjust';
+  }, [user.uuid, user.joinedTeamUuid, user.selectedRound, user.choices]);
 
   return (
     <div
@@ -38,8 +41,7 @@ export const ChipWithUser = ({
         overflow: 'hidden',
       })}
     >
-      {/* @fixme: 일단 타입 체크 피하기 위해 any 잠시 사용... */}
-      <Chip visual={visual as any} label={user.userName} />
+      <Chip visual={visual} label={user.userName} />
 
       {isShowButton && (
         <div
@@ -102,4 +104,13 @@ const indexRoundMap: Record<number, string> = {
   1: 'second',
   2: 'third',
   3: 'fourth',
+};
+
+const roundVisualMap: Record<Round, ChipVisual> = {
+  FIRST_ROUND: 'first',
+  SECOND_ROUND: 'second',
+  THIRD_ROUND: 'third',
+  FORTH_ROUND: 'fourth',
+  ADJUSTED_ROUND: 'adjust',
+  COMPLETE: 'none',
 };

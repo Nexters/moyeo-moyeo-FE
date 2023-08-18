@@ -73,7 +73,7 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
     data: totalInfo,
     refetch: refetchTotalInfo,
     setTotalInfo,
-  } = useGetTotalInfo(teamBuildingUuid);
+  } = useGetTotalInfo(teamBuildingUuid, true);
   const { teamBuildingInfo, teamInfoList, userInfoList } = totalInfo ?? {};
 
   const { mutate: adjustUser } = useAdjustUser();
@@ -147,7 +147,7 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
                   if (user.uuid === selectedUser.uuid) {
                     return {
                       ...user,
-                      selectedTeam: false,
+                      selectedRound: null,
                       joinedTeamUuid: null,
                     };
                   }
@@ -189,7 +189,7 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
                   if (user.uuid === selectedUser.uuid) {
                     return {
                       ...user,
-                      selectedTeam: true,
+                      selectedRound: 'ADJUSTED_ROUND',
                       joinedTeamUuid: team.uuid,
                     };
                   }
@@ -228,9 +228,18 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
       },
       {
         onSuccess: () => {
+          // @note: refetch 되기 전까지 disabled 되어있도록 먼저 반영
+          setTotalInfo((prev) => {
+            if (!prev) return prev;
+            return {
+              ...prev,
+              teamBuildingInfo: {
+                ...prev.teamBuildingInfo,
+                roundStatus: 'COMPLETE',
+              },
+            };
+          });
           refetchTotalInfo();
-          toast.success('팀 빌딩을 완료했습니다.');
-          playSound('팀빌딩_완료');
         },
         onError: () => {
           toastWithSound.error(
@@ -254,11 +263,11 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
     const roundStatus = teamBuildingInfo?.roundStatus ?? 'FIRST_ROUND';
 
     if (roundStatus === 'COMPLETE') {
-      toastWithSound.success('팀 빌딩이 완료되었습니다.');
+      playSound('팀빌딩_완료');
+      toast.success('팀 빌딩이 완료되었습니다.');
     } else {
-      toastWithSound.success(
-        `${ROUND_LABEL_MAP[roundStatus]} 라운드가 시작되었습니다.`,
-      );
+      playSound('라운드_변경');
+      toast.success(`${ROUND_LABEL_MAP[roundStatus]} 라운드가 시작되었습니다.`);
     }
   }, [teamBuildingInfo?.roundStatus]);
 
@@ -277,32 +286,8 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
       const data: PickUserEvent = JSON.parse(e.data);
       console.log('pick user', data);
 
-      // @note: refetch 대신 쿼리 클라이언트 수정
-      setTotalInfo((prev) => {
-        if (!prev) return prev;
-        return {
-          ...prev,
-          teamInfoList: prev.teamInfoList.map((team) => {
-            if (team.uuid === data.teamUuid) {
-              return {
-                ...team,
-                selectDone: true,
-              };
-            }
-            return team;
-          }),
-          userInfoList: prev.userInfoList.map((user) => {
-            if (data.pickUserUuids.includes(user.uuid)) {
-              return {
-                ...user,
-                selectedTeam: true,
-                joinedTeamUuid: data.teamUuid,
-              };
-            }
-            return user;
-          }),
-        };
-      });
+      // @note: 선택된 라운드 표시를 서버에서 가져오기 위해 refetch
+      refetchTotalInfo();
       toastWithSound.success(`${data.teamName}팀이 팀원 선택을 완료했습니다.`);
     };
 
@@ -353,9 +338,7 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
 
   const renderTeamTitle = (teamUuid: Team['uuid']) => {
     const team = teamInfoList?.find((team) => team.uuid === teamUuid);
-    const teamTitle = team
-      ? `${team.pmName}팀 - ${team.teamName}`
-      : '남은 인원';
+    const teamTitle = team ? `${team.pmName} - ${team.teamName}` : '남은 인원';
     const showCheck = team?.selectDone ?? false;
 
     return (
@@ -564,7 +547,7 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
               <Chip visual="second" label="2 지망" />
               <Chip visual="third" label="3 지망" />
               <Chip visual="fourth" label="4 지망" />
-              <Chip visual="extra" label="임의배정" />
+              <Chip visual="adjust" label="임의배정" />
               <Chip visual="pm" label="PM" />
             </div>
 
