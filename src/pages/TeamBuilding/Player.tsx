@@ -20,7 +20,7 @@ import SelectConfirmModal from '@/modals/SelectConfirmModal';
 import { eventSourceAtom } from '@/store/atoms';
 import { css } from '@/styled-system/css';
 import { grid, hstack, stack, vstack } from '@/styled-system/patterns';
-import { Round, Team, User } from '@/types';
+import { AdjustUserEvent, DeleteUserEvent, Round, Team, User } from '@/types';
 import { ROUND_INDEX_MAP, ROUND_LABEL_MAP } from '@/utils/const';
 import { playSound } from '@/utils/sound';
 import { toastWithSound } from '@/utils/toast';
@@ -79,19 +79,8 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
     const roundStatus = teamBuildingInfo?.roundStatus ?? 'FIRST_ROUND';
     if (teamBuildingInfo?.roundStatus === 'COMPLETE') return '팀 빌딩 완료';
     else if (selectDoneList?.includes(teamUuid) || activeStep > 3)
-      return (
-        <>
-          {ROUND_LABEL_MAP[roundStatus]} <br />
-          대기중
-        </>
-      );
-    else
-      return (
-        <>
-          {ROUND_LABEL_MAP[roundStatus]} <br />
-          선택 완료하기
-        </>
-      );
+      return `${ROUND_LABEL_MAP[roundStatus]}\n대기중`;
+    else return `${ROUND_LABEL_MAP[roundStatus]}\n선택 완료하기`;
   }, [selectDoneList, teamUuid, activeStep, teamBuildingInfo?.roundStatus]);
 
   const selectListModalProps = useDisclosure();
@@ -157,13 +146,28 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
       refetch();
     };
 
+    const handleDeleteUser = (e: MessageEvent<string>) => {
+      const deletedUserUuid = e.data as DeleteUserEvent;
+      console.log('DELETE USER: ', deletedUserUuid);
+      refetch();
+    };
+
+    const handleAdjustUser = (e: MessageEvent<string>) => {
+      const data: AdjustUserEvent = JSON.parse(e.data);
+      console.log('ADJUST USER: ', data);
+      refetch();
+    };
+
     eventSource?.addEventListener('pick-user', handlePickUser);
     eventSource?.addEventListener('change-round', handleChangeRound);
-
+    eventSource.addEventListener('delete-user', handleDeleteUser);
+    eventSource.addEventListener('adjust-user', handleAdjustUser);
     return () => {
       console.log('REMOVE EVENT LISTENER');
       eventSource?.removeEventListener('pick-user', handlePickUser);
       eventSource?.removeEventListener('change-round', handleChangeRound);
+      eventSource?.removeEventListener('delete-user', handleDeleteUser);
+      eventSource?.removeEventListener('adjust-user', handleAdjustUser);
     };
   }, [eventSource, refetch, setTotalInfo, teamBuildingInfo?.roundStatus]);
 
@@ -521,7 +525,7 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
             <Button
               color="secondary"
               size="large"
-              className={css({ height: '100%' })}
+              className={css({ height: '100%', whiteSpace: 'pre-line' })}
               disabled={selectDoneList?.includes(teamUuid) || activeStep > 3}
               onClick={() => {
                 playSound('버튼_클릭');
