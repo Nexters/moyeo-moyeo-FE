@@ -343,8 +343,6 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
     eventSource.addEventListener('change-round', handleChangeRound);
     eventSource.addEventListener('delete-user', handleDeleteUser);
     eventSource.addEventListener('adjust-user', handleAdjustUser);
-    eventSource.addEventListener('error', console.error);
-    eventSource.addEventListener('message', console.warn);
 
     return () => {
       eventSource.removeEventListener('create-user', handleCreateUser);
