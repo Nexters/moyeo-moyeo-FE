@@ -553,7 +553,7 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
               <Chip visual="second" label="2 지망" />
               <Chip visual="third" label="3 지망" />
               <Chip visual="fourth" label="4 지망" />
-              <Chip visual="extra" label="임의배정" />
+              <Chip visual="adjust" label="임의배정" />
               <Chip visual="pm" label="PM" />
             </div>
 

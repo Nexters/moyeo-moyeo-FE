@@ -4,6 +4,7 @@ import { center, hstack } from '@/styled-system/patterns';
 export type ChipProps = RecipeVariantProps<typeof square> & {
   label: string;
 };
+export type ChipVisual = NonNullable<ChipProps['visual']>;
 
 export const Chip = ({ visual = 'none', label }: ChipProps) => {
   const shortChar = visualShortCharMap[visual];
@@ -27,12 +28,12 @@ export const Chip = ({ visual = 'none', label }: ChipProps) => {
   );
 };
 
-const visualShortCharMap = {
+const visualShortCharMap: Record<ChipVisual, string> = {
   first: '1',
   second: '2',
   third: '3',
   fourth: '4',
-  extra: 'E',
+  adjust: 'E',
   pm: 'P',
   none: '',
 };
@@ -59,7 +60,7 @@ const square = cva({
       fourth: {
         backgroundColor: 'purple.70',
       },
-      extra: {
+      adjust: {
         backgroundColor: 'gray.70',
       },
       pm: {
