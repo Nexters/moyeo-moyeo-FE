@@ -246,8 +246,6 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
       {
         onSuccess: () => {
           refetchTotalInfo();
-          toast.success('팀 빌딩을 완료했습니다.');
-          playSound('팀빌딩_완료');
         },
         onError: () => {
           toastWithSound.error(
@@ -271,11 +269,11 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
     const roundStatus = teamBuildingInfo?.roundStatus ?? 'FIRST_ROUND';
 
     if (roundStatus === 'COMPLETE') {
-      toastWithSound.success('팀 빌딩이 완료되었습니다.');
+      playSound('팀빌딩_완료');
+      toast.success('팀 빌딩이 완료되었습니다.');
     } else {
-      toastWithSound.success(
-        `${roundLabelMap[roundStatus]} 라운드가 시작되었습니다.`,
-      );
+      playSound('라운드_변경');
+      toast.success(`${roundLabelMap[roundStatus]} 라운드가 시작되었습니다.`);
     }
   }, [teamBuildingInfo?.roundStatus]);
 
