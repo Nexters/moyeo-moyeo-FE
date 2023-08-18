@@ -76,6 +76,15 @@ const cardRecipe = cva({
   },
 });
 
+// @FIXME: 캐릭터 나오면 변경하기
+const imageUrl = {
+  FRONT_END: FrontEndIcon,
+  BACK_END: BackEndIcon,
+  DESIGNER: DesignerIcon,
+  ANDROID: FrontEndIcon,
+  IOS: FrontEndIcon,
+};
+
 export const Card = ({
   name,
   position,
@@ -151,7 +160,7 @@ export const Card = ({
             objectFit: 'cover',
             borderRadius: '10px',
           })}
-          src={imageUrl(position)}
+          src={imageUrl[position]}
         />
       </div>
       {selected && (
@@ -178,25 +187,4 @@ export const Card = ({
       )}
     </button>
   );
-};
-
-// @FIXME: 캐릭터 나오면 변경하기
-const imageUrl = (position: Position) => {
-  switch (position) {
-    case 'FRONT_END':
-      return FrontEndIcon;
-      break;
-    case 'BACK_END':
-      return BackEndIcon;
-      break;
-    case 'DESIGNER':
-      return DesignerIcon;
-      break;
-    case 'ANDROID':
-      return FrontEndIcon;
-      break;
-    case 'IOS':
-      return FrontEndIcon;
-      break;
-  }
 };
