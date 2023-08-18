@@ -122,7 +122,7 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
           choices: [],
           joinedTeamUuid: team.uuid,
           profileLink: '',
-          selectedTeam: true,
+          selectedRound: 'FIRST_ROUND',
         } as User,
         ...(userInfoList ?? []).filter(
           (user) => user.joinedTeamUuid === team.uuid,
@@ -164,7 +164,7 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
                   if (user.uuid === selectedUser.uuid) {
                     return {
                       ...user,
-                      selectedTeam: false,
+                      selectedRound: null,
                       joinedTeamUuid: null,
                     };
                   }
@@ -206,7 +206,7 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
                   if (user.uuid === selectedUser.uuid) {
                     return {
                       ...user,
-                      selectedTeam: true,
+                      selectedRound: 'ADJUSTED_ROUND',
                       joinedTeamUuid: team.uuid,
                     };
                   }
@@ -294,32 +294,8 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
       const data: PickUserEvent = JSON.parse(e.data);
       console.log('pick user', data);
 
-      // @note: refetch 대신 쿼리 클라이언트 수정
-      setTotalInfo((prev) => {
-        if (!prev) return prev;
-        return {
-          ...prev,
-          teamInfoList: prev.teamInfoList.map((team) => {
-            if (team.uuid === data.teamUuid) {
-              return {
-                ...team,
-                selectDone: true,
-              };
-            }
-            return team;
-          }),
-          userInfoList: prev.userInfoList.map((user) => {
-            if (data.pickUserUuids.includes(user.uuid)) {
-              return {
-                ...user,
-                selectedTeam: true,
-                joinedTeamUuid: data.teamUuid,
-              };
-            }
-            return user;
-          }),
-        };
-      });
+      // @note: 선택된 라운드 표시를 서버에서 가져오기 위해 refetch
+      refetchTotalInfo();
       toastWithSound.success(`${data.teamName}팀이 팀원 선택을 완료했습니다.`);
     };
 

@@ -34,7 +34,7 @@ export type User = {
   choices: Team['uuid'][];
   joinedTeamUuid: string | null;
   profileLink: string;
-  selectedTeam: boolean;
+  selectedRound: Round | null;
 };
 
 export type TotalInfo = {
