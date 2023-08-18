@@ -119,9 +119,11 @@ export const Card = ({
             href={link}
             // @note: 툴팁같은 효과를 주기 위함
             title={link}
-            target={link ? '_blank' : undefined}
+            target={'_blank'}
             onClick={(e) => {
               e.stopPropagation();
+              // @note: link가 없으면 클릭이벤트를 막음
+              if (!link) e.preventDefault();
               playSound('버튼_클릭');
             }}
           >
