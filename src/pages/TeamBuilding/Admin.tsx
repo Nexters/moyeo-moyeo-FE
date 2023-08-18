@@ -90,7 +90,7 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
     data: totalInfo,
     refetch: refetchTotalInfo,
     setTotalInfo,
-  } = useGetTotalInfo(teamBuildingUuid);
+  } = useGetTotalInfo(teamBuildingUuid, true);
   const { teamBuildingInfo, teamInfoList, userInfoList } = totalInfo ?? {};
 
   const { mutate: adjustUser } = useAdjustUser();
