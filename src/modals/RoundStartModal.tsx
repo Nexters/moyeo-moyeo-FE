@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 
 import { ReactComponent as ExtraRound } from '@/assets/icons/modalLogo/extraRound.svg';
+import { ReactComponent as Finish } from '@/assets/icons/modalLogo/finish.svg';
 import { ReactComponent as FirstRound } from '@/assets/icons/modalLogo/firstRound.svg';
 import { ReactComponent as FourthRound } from '@/assets/icons/modalLogo/fourthRound.svg';
 import { ReactComponent as SecondRound } from '@/assets/icons/modalLogo/secondRound.svg';
@@ -13,12 +14,15 @@ type RoundFinishModalProps = {
   round: number;
 };
 
+const DURATION = 3000;
+
 const modalLogo = [
   <FirstRound />,
   <SecondRound />,
   <ThirdRound />,
   <FourthRound />,
   <ExtraRound />,
+  <Finish />,
 ];
 
 const RoundStartModal = ({ isOpen, onClose, round }: RoundFinishModalProps) => {
@@ -26,7 +30,7 @@ const RoundStartModal = ({ isOpen, onClose, round }: RoundFinishModalProps) => {
     if (!isOpen) return;
     const delay = setTimeout(() => {
       onClose();
-    }, 5000);
+    }, DURATION);
     return () => clearTimeout(delay);
   }, [isOpen, onClose]);
 

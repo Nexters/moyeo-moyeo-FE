@@ -43,8 +43,6 @@ export type TotalInfo = {
   userInfoList: User[];
 };
 
-export type Choice = '1지망' | '2지망' | '3지망' | '4지망' | '팀 구성 조정';
-
 // survey
 export type SurveyFormInputs = {
   userName: string;
