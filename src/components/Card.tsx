@@ -13,7 +13,7 @@ import { playSound } from '@/utils/sound';
 export type CardProps = {
   name: string;
   position: Position;
-  choice: Round;
+  choice?: Round;
   border?: 'default' | 'yellow' | 'selected';
   link?: string;
   selected?: boolean;
@@ -39,7 +39,7 @@ const choiceRecipe = cva({
       THIRD_ROUND: { background: 'purple.60' },
       FORTH_ROUND: { background: 'purple.70' },
       ADJUSTED_ROUND: { background: 'gray.60' },
-      COMPLETE: { background: 'gray.60' },
+      COMPLETE: {},
     },
   },
 });
@@ -79,7 +79,7 @@ const cardRecipe = cva({
 export const Card = ({
   name,
   position,
-  choice,
+  choice = 'FIRST_ROUND',
   link,
   border,
   selected = false,

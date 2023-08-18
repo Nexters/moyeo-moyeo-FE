@@ -142,7 +142,7 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
             if (data.pickUserUuids.includes(user.uuid)) {
               return {
                 ...user,
-                selectedTeam: true,
+                selectedRound: teamBuildingInfo?.roundStatus ?? 'FIRST_ROUND',
                 joinedTeamUuid: data.teamUuid,
               };
             }
@@ -165,7 +165,7 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
       eventSource?.removeEventListener('pick-user', handlePickUser);
       eventSource?.removeEventListener('change-round', handleChangeRound);
     };
-  }, [eventSource, refetch, setTotalInfo]);
+  }, [eventSource, refetch, setTotalInfo, teamBuildingInfo?.roundStatus]);
 
   const filteredSelectedUsers = useMemo(() => {
     // @note: 현재 PM 팀에 속해 있는 사람들과 이번 라운드에서 선택된 사람들을 보여준다.
