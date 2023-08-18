@@ -20,7 +20,7 @@ import SelectConfirmModal from '@/modals/SelectConfirmModal';
 import { eventSourceAtom } from '@/store/atoms';
 import { css } from '@/styled-system/css';
 import { grid, hstack, stack, vstack } from '@/styled-system/patterns';
-import { Choice, Round, Team, User } from '@/types';
+import { Round, Team, User } from '@/types';
 import { ROUND_INDEX_MAP, ROUND_LABEL_MAP } from '@/utils/const';
 import { playSound } from '@/utils/sound';
 import { toastWithSound } from '@/utils/toast';
@@ -34,14 +34,6 @@ type PickUserEvent = {
   teamUuid: Team['uuid'];
   teamName: string;
   pickUserUuids: string[];
-};
-
-const choiceMap: Record<number, Choice> = {
-  0: '1지망',
-  1: '2지망',
-  2: '3지망',
-  3: '4지망',
-  4: '팀 구성 조정',
 };
 
 const ROUNDS = [
@@ -125,6 +117,9 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
   }, [teamBuildingInfo?.roundStatus]);
 
   useEffect(() => {
+    if (!eventSource) return;
+    console.log('ADD EVENT LISTENER');
+
     const handlePickUser = (e: MessageEvent<string>) => {
       const data: PickUserEvent = JSON.parse(e.data);
       console.log('PICK USER: ', data);
@@ -166,6 +161,7 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
     eventSource?.addEventListener('change-round', handleChangeRound);
 
     return () => {
+      console.log('REMOVE EVENT LISTENER');
       eventSource?.removeEventListener('pick-user', handlePickUser);
       eventSource?.removeEventListener('change-round', handleChangeRound);
     };
@@ -361,9 +357,7 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
                   selectedUsers?.includes(user.uuid) ? 'yellow' : 'default'
                 }
                 position={user.position}
-                choice={
-                  choiceMap[user.choices.indexOf(teamUuid)] ?? '팀 구성 조정' // @FIXME
-                }
+                choice={user.selectedRound ?? teamBuildingInfo?.roundStatus}
                 link={user.profileLink}
                 selected={false}
               />
@@ -489,7 +483,7 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
                   name={user.userName}
                   position={user.position}
                   link={user.profileLink}
-                  choice={choiceMap[activeStep]}
+                  choice={teamBuildingInfo?.roundStatus ?? 'FIRST_ROUND'}
                   selected={selectedUsers.includes(user.uuid)}
                   onClick={() => toggleCard(user)}
                 />
@@ -510,7 +504,7 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
                 })}
               >
                 <InfoIcon />
-                {teamBuildingInfo?.roundStatus === 'COMPLETE'
+                {activeStep > 3
                   ? '남은 인원이 없습니다'
                   : '이번 라운드에는 지망자가 없습니다'}
               </span>

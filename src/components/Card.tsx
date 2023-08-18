@@ -6,13 +6,14 @@ import { ReactComponent as LinkIcon } from '@/assets/icons/link.svg';
 import { ReactComponent as NoLinkIcon } from '@/assets/icons/noLink.svg';
 import { css, cva, cx } from '@/styled-system/css';
 import { center, hstack, vstack } from '@/styled-system/patterns';
-import { Choice, Position } from '@/types';
+import { Position, Round } from '@/types';
+import { ROUND_LABEL_MAP } from '@/utils/const';
 import { playSound } from '@/utils/sound';
 
 export type CardProps = {
   name: string;
   position: Position;
-  choice: Choice;
+  choice: Round;
   border?: 'default' | 'yellow' | 'selected';
   link?: string;
   selected?: boolean;
@@ -33,11 +34,12 @@ const choiceRecipe = cva({
   },
   variants: {
     choice: {
-      '1지망': { background: 'purple.40' },
-      '2지망': { background: 'purple.50' },
-      '3지망': { background: 'purple.60' },
-      '4지망': { background: 'purple.70' },
-      '팀 구성 조정': { background: 'gray.60' },
+      FIRST_ROUND: { background: 'purple.40' },
+      SECOND_ROUND: { background: 'purple.50' },
+      THIRD_ROUND: { background: 'purple.60' },
+      FORTH_ROUND: { background: 'purple.70' },
+      ADJUSTED_ROUND: { background: 'gray.60' },
+      COMPLETE: { background: 'gray.60' },
     },
   },
 });
@@ -89,7 +91,7 @@ export const Card = ({
       <div className={vstack({ alignItems: 'flex-start' })}>
         <div className={hstack({ gap: '6px', height: '28px' })}>
           <span className={choiceRecipe({ choice })}>
-            {choice === '팀 구성 조정' ? 'E' : choice}
+            {choice === 'ADJUSTED_ROUND' ? 'E' : ROUND_LABEL_MAP[choice]}
           </span>
           <a
             className={center({
