@@ -7,6 +7,7 @@ import { type API } from '@/apis/type';
 
 export const useGetTotalInfo = (
   teamBuildingUuid?: API['getTotalInfo']['request']['teamBuildingUuid'],
+  polling?: boolean,
 ) => {
   type Response = API['getTotalInfo']['response'];
 
@@ -36,6 +37,8 @@ export const useGetTotalInfo = (
     },
     {
       enabled: !!teamBuildingUuid,
+      refetchInterval: polling ? 10000 : false,
+      refetchIntervalInBackground: polling,
     },
   );
 
