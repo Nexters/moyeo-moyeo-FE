@@ -105,7 +105,7 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
           choices: [],
           joinedTeamUuid: team.uuid,
           profileLink: '',
-          selectedTeam: true,
+          selectedRound: 'FIRST_ROUND',
         } as User,
         ...(userInfoList ?? []).filter(
           (user) => user.joinedTeamUuid === team.uuid,

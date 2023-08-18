@@ -37,7 +37,7 @@ export const OverallStatusModal = ({
           choices: [],
           joinedTeamUuid: team.uuid,
           profileLink: '',
-          selectedTeam: true,
+          selectedRound: 'FIRST_ROUND',
         } as User,
         ...(userInfoList ?? []).filter(
           (user) => user.joinedTeamUuid === team.uuid,
@@ -54,9 +54,7 @@ export const OverallStatusModal = ({
 
   const renderTeamTitle = (teamUuid: Team['uuid']) => {
     const team = teamInfoList?.find((team) => team.uuid === teamUuid);
-    const teamTitle = team
-      ? `${team.pmName}팀 - ${team.teamName}`
-      : '남은 인원';
+    const teamTitle = team ? `${team.pmName} - ${team.teamName}` : '남은 인원';
     const showCheck = team?.selectDone ?? false;
 
     return (
