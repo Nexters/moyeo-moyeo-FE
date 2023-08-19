@@ -245,7 +245,6 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
         className={vstack({
           height: '100vh',
           gap: '20px',
-          margin: '0 80px',
           position: 'relative',
         })}
       >
