@@ -153,6 +153,7 @@ export const SurveyForm = ({
             name="userName"
             placeholder="이름을 입력해주세요"
             maxLength={MAX_LENGTH__USER_NAME}
+            autoComplete="off"
             value={inputs.userName}
             onChange={(e) =>
               setInputs({
@@ -187,6 +188,7 @@ export const SurveyForm = ({
             name="userProfile"
             placeholder="Github, Behance, Instagram 등"
             maxLength={MAX_LENGTH__USER_PROFILE}
+            autoComplete="off"
             value={inputs.userProfile}
             onChange={(e) =>
               setInputs({

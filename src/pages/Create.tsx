@@ -189,6 +189,7 @@ const Create = () => {
             value={teamBuildingName}
             placeholder="ex) 넥스터즈 23기 팀 빌딩"
             maxLength={MAX_LENGTH__TEAM_BUILDING_NAME}
+            autoComplete="off"
             className={css({
               width: '100%',
               maxWidth: '600px',
@@ -272,6 +273,7 @@ const Create = () => {
                         placeholder="PM 이름을 입력해주세요"
                         value={team.pmName}
                         maxLength={MAX_LENGTH__USER_NAME}
+                        autoComplete="off"
                         onChange={handleUpdateTeamRow(team.id)}
                         className={css({
                           width: '100%',
@@ -328,6 +330,7 @@ const Create = () => {
                         placeholder="팀 이름을 입력해주세요"
                         value={team.teamName}
                         maxLength={MAX_LENGTH__TEAM_NAME}
+                        autoComplete="off"
                         onChange={handleUpdateTeamRow(team.id)}
                         className={css({
                           width: '100%',
