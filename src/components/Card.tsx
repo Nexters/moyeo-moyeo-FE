@@ -1,6 +1,8 @@
+import AndroidIcon from '@/assets/icons/character/android.svg';
 import BackEndIcon from '@/assets/icons/character/backend.svg';
 import DesignerIcon from '@/assets/icons/character/designer.svg';
 import FrontEndIcon from '@/assets/icons/character/frontend.svg';
+import IosIcon from '@/assets/icons/character/ios.svg';
 import checkIcon from '@/assets/icons/check.svg';
 import { ReactComponent as LinkIcon } from '@/assets/icons/link.svg';
 import { ReactComponent as NoLinkIcon } from '@/assets/icons/noLink.svg';
@@ -76,13 +78,12 @@ const cardRecipe = cva({
   },
 });
 
-// @FIXME: 캐릭터 나오면 변경하기
 const imageUrl = {
   FRONT_END: FrontEndIcon,
   BACK_END: BackEndIcon,
   DESIGNER: DesignerIcon,
-  ANDROID: FrontEndIcon,
-  IOS: FrontEndIcon,
+  ANDROID: AndroidIcon,
+  IOS: IosIcon,
 };
 
 export const Card = ({
