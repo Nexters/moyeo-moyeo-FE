@@ -34,7 +34,7 @@ export const ROUND_LABEL_MAP: Record<Round, string> = {
 };
 
 // max length
-export const MAX_LENGTH__USER_NAME = 20;
+export const MAX_LENGTH__USER_NAME = 5;
 export const MAX_LENGTH__USER_PROFILE = 255;
 
 export const MAX_LENGTH__TEAM_BUILDING_NAME = 20;
