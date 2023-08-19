@@ -180,14 +180,15 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
   }, [userInfoList, teamUuid, selectedUsers]);
 
   const filteredUsersByRound = useMemo(() => {
-    // @note: 이번 라운드에서 선택할 수 있는 사람들을 보여준다.
+    // @note: 이번 라운드에서 선택할 수 있거나 이번 라운드에 선택된 사람들을 보여준다.
     return userInfoList?.filter((user) => {
       // @note: 조정 라운드라면 선택되지 못한 사람들을 전부 보여준다.
       if (teamBuildingInfo?.roundStatus === 'ADJUSTED_ROUND')
         return user.joinedTeamUuid === null;
       else
         return (
-          user.choices[activeStep] === teamUuid && user.joinedTeamUuid === null
+          user.choices[activeStep] === teamUuid &&
+          (user.joinedTeamUuid === null || user.joinedTeamUuid === teamUuid)
         );
     });
   }, [activeStep, teamBuildingInfo?.roundStatus, teamUuid, userInfoList]);
@@ -487,7 +488,11 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
                   position={user.position}
                   link={user.profileLink}
                   choice={teamBuildingInfo?.roundStatus ?? 'FIRST_ROUND'}
-                  selected={selectedUsers.includes(user.uuid)}
+                  selected={
+                    selectedUsers.includes(user.uuid) ||
+                    (user.choices[activeStep] === teamUuid &&
+                      user.joinedTeamUuid === teamUuid)
+                  }
                   onClick={() => toggleCard(user)}
                 />
               ))}
