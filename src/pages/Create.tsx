@@ -306,6 +306,10 @@ const Create = () => {
                               ? '2px solid token(colors.red.60)'
                               : '2px solid transparent',
                           borderRadius: '4px',
+                          '& option': {
+                            backgroundColor: 'rgba(12, 13, 14, 0.50)',
+                            color: 'gray.5',
+                          },
                         })}
                       >
                         <option value="" disabled>
