@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 
 import { useAtomValue } from 'jotai';
+import toast from 'react-hot-toast';
 
 import { useSelectUsers } from '@/apis/team-building/mutations';
 import { useGetTotalInfo } from '@/apis/team-building/queries';
@@ -113,32 +114,7 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
       const data: PickUserEvent = JSON.parse(e.data);
       console.log('PICK USER: ', data);
 
-      // @note: refetch 대신 쿼리 클라이언트 수정
-      setTotalInfo((prev) => {
-        if (!prev) return prev;
-        return {
-          ...prev,
-          teamInfoList: prev.teamInfoList.map((team) => {
-            if (team.uuid === data.teamUuid) {
-              return {
-                ...team,
-                selectDone: true,
-              };
-            }
-            return team;
-          }),
-          userInfoList: prev.userInfoList.map((user) => {
-            if (data.pickUserUuids.includes(user.uuid)) {
-              return {
-                ...user,
-                selectedRound: teamBuildingInfo?.roundStatus ?? 'FIRST_ROUND',
-                joinedTeamUuid: data.teamUuid,
-              };
-            }
-            return user;
-          }),
-        };
-      });
+      refetch();
     };
 
     const handleChangeRound = (e: MessageEvent<Round>) => {
@@ -169,7 +145,7 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
       eventSource?.removeEventListener('delete-user', handleDeleteUser);
       eventSource?.removeEventListener('adjust-user', handleAdjustUser);
     };
-  }, [eventSource, refetch, setTotalInfo, teamBuildingInfo?.roundStatus]);
+  }, [eventSource, refetch, setTotalInfo]);
 
   const filteredSelectedUsers = useMemo(() => {
     // @note: 현재 PM 팀에 속해 있는 사람들과 이번 라운드에서 선택된 사람들을 보여준다.
@@ -222,10 +198,19 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
         },
       },
       {
-        onSuccess: () => {
+        onSuccess: (data) => {
           playSound('팀원_확정');
           setSelectedUsers([]);
+          // @note: SSE를 못받을 경우를 대비해 수정할 수 있는 데이터 반영
+          setTotalInfo((prev) => {
+            if (!prev) return prev;
+            return {
+              ...prev,
+              userInfoList: data.userInfoList,
+            };
+          });
         },
+
         onError: () => {
           toastWithSound.error(
             '문제가 발생했습니다. 잠시 후 다시 시도해주세요.',
