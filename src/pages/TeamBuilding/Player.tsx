@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 
 import { useAtomValue } from 'jotai';
-import toast from 'react-hot-toast';
 
 import { useSelectUsers } from '@/apis/team-building/mutations';
 import { useGetTotalInfo } from '@/apis/team-building/queries';
