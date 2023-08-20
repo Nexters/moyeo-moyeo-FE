@@ -65,9 +65,11 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
   const { mutateAsync: selectUsers } = useSelectUsers();
   const eventSource = useAtomValue(eventSourceAtom);
 
-  const activeStep =
-    ROUND_INDEX_MAP[teamBuildingInfo?.roundStatus ?? 'FIRST_ROUND'];
   const [selectedUsers, setSelectedUsers] = useState<User['uuid'][]>([]); // 현재 라운드에 PM이 선택한 사람
+
+  const activeStep = useMemo(() => {
+    return ROUND_INDEX_MAP[teamBuildingInfo?.roundStatus ?? 'FIRST_ROUND'];
+  }, [teamBuildingInfo?.roundStatus]);
 
   const selectDoneList = useMemo(() => {
     return teamInfoList
@@ -130,6 +132,8 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
     const handleAdjustUser = (e: MessageEvent<string>) => {
       const data: AdjustUserEvent = JSON.parse(e.data);
       console.log('ADJUST USER: ', data);
+      if (data.joinedTeamUuid === teamUuid)
+        toastWithSound.success(`${data.userName}님이 팀에 배정되었습니다.`);
       refetch();
     };
 
@@ -201,19 +205,11 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
         },
       },
       {
-        onSuccess: (data) => {
+        onSuccess: () => {
           playSound('팀원_확정');
           setSelectedUsers([]);
-          // @note: SSE를 못받을 경우를 대비해 수정할 수 있는 데이터 반영
-          setTotalInfo((prev) => {
-            if (!prev) return prev;
-            return {
-              ...prev,
-              userInfoList: data.userInfoList,
-            };
-          });
+          refetch();
         },
-
         onError: () => {
           toastWithSound.error(
             '문제가 발생했습니다. 잠시 후 다시 시도해주세요.',
