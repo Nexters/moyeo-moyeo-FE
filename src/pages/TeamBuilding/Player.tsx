@@ -161,10 +161,15 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
       // @note: 조정 라운드라면 선택되지 못한 사람들을 전부 보여준다.
       if (teamBuildingInfo?.roundStatus === 'ADJUSTED_ROUND')
         return user.joinedTeamUuid === null;
+      // @note: 1. 현재 라운드에서 선택할 수 있는 사람들
+      // @note: 2. 이번 라운드에서 선택된 사람들
       else
         return (
-          user.choices[activeStep] === teamUuid &&
-          (user.joinedTeamUuid === null || user.joinedTeamUuid === teamUuid)
+          (user.choices[activeStep] === teamUuid &&
+            user.joinedTeamUuid === null) ||
+          (!!user.selectedRound &&
+            ROUND_INDEX_MAP[user.selectedRound] === activeStep &&
+            user.joinedTeamUuid === teamUuid)
         );
     });
   }, [activeStep, teamBuildingInfo?.roundStatus, teamUuid, userInfoList]);
