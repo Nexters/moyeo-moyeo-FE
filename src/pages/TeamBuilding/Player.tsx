@@ -166,8 +166,7 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
         return (
           (user.choices[activeStep] === teamUuid &&
             user.joinedTeamUuid === null) ||
-          (!!user.selectedRound &&
-            ROUND_INDEX_MAP[user.selectedRound] === activeStep &&
+          (user.selectedRound === teamBuildingInfo?.roundStatus &&
             user.joinedTeamUuid === teamUuid)
         );
     });
