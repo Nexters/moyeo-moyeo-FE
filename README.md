@@ -1,6 +1,21 @@
 <div align="center">
 <img src="https://github.com/Nexters/moyeo-moyeo-FE/assets/64428916/a74da854-24e4-42f5-86e2-3098a4d6d57b" title="moyeo moyeo logo"/>
 
+<table>
+  <tbody>
+    <tr>
+      <td align="center"><img src="https://github.com/Nexters/moyeo-moyeo-FE/assets/64428916/1d090ccf-eb09-40ef-8db1-26d8a5ca128d" width="100px;" alt=""/></td>
+      <td align="center"><img src="https://github.com/Nexters/moyeo-moyeo-FE/assets/64428916/2476713a-8971-4764-b660-071abe0acd72" width="100px;" alt=""/></td>
+      <td align="center"><img src="https://github.com/Nexters/moyeo-moyeo-FE/assets/64428916/68bf5818-5a88-49a4-8f5f-703dd0222f5b" width="100px;" alt=""/></td>
+      <td align="center"><img src="https://github.com/Nexters/moyeo-moyeo-FE/assets/64428916/f9a6f7e9-cee9-471c-a6f7-fe36e567bb00" width="100px;" alt=""/></td>
+      <td align="center"><img src="https://github.com/Nexters/moyeo-moyeo-FE/assets/64428916/2bf5c090-d751-41af-890e-d778a15585bf" width="100px;" alt=""/></td>
+    </tr>
+  </tbody>
+</table>
+<a href="https://forms.gle/SScnNAsaziQWfCi89" style="font-style:italic; font-size:18px; color:#8060FF">귀여운 캐릭터들 이름 추천 받아요~!</a>
+
+<br/>
+
 [![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2FNexters%2Fmoyeo-moyeo-FE&count_bg=%237B5CFE&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=hits&edge_flat=false)](https://hits.seeyoufarm.com)
 
 </div>
@@ -14,12 +29,12 @@
 <table>
   <tbody>
     <tr>
-      <td align="center"><a href="https://github.com/young-do"><img src="https://avatars.githubusercontent.com/u/22021344?v=4" width="100px;" alt=""/><br /><sub><b>FE & PM : 조영도</b></sub></a><br /></td>
-      <td align="center"><a href="https://github.com/haryung-lee"><img src="https://avatars.githubusercontent.com/u/64428916?v=4" width="100px;" alt=""/><br /><sub><b>FE : 이하령</b></sub></a><br /></td>
-      <td align="center"><a href="https://github.com/parkdaye"><img src="https://github-production-user-asset-6210df.s3.amazonaws.com/22021344/261303592-ff0d499a-8f96-4c8c-86fa-87dee87faaab.jpeg" width="100px;" alt=""/><br /><sub><b>BE : 박다예</b></sub></a><br /></td>
-      <td align="center"><a href="https://github.com/her0807"><img src="https://avatars.githubusercontent.com/u/26570275?v=4" width="100px;" alt=""/><br /><sub><b>BE : 허수진</b></sub></a><br /></td>
-      <td align="center"><a href="https://www.linkedin.com/in/minhyeongkim98/"><img src="https://media.licdn.com/dms/image/D5603AQGJUcZh8l4Mug/profile-displayphoto-shrink_400_400/0/1690543966012?e=1697673600&v=beta&t=HPqm_NfsNTFb0jKCRdl200Ci395J_9X4TrfQh0jErBo" width="100px;" alt=""/><br /><sub><b>DE : 김민형</b></sub></a><br /></td>
-      <td align="center"><a href="https://www.linkedin.com/in/seongin-hong/"><img src="https://media.licdn.com/dms/image/D5635AQHa5MjDGr-f_w/profile-framedphoto-shrink_400_400/0/1682042613604?e=1692716400&v=beta&t=Ez7J7ykzq5maQ6jL-TmAG3JIfrpc9-qSNCTqEmHqtso" width="100px;" alt=""/><br /><sub><b>DE : 홍성인</b></sub></a><br /></td>
+      <td align="center"><a href="https://github.com/young-do"><img src="https://avatars.githubusercontent.com/u/22021344?v=4" width="200px;" alt=""/><br /><sub><b>FE & PM : 조영도</b></sub></a><br /></td>
+      <td align="center"><a href="https://github.com/haryung-lee"><img src="https://avatars.githubusercontent.com/u/64428916?v=4" width="200px;" alt=""/><br /><sub><b>FE : 이하령</b></sub></a><br /></td>
+      <td align="center"><a href="https://github.com/parkdaye"><img src="https://github-production-user-asset-6210df.s3.amazonaws.com/22021344/261303592-ff0d499a-8f96-4c8c-86fa-87dee87faaab.jpeg" width="200px;" alt=""/><br /><sub><b>BE : 박다예</b></sub></a><br /></td>
+      <td align="center"><a href="https://github.com/her0807"><img src="https://avatars.githubusercontent.com/u/26570275?v=4" width="200px;" alt=""/><br /><sub><b>BE : 허수진</b></sub></a><br /></td>
+      <td align="center"><a href="https://www.linkedin.com/in/minhyeongkim98/"><img src="https://media.licdn.com/dms/image/D5603AQGJUcZh8l4Mug/profile-displayphoto-shrink_400_400/0/1690543966012?e=1697673600&v=beta&t=HPqm_NfsNTFb0jKCRdl200Ci395J_9X4TrfQh0jErBo" width="200px;" alt=""/><br /><sub><b>DE : 김민형</b></sub></a><br /></td>
+      <td align="center"><a href="https://www.linkedin.com/in/seongin-hong/"><img src="https://media.licdn.com/dms/image/D5635AQHa5MjDGr-f_w/profile-framedphoto-shrink_400_400/0/1682042613604?e=1692716400&v=beta&t=Ez7J7ykzq5maQ6jL-TmAG3JIfrpc9-qSNCTqEmHqtso" width="200px;" alt=""/><br /><sub><b>DE : 홍성인</b></sub></a><br /></td>
     </tr>
   </tbody>
 </table>
