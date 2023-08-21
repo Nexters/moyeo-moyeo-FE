@@ -65,9 +65,11 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
   const { mutateAsync: selectUsers } = useSelectUsers();
   const eventSource = useAtomValue(eventSourceAtom);
 
-  const activeStep =
-    ROUND_INDEX_MAP[teamBuildingInfo?.roundStatus ?? 'FIRST_ROUND'];
   const [selectedUsers, setSelectedUsers] = useState<User['uuid'][]>([]); // 현재 라운드에 PM이 선택한 사람
+
+  const activeStep = useMemo(() => {
+    return ROUND_INDEX_MAP[teamBuildingInfo?.roundStatus ?? 'FIRST_ROUND'];
+  }, [teamBuildingInfo?.roundStatus]);
 
   const selectDoneList = useMemo(() => {
     return teamInfoList
@@ -113,32 +115,7 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
       const data: PickUserEvent = JSON.parse(e.data);
       console.log('PICK USER: ', data);
 
-      // @note: refetch 대신 쿼리 클라이언트 수정
-      setTotalInfo((prev) => {
-        if (!prev) return prev;
-        return {
-          ...prev,
-          teamInfoList: prev.teamInfoList.map((team) => {
-            if (team.uuid === data.teamUuid) {
-              return {
-                ...team,
-                selectDone: true,
-              };
-            }
-            return team;
-          }),
-          userInfoList: prev.userInfoList.map((user) => {
-            if (data.pickUserUuids.includes(user.uuid)) {
-              return {
-                ...user,
-                selectedRound: teamBuildingInfo?.roundStatus ?? 'FIRST_ROUND',
-                joinedTeamUuid: data.teamUuid,
-              };
-            }
-            return user;
-          }),
-        };
-      });
+      refetch();
     };
 
     const handleChangeRound = (e: MessageEvent<Round>) => {
@@ -155,6 +132,8 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
     const handleAdjustUser = (e: MessageEvent<string>) => {
       const data: AdjustUserEvent = JSON.parse(e.data);
       console.log('ADJUST USER: ', data);
+      if (data.joinedTeamUuid === teamUuid)
+        toastWithSound.success(`${data.userName}님이 팀에 배정되었습니다.`);
       refetch();
     };
 
@@ -169,7 +148,7 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
       eventSource?.removeEventListener('delete-user', handleDeleteUser);
       eventSource?.removeEventListener('adjust-user', handleAdjustUser);
     };
-  }, [eventSource, refetch, setTotalInfo, teamBuildingInfo?.roundStatus]);
+  }, [eventSource, refetch, setTotalInfo]);
 
   const filteredSelectedUsers = useMemo(() => {
     // @note: 현재 PM 팀에 속해 있는 사람들과 이번 라운드에서 선택된 사람들을 보여준다.
@@ -185,10 +164,14 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
       // @note: 조정 라운드라면 선택되지 못한 사람들을 전부 보여준다.
       if (teamBuildingInfo?.roundStatus === 'ADJUSTED_ROUND')
         return user.joinedTeamUuid === null;
+      // @note: 1. 현재 라운드에서 선택할 수 있는 사람들
+      // @note: 2. 이번 라운드에서 선택된 사람들
       else
         return (
-          user.choices[activeStep] === teamUuid &&
-          (user.joinedTeamUuid === null || user.joinedTeamUuid === teamUuid)
+          (user.choices[activeStep] === teamUuid &&
+            user.joinedTeamUuid === null) ||
+          (user.selectedRound === teamBuildingInfo?.roundStatus &&
+            user.joinedTeamUuid === teamUuid)
         );
     });
   }, [activeStep, teamBuildingInfo?.roundStatus, teamUuid, userInfoList]);
@@ -225,6 +208,7 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
         onSuccess: () => {
           playSound('팀원_확정');
           setSelectedUsers([]);
+          refetch();
         },
         onError: () => {
           toastWithSound.error(
