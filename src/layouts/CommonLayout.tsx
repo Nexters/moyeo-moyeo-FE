@@ -4,11 +4,13 @@ import { Player } from '@lottiefiles/react-lottie-player';
 import { useAtomValue } from 'jotai';
 import { Outlet } from 'react-router-dom';
 
+import { ReactComponent as VolumeOffIcon } from '@/assets/icons/volumeOff.svg';
+import { ReactComponent as VolumeOnIcon } from '@/assets/icons/volumeOn.svg';
 import BlurBackgroundImage from '@/assets/images/blur.webp';
 import LottieBackgroundImage from '@/assets/images/lottie.webp';
 import { isShowLottieBackgroundState } from '@/store/atoms';
 import { css } from '@/styled-system/css';
-import { vstack } from '@/styled-system/patterns';
+import { center, vstack } from '@/styled-system/patterns';
 import { playSound, stopSound } from '@/utils/sound';
 
 const CommonLayout = () => {
@@ -50,15 +52,21 @@ const CommonLayout = () => {
       })}
     >
       <button
-        className={css({
+        className={center({
           position: 'fixed',
-          right: 0,
-          bottom: 0,
+          right: '20px',
+          bottom: '20px',
           zIndex: 2,
+          border: isPlayedBackgroundMusic
+            ? '2px solid token(colors.green.60)'
+            : '2px solid rgba(255, 255, 255, 0.28)',
+          borderRadius: '50%',
           cursor: 'pointer',
           color: 'gray.5',
           fontSize: '10px',
-          padding: '4px',
+          background: 'rgba(12, 12, 14, 0.50)',
+          backdropFilter: 'blur(50px)',
+          padding: '8px',
         })}
         onClick={() => {
           if (isPlayedBackgroundMusic) {
@@ -70,7 +78,11 @@ const CommonLayout = () => {
           }
         }}
       >
-        {isPlayedBackgroundMusic ? '브금 끄기' : '브금 켜기'}
+        {isPlayedBackgroundMusic ? (
+          <VolumeOnIcon width="25px" height="25px" />
+        ) : (
+          <VolumeOffIcon width="25px" height="25px" />
+        )}
       </button>
       {/* @note: 두 이미지를 가져오는 이유는 페이지 전환시 깜빡이는 느낌을 제거하기 위함 */}
       <img
