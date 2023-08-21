@@ -12,7 +12,7 @@
     </tr>
   </tbody>
 </table>
-<a href="https://forms.gle/SScnNAsaziQWfCi89" style="font-style:italic; font-size:18px; color:#8060FF">귀여운 캐릭터들 이름 추천 받아요~!</a>
+<a href="https://forms.gle/SScnNAsaziQWfCi89"><i>귀여운 캐릭터들 이름 추천 받아요~!</i></a>
 
 <br/>
 
