@@ -37,9 +37,7 @@ export const SelectTeamModal = ({
             onClose();
           }}
         >
-          <option value="" disabled>
-            팀 선택
-          </option>
+          <option value="">팀 선택</option>
           {teams.map((team) => (
             <option key={team.uuid} value={team.uuid}>
               {team.pmName} 팀
