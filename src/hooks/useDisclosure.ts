@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 
-export const useDisclosure = () => {
-  const [isOpen, setIsOpen] = useState(false);
+export const useDisclosure = (open?: boolean) => {
+  const [isOpen, setIsOpen] = useState(open ?? false);
 
   return useMemo(
     () => ({
