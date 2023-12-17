@@ -49,7 +49,7 @@ const square = cva({
   variants: {
     visual: {
       first: {
-        backgroundColor: 'purple.80',
+        backgroundColor: 'purple.40',
       },
       second: {
         backgroundColor: 'purple.50',

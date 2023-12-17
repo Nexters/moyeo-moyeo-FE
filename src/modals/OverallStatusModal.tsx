@@ -9,7 +9,6 @@ import { Modal } from '@/components/Modal';
 import { css } from '@/styled-system/css';
 import { center, hstack, vstack } from '@/styled-system/patterns';
 import { Team, User } from '@/types';
-import { playSound } from '@/utils/sound';
 
 type OverallStatusModalProps = {
   isOpen: boolean;
@@ -123,10 +122,7 @@ export const OverallStatusModal = ({
             팀 빌딩 현황
           </h2>
           <CloseIcon
-            onClick={() => {
-              playSound('버튼_클릭');
-              onClose();
-            }}
+            onClick={onClose}
             className={css({ width: '40px', cursor: 'pointer' })}
           />
         </div>

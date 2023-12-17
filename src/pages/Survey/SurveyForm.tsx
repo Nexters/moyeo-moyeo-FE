@@ -186,7 +186,7 @@ export const SurveyForm = ({
         <FormControl label="소개 페이지(선택)">
           <input
             name="userProfile"
-            placeholder="Github, Behance, Instagram 등"
+            placeholder="노션 자기소개 페이지 혹은 개인 웹사이트 등"
             maxLength={MAX_LENGTH__USER_PROFILE}
             autoComplete="off"
             value={inputs.userProfile}

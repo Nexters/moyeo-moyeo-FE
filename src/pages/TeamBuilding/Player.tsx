@@ -101,8 +101,20 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
     // 별도의 effect 훅으로 토스트를 띄운다.
     if (!localStorage.getItem('agreement')) return;
 
-    if (teamBuildingInfo?.roundStatus === 'COMPLETE') playSound('팀빌딩_완료');
-    else playSound('라운드_변경');
+    // @note: 조정라운드와 완료라운드는 전체 현황보기 모달이 자동으로 열린다.
+    // 첫번째 라운드에서는 선택 리스트 모달이 자동으로 열린다.
+    if (teamBuildingInfo?.roundStatus === 'COMPLETE') {
+      overallModalProps.onOpen();
+      playSound('팀빌딩_완료');
+    } else if (teamBuildingInfo?.roundStatus === 'ADJUSTED_ROUND') {
+      overallModalProps.onOpen();
+      playSound('라운드_변경');
+    } else {
+      if (teamBuildingInfo?.roundStatus === 'FIRST_ROUND') {
+        selectListModalProps.onOpen();
+      }
+      playSound('라운드_변경');
+    }
 
     roundStartModalProps.onOpen();
   }, [teamBuildingInfo?.roundStatus]);
@@ -222,6 +234,13 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
   const onClickAgreement = () => {
     localStorage.setItem('agreement', 'true');
     roundStartModalProps.onOpen();
+  };
+
+  const onClickOverallStatusModalClose = () => {
+    // @note: 팀 빌딩이 끝났으면 못닫게 막기
+    if (data?.teamBuildingInfo?.roundStatus === 'COMPLETE') return;
+    playSound('버튼_클릭');
+    overallModalProps.onClose();
   };
 
   return (
@@ -537,7 +556,7 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
       />
       <OverallStatusModal
         isOpen={overallModalProps.isOpen}
-        onClose={overallModalProps.onClose}
+        onClose={onClickOverallStatusModalClose}
         teamBuildingUuid={teamBuildingUuid}
       />
       <RoundStartModal
