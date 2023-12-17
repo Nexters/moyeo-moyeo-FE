@@ -9,9 +9,9 @@ import {
   useFinishTeamBuilding,
 } from '@/apis/admin/mutations';
 import { useGetTotalInfo } from '@/apis/team-building/queries';
-import { ReactComponent as CheckWithoutCircleIcon } from '@/assets/icons/checkWithoutCircle.svg';
-import { ReactComponent as Face } from '@/assets/icons/face.svg';
-import { ReactComponent as Group } from '@/assets/icons/group.svg';
+import CheckWithoutCircleIcon from '@/assets/icons/checkWithoutCircle.svg?react';
+import Face from '@/assets/icons/face.svg?react';
+import Group from '@/assets/icons/group.svg?react';
 import { Button } from '@/components/Button';
 import { Chip } from '@/components/Chip';
 import { ChipWithUser } from '@/components/ChipWithUser';
@@ -78,7 +78,7 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
 
   const { mutate: adjustUser } = useAdjustUser();
   const { mutate: deleteUser } = useDeleteUser();
-  const { mutate: finishTeamBuilding, isLoading: isLoadingToFinish } =
+  const { mutate: finishTeamBuilding, isPending: isLoadingToFinish } =
     useFinishTeamBuilding();
 
   const activeStep =

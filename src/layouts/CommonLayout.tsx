@@ -4,8 +4,8 @@ import { Player } from '@lottiefiles/react-lottie-player';
 import { useAtomValue } from 'jotai';
 import { Outlet } from 'react-router-dom';
 
-import { ReactComponent as VolumeOffIcon } from '@/assets/icons/volumeOff.svg';
-import { ReactComponent as VolumeOnIcon } from '@/assets/icons/volumeOn.svg';
+import VolumeOffIcon from '@/assets/icons/volumeOff.svg?react';
+import VolumeOnIcon from '@/assets/icons/volumeOn.svg?react';
 import BlurBackgroundImage from '@/assets/images/blur.webp';
 import LottieBackgroundImage from '@/assets/images/lottie.webp';
 import { isShowLottieBackgroundState } from '@/store/atoms';

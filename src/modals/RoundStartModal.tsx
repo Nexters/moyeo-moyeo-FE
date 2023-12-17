@@ -1,11 +1,11 @@
 import { useEffect } from 'react';
 
-import { ReactComponent as ExtraRound } from '@/assets/icons/modalLogo/extraRound.svg';
-import { ReactComponent as Finish } from '@/assets/icons/modalLogo/finish.svg';
-import { ReactComponent as FirstRound } from '@/assets/icons/modalLogo/firstRound.svg';
-import { ReactComponent as FourthRound } from '@/assets/icons/modalLogo/fourthRound.svg';
-import { ReactComponent as SecondRound } from '@/assets/icons/modalLogo/secondRound.svg';
-import { ReactComponent as ThirdRound } from '@/assets/icons/modalLogo/thirdRound.svg';
+import ExtraRound from '@/assets/icons/modalLogo/extraRound.svg?react';
+import Finish from '@/assets/icons/modalLogo/finish.svg?react';
+import FirstRound from '@/assets/icons/modalLogo/firstRound.svg?react';
+import FourthRound from '@/assets/icons/modalLogo/fourthRound.svg?react';
+import SecondRound from '@/assets/icons/modalLogo/secondRound.svg?react';
+import ThirdRound from '@/assets/icons/modalLogo/thirdRound.svg?react';
 import { Modal } from '@/components/Modal';
 
 type RoundFinishModalProps = {

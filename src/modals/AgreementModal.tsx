@@ -1,4 +1,4 @@
-import { ReactComponent as InfoIcon } from '@/assets/icons/info.svg';
+import InfoIcon from '@/assets/icons/info.svg?react';
 import { Button } from '@/components/Button';
 import { Modal } from '@/components/Modal';
 import { css } from '@/styled-system/css';

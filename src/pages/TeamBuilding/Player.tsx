@@ -4,10 +4,10 @@ import { useAtomValue } from 'jotai';
 
 import { useSelectUsers } from '@/apis/team-building/mutations';
 import { useGetTotalInfo } from '@/apis/team-building/queries';
-import { ReactComponent as ArrowUpIcon } from '@/assets/icons/arrowUp.svg';
-import { ReactComponent as FaceIcon } from '@/assets/icons/face.svg';
-import { ReactComponent as GroupIcon } from '@/assets/icons/group.svg';
-import { ReactComponent as InfoIcon } from '@/assets/icons/info.svg';
+import ArrowUpIcon from '@/assets/icons/arrowUp.svg?react';
+import FaceIcon from '@/assets/icons/face.svg?react';
+import GroupIcon from '@/assets/icons/group.svg?react';
+import InfoIcon from '@/assets/icons/info.svg?react';
 import { Button } from '@/components/Button';
 import { Card } from '@/components/Card';
 import { LinearProgress } from '@/components/LinearProgress';

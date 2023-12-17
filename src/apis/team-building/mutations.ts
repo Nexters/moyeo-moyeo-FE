@@ -7,8 +7,8 @@ export const useSelectUsers = () => {
   type RequestBody = API['selectUsers']['request']['body'];
   type Response = API['selectUsers']['response'];
 
-  return useMutation(
-    async ({
+  return useMutation({
+    mutationFn: async ({
       teamBuildingUuid,
       teamUuid,
       body,
@@ -18,5 +18,5 @@ export const useSelectUsers = () => {
         body,
       );
     },
-  );
+  });
 };

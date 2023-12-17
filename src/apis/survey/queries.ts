@@ -8,16 +8,14 @@ export const useGetTotalInfoForSurvey = (
 ) => {
   type Response = API['getTotalInfoForSurvey']['response'];
 
-  return useQuery(
-    ['survey', teamBuildingUuid],
-    async () => {
+  return useQuery({
+    queryKey: ['survey', teamBuildingUuid],
+    queryFn: async () => {
       if (!teamBuildingUuid) throw 'teamBuildingUuid is undefined';
       return await httpClient.get<Response>(
         `/api/surveys/team-building/${teamBuildingUuid}/teams`,
       );
     },
-    {
-      enabled: !!teamBuildingUuid,
-    },
-  );
+    enabled: !!teamBuildingUuid,
+  });
 };
