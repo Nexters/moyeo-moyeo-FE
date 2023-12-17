@@ -85,7 +85,7 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
     else return `${ROUND_LABEL_MAP[roundStatus]}\n선택 완료하기`;
   }, [selectDoneList, teamUuid, activeStep, teamBuildingInfo?.roundStatus]);
 
-  const selectListModalProps = useDisclosure();
+  const selectListModalProps = useDisclosure(true);
   const roundStartModalProps = useDisclosure(); // 라운드 시작 모달
   const selectConfirmModalProps = useDisclosure(); // 선택 확인용 모달
   const agreementModalProps = useDisclosure(); // 동의서 모달

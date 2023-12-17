@@ -92,8 +92,14 @@ export const OverallStatusModal = ({
     );
   };
 
+  const onClickClose = () => {
+    if (data?.teamBuildingInfo?.roundStatus === 'COMPLETE') return;
+    playSound('버튼_클릭');
+    onClose();
+  };
+
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
+    <Modal isOpen={isOpen} onClose={onClickClose}>
       <section
         className={vstack({
           width: '100%',
@@ -123,10 +129,7 @@ export const OverallStatusModal = ({
             팀 빌딩 현황
           </h2>
           <CloseIcon
-            onClick={() => {
-              playSound('버튼_클릭');
-              onClose();
-            }}
+            onClick={onClickClose}
             className={css({ width: '40px', cursor: 'pointer' })}
           />
         </div>
