@@ -9,7 +9,6 @@ import { Modal } from '@/components/Modal';
 import { css } from '@/styled-system/css';
 import { center, hstack, vstack } from '@/styled-system/patterns';
 import { Team, User } from '@/types';
-import { playSound } from '@/utils/sound';
 
 type OverallStatusModalProps = {
   isOpen: boolean;
