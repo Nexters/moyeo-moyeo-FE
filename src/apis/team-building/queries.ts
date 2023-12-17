@@ -23,9 +23,9 @@ export const useGetTotalInfo = (
     [queryClient, teamBuildingUuid],
   );
 
-  const queryResult = useQuery(
-    ['totalInfo', teamBuildingUuid],
-    async () => {
+  const queryResult = useQuery({
+    queryKey: ['totalInfo', teamBuildingUuid],
+    queryFn: async () => {
       if (!teamBuildingUuid) throw new Error('teamBuildingUuid is required');
 
       const data = await httpClient.get<Response>(
@@ -35,12 +35,10 @@ export const useGetTotalInfo = (
       console.log(data);
       return data;
     },
-    {
-      enabled: !!teamBuildingUuid,
-      refetchInterval: polling ? 10000 : false,
-      refetchIntervalInBackground: polling,
-    },
-  );
+    enabled: !!teamBuildingUuid,
+    refetchInterval: polling ? 10000 : false,
+    refetchIntervalInBackground: polling,
+  });
 
   return {
     ...queryResult,

@@ -260,9 +260,9 @@ export const SurveyForm = ({
         type="submit"
         size="small"
         color="secondary"
-        disabled={mutation.isLoading}
+        disabled={mutation.isPending}
       >
-        {mutation.isLoading ? '제출 중...' : '설문 제출하기'}
+        {mutation.isPending ? '제출 중...' : '설문 제출하기'}
       </Button>
     </form>
   );

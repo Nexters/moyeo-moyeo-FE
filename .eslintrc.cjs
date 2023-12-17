@@ -21,5 +21,7 @@ module.exports = {
       { allowConstantExport: true },
     ],
     '@typescript-eslint/no-non-null-assertion': 'off',
+    // @note: 의존성 배열 직접 설정하는 걸 선호하여 off
+    'react-hooks/exhaustive-deps': 'off',
   },
 };

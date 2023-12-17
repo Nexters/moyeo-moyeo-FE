@@ -1,8 +1,8 @@
 import { useMemo } from 'react';
 
 import { useGetTotalInfo } from '@/apis/team-building/queries';
-import { ReactComponent as CheckWithoutCircleIcon } from '@/assets/icons/checkWithoutCircle.svg';
-import { ReactComponent as CloseIcon } from '@/assets/icons/close.svg';
+import CheckWithoutCircleIcon from '@/assets/icons/checkWithoutCircle.svg?react';
+import CloseIcon from '@/assets/icons/close.svg?react';
 import { Chip } from '@/components/Chip';
 import { ChipWithUser } from '@/components/ChipWithUser';
 import { Modal } from '@/components/Modal';

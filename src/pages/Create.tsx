@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 
 import { useCreateTeamBuilding } from '@/apis/admin/mutations';
 import closeIcon from '@/assets/icons/close.svg';
-import { ReactComponent as TrashBinIcon } from '@/assets/icons/trashbin.svg';
+import TrashBinIcon from '@/assets/icons/trashbin.svg?react';
 import { Button } from '@/components/Button';
 import { css } from '@/styled-system/css';
 import { center, hstack, vstack } from '@/styled-system/patterns';
@@ -390,12 +390,12 @@ const Create = () => {
             type="submit"
             color="primary"
             size="medium"
-            disabled={mutation.isLoading}
+            disabled={mutation.isPending}
             className={css({
               width: '320px !important',
             })}
           >
-            {mutation.isLoading ? '팀 빌딩 생성 중...' : '팀 빌딩 시작하기'}
+            {mutation.isPending ? '팀 빌딩 생성 중...' : '팀 빌딩 시작하기'}
           </Button>
         </section>
       </form>
