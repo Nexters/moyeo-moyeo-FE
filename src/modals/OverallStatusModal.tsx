@@ -93,6 +93,7 @@ export const OverallStatusModal = ({
   };
 
   const onClickClose = () => {
+    // @note: 팀 빌딩이 끝났으면 못닫게 막기
     if (data?.teamBuildingInfo?.roundStatus === 'COMPLETE') return;
     playSound('버튼_클릭');
     onClose();

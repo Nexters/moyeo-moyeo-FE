@@ -101,9 +101,13 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
     // 별도의 effect 훅으로 토스트를 띄운다.
     if (!localStorage.getItem('agreement')) return;
 
+    // @note: 조정라운드와 완료라운드는 전체 현황보기 모달이 자동으로 열린다.
     if (teamBuildingInfo?.roundStatus === 'COMPLETE') {
       overallModalProps.onOpen();
       playSound('팀빌딩_완료');
+    } else if (teamBuildingInfo?.roundStatus === 'ADJUSTED_ROUND') {
+      overallModalProps.onOpen();
+      playSound('라운드_변경');
     } else playSound('라운드_변경');
 
     roundStartModalProps.onOpen();
