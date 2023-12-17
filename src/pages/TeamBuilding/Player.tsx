@@ -384,6 +384,11 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
               background: 'rgba(0, 0, 0, 0.8)',
             },
           })}
+          onClick={(e) => {
+            if (e.currentTarget === e.target) {
+              selectListModalProps.onClose();
+            }
+          }}
         >
           <div
             className={stack({
