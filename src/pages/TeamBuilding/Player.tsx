@@ -101,8 +101,10 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
     // 별도의 effect 훅으로 토스트를 띄운다.
     if (!localStorage.getItem('agreement')) return;
 
-    if (teamBuildingInfo?.roundStatus === 'COMPLETE') playSound('팀빌딩_완료');
-    else playSound('라운드_변경');
+    if (teamBuildingInfo?.roundStatus === 'COMPLETE') {
+      overallModalProps.onOpen();
+      playSound('팀빌딩_완료');
+    } else playSound('라운드_변경');
 
     roundStartModalProps.onOpen();
   }, [teamBuildingInfo?.roundStatus]);
