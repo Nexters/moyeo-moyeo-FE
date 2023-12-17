@@ -77,12 +77,20 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
       .map((team) => team.uuid);
   }, [teamInfoList]);
 
-  const selectionCompleteButtonName = useMemo(() => {
+  const selectionCompleteButtonName = useMemo<{
+    firstLine: string;
+    secondLine?: string;
+  }>(() => {
     const roundStatus = teamBuildingInfo?.roundStatus ?? 'FIRST_ROUND';
-    if (teamBuildingInfo?.roundStatus === 'COMPLETE') return '팀 빌딩 완료';
+    if (teamBuildingInfo?.roundStatus === 'COMPLETE')
+      return { firstLine: '팀 빌딩 완료' };
     else if (selectDoneList?.includes(teamUuid) || activeStep > 3)
-      return `${ROUND_LABEL_MAP[roundStatus]}\n대기중`;
-    else return `${ROUND_LABEL_MAP[roundStatus]}\n선택 완료하기`;
+      return { firstLine: ROUND_LABEL_MAP[roundStatus], secondLine: '대기중' };
+    else
+      return {
+        firstLine: ROUND_LABEL_MAP[roundStatus],
+        secondLine: '선택 완료하기',
+      };
   }, [selectDoneList, teamUuid, activeStep, teamBuildingInfo?.roundStatus]);
 
   const selectListModalProps = useDisclosure();
@@ -518,14 +526,24 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
             <Button
               color="secondary"
               size="large"
-              className={css({ height: '100%', whiteSpace: 'pre-line' })}
+              className={vstack({
+                height: '100%',
+                gap: '12px',
+                alignItems: 'center',
+                justifyContent: 'center',
+              })}
               disabled={selectDoneList?.includes(teamUuid) || activeStep > 3}
               onClick={() => {
                 playSound('버튼_클릭');
                 selectConfirmModalProps.onOpen();
               }}
             >
-              {selectionCompleteButtonName}
+              <span>{selectionCompleteButtonName.firstLine}</span>
+              {selectionCompleteButtonName.secondLine && (
+                <span className={css({ textStyle: 'h2' })}>
+                  {selectionCompleteButtonName.secondLine}
+                </span>
+              )}
             </Button>
           </div>
         </section>
