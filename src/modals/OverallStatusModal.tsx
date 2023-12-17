@@ -92,15 +92,8 @@ export const OverallStatusModal = ({
     );
   };
 
-  const onClickClose = () => {
-    // @note: 팀 빌딩이 끝났으면 못닫게 막기
-    if (data?.teamBuildingInfo?.roundStatus === 'COMPLETE') return;
-    playSound('버튼_클릭');
-    onClose();
-  };
-
   return (
-    <Modal isOpen={isOpen} onClose={onClickClose}>
+    <Modal isOpen={isOpen} onClose={onClose}>
       <section
         className={vstack({
           width: '100%',
@@ -130,7 +123,7 @@ export const OverallStatusModal = ({
             팀 빌딩 현황
           </h2>
           <CloseIcon
-            onClick={onClickClose}
+            onClick={onClose}
             className={css({ width: '40px', cursor: 'pointer' })}
           />
         </div>

@@ -85,7 +85,7 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
     else return `${ROUND_LABEL_MAP[roundStatus]}\n선택 완료하기`;
   }, [selectDoneList, teamUuid, activeStep, teamBuildingInfo?.roundStatus]);
 
-  const selectListModalProps = useDisclosure(true);
+  const selectListModalProps = useDisclosure();
   const roundStartModalProps = useDisclosure(); // 라운드 시작 모달
   const selectConfirmModalProps = useDisclosure(); // 선택 확인용 모달
   const agreementModalProps = useDisclosure(); // 동의서 모달
@@ -102,13 +102,19 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
     if (!localStorage.getItem('agreement')) return;
 
     // @note: 조정라운드와 완료라운드는 전체 현황보기 모달이 자동으로 열린다.
+    // 첫번째 라운드에서는 선택 리스트 모달이 자동으로 열린다.
     if (teamBuildingInfo?.roundStatus === 'COMPLETE') {
       overallModalProps.onOpen();
       playSound('팀빌딩_완료');
     } else if (teamBuildingInfo?.roundStatus === 'ADJUSTED_ROUND') {
       overallModalProps.onOpen();
       playSound('라운드_변경');
-    } else playSound('라운드_변경');
+    } else {
+      if (teamBuildingInfo?.roundStatus === 'FIRST_ROUND') {
+        selectListModalProps.onOpen();
+      }
+      playSound('라운드_변경');
+    }
 
     roundStartModalProps.onOpen();
   }, [teamBuildingInfo?.roundStatus]);
@@ -228,6 +234,13 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
   const onClickAgreement = () => {
     localStorage.setItem('agreement', 'true');
     roundStartModalProps.onOpen();
+  };
+
+  const onClickOverallStatusModalClose = () => {
+    // @note: 팀 빌딩이 끝났으면 못닫게 막기
+    if (data?.teamBuildingInfo?.roundStatus === 'COMPLETE') return;
+    playSound('버튼_클릭');
+    overallModalProps.onClose();
   };
 
   return (
@@ -543,7 +556,7 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
       />
       <OverallStatusModal
         isOpen={overallModalProps.isOpen}
-        onClose={overallModalProps.onClose}
+        onClose={onClickOverallStatusModalClose}
         teamBuildingUuid={teamBuildingUuid}
       />
       <RoundStartModal
