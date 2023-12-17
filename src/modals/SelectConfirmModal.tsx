@@ -23,7 +23,7 @@ const SelectConfirmModal = ({
           padding: '60px',
           gap: '20px',
           background: 'rgba(255, 255, 255, 0.07)',
-          width: '1060px',
+          width: '640px',
           backdropFilter: 'blur(50px)',
         })}
       >
@@ -35,12 +35,11 @@ const SelectConfirmModal = ({
         >
           <span
             className={css({
-              fontFamily: 'GmarketSansBold',
-              fontSize: '48px',
+              textStyle: 'h1',
               color: 'gray.5',
             })}
           >
-            선택한 팀원을 확정하시겠어요?
+            이번 라운드 팀원 선택을 마칠까요?
           </span>
           <CloseIcon
             onClick={() => {
@@ -51,16 +50,14 @@ const SelectConfirmModal = ({
           />
         </div>
         <div className={css({ width: '100%' })}>
-          <p className={css({ fontSize: '20px', color: 'gray.10' })}>
-            본인의 아이디어에 필요한 직군을 포함한 팀이 적절히 구성되고 있는지
-            확인해주세요
+          <p className={css({ textStyle: 'p1', color: 'gray.10' })}>
+            본인 아이디어에 필요한 팀원인지 확인해주세요.
             <br />
-            이번 라운드에 선택한 팀원은 운영진의 허가없이 선택을 취소 할 수
-            없습니다
+            1~4지망 라운드에서 선택 확정하면 취소할 수 없어요.
           </p>
           <div
             className={css({
-              width: '320px',
+              width: '100%',
               margin: '80px 0 0 auto',
             })}
           >
@@ -70,7 +67,7 @@ const SelectConfirmModal = ({
                 onClose();
               }}
             >
-              선택 확정하기
+              선택 완료하기
             </Button>
           </div>
         </div>
