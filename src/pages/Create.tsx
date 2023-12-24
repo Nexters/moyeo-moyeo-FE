@@ -18,6 +18,7 @@ import {
 import { playSound } from '@/utils/sound';
 import { isTrulyEmptyString } from '@/utils/string';
 import { toastWithSound } from '@/utils/toast';
+import { keepScroll } from '@/utils/ui';
 import { generateId } from '@/utils/user';
 
 type TeamRow = {
@@ -36,13 +37,15 @@ const Create = () => {
 
   const handleAddTeamRow = () => {
     playSound('버튼_클릭');
-    const newTeam: TeamRow = {
-      id: generateId(), // <- 임시. 서버에 보낼때는 제거해야함
-      pmName: '',
-      pmPosition: '',
-      teamName: '',
-    };
-    setTeamRows((prev) => prev.concat(newTeam));
+    keepScroll(() => {
+      const newTeam: TeamRow = {
+        id: generateId(), // <- 임시. 서버에 보낼때는 제거해야함
+        pmName: '',
+        pmPosition: '',
+        teamName: '',
+      };
+      setTeamRows((prev) => prev.concat(newTeam));
+    });
   };
   const handleUpdateTeamRow =
     (id: string) => (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -67,7 +70,7 @@ const Create = () => {
     });
 
     if (isEmptyRow || confirm('입력한 값이 존재합니다.\n삭제하시겠습니까?')) {
-      setTeamRows((prev) => prev.filter((t) => t.id !== id));
+      keepScroll(() => setTeamRows((prev) => prev.filter((t) => t.id !== id)));
     }
   };
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
