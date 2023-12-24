@@ -60,7 +60,13 @@ const Create = () => {
       );
     };
   const handleDeleteTeamRow = (id: string) => () => {
-    if (confirm('삭제하시겠습니까?')) {
+    const row = teamRows.find((t) => t.id === id);
+    const isEmptyRow = Object.entries(row ?? {}).every(([key, value]) => {
+      if (key === 'id') return true;
+      return isTrulyEmptyString(value);
+    });
+
+    if (isEmptyRow || confirm('입력한 값이 존재합니다.\n삭제하시겠습니까?')) {
       setTeamRows((prev) => prev.filter((t) => t.id !== id));
     }
   };
