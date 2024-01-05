@@ -338,29 +338,37 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
 
   const renderTeamTitle = (teamUuid: Team['uuid']) => {
     const team = teamInfoList?.find((team) => team.uuid === teamUuid);
-    const teamTitle = team ? `${team.pmName} - ${team.teamName}` : '남은 인원';
     const showCheck = team?.selectDone ?? false;
 
     return (
-      <div className={hstack()}>
-        {teamTitle}
-        {showCheck && (
-          <div
-            title="이번 라운드 팀원 선택을 완료했습니다."
-            className={center({
-              width: '28px',
-              height: '28px',
-              borderRadius: '50%',
-              flexShrink: 0,
-              backgroundColor: 'green.70',
-              '& svg': {
-                width: '20px',
-                height: '20px',
-              },
-            })}
-          >
-            <CheckWithoutCircleIcon />
+      <div className={css({ padding: '16px 0', textStyle: 'p2' })}>
+        {team ? (
+          <div className={stack({ gap: '8px' })}>
+            <div className={hstack({ textStyle: 'h4' })}>
+              {team.pmName}
+              {showCheck && (
+                <div
+                  title="이번 라운드 팀원 선택을 완료했습니다."
+                  className={center({
+                    width: '28px',
+                    height: '28px',
+                    borderRadius: '50%',
+                    flexShrink: 0,
+                    backgroundColor: 'green.70',
+                    '& svg': {
+                      width: '20px',
+                      height: '20px',
+                    },
+                  })}
+                >
+                  <CheckWithoutCircleIcon />
+                </div>
+              )}
+            </div>
+            <div>{team.teamName}</div>
           </div>
+        ) : (
+          '남은 인원'
         )}
       </div>
     );
