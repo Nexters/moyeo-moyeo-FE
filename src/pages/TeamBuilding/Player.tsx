@@ -287,7 +287,7 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
                 color: 'gray.5',
               })}
             >
-              Nexters23기 팀빌딩입니다
+              {teamBuildingInfo?.teamBuildingName}
             </h1>
             <button
               className={css({
