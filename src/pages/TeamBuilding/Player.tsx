@@ -544,6 +544,19 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
                   : '이번 라운드에는 지망자가 없습니다'}
               </span>
             )}
+            {!selectListModalProps.isOpen && (
+              <div
+                className={css({
+                  position: 'absolute',
+                  top: '0',
+                  left: '0',
+                  width: '100%',
+                  height: '100%',
+                  cursor: 'pointer',
+                })}
+                onClick={() => selectListModalProps.onOpen()}
+              />
+            )}
           </div>
           <div
             className={css({
