@@ -60,7 +60,10 @@ const ROUNDS = [
 ];
 
 export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
-  const { data, refetch, setTotalInfo } = useGetTotalInfo(teamBuildingUuid);
+  const { data, refetch, setTotalInfo } = useGetTotalInfo(
+    teamBuildingUuid,
+    true,
+  );
   const { teamBuildingInfo, teamInfoList, userInfoList } = data ?? {};
   const { mutateAsync: selectUsers } = useSelectUsers();
   const eventSource = useAtomValue(eventSourceAtom);
