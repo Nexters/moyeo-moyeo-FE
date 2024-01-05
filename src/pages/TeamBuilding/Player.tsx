@@ -407,6 +407,7 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
           className={css({
             width: '1280px',
             height: '200px',
+            position: 'relative',
             _after: {
               content: '""',
               position: 'fixed',
@@ -426,23 +427,30 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
           <div
             className={stack({
               width: '1030px',
-              height: selectListModalProps.isOpen ? '650px' : '200px',
+              height: '650px',
               background: selectListModalProps.isOpen
                 ? 'rgba(255, 255, 255, 0.07)'
                 : 'rgba(0, 0, 0, 0.07)',
               backdropFilter: 'blur(50px)',
-              padding: '30px 30px 0 30px',
+              padding: '30px 0 0 30px',
               border: '1px solid rgba(255, 255, 255, 0.11)',
               borderRadius: '20px 20px 0 0',
               overflow: 'auto',
               position: 'absolute',
-              bottom: '0',
+              top: selectListModalProps.isOpen ? '-450px' : '0', // -450px = 650px(전체 높이) - 200px(부모 높이)
+              left: '0',
               gap: '0',
-              transition: 'height 0.3s ease-in-out',
+              transition: 'top 0.3s ease-in-out',
+              willChange: 'top',
               zIndex: '1',
             })}
           >
-            <div className={hstack({ justifyContent: 'space-between' })}>
+            <div
+              className={hstack({
+                justifyContent: 'space-between',
+                paddingRight: '30px',
+              })}
+            >
               <h2
                 className={css({
                   textStyle: 'h1',
@@ -481,6 +489,8 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
               className={grid({
                 columns: 4,
                 marginTop: '30px',
+                marginRight: '20px',
+                paddingRight: '10px',
                 gap: '16px',
                 overflow: 'auto',
                 _scrollbarThumb: {
