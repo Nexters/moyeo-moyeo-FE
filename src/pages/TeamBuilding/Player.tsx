@@ -74,6 +74,10 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
     return ROUND_INDEX_MAP[teamBuildingInfo?.roundStatus ?? 'FIRST_ROUND'];
   }, [teamBuildingInfo?.roundStatus]);
 
+  const currentRoundLabel = useMemo(() => {
+    return ROUND_LABEL_MAP[teamBuildingInfo?.roundStatus ?? 'FIRST_ROUND'];
+  }, [teamBuildingInfo?.roundStatus]);
+
   const selectDoneList = useMemo(() => {
     return teamInfoList
       ?.filter((team) => team.selectDone)
@@ -84,14 +88,13 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
     firstLine: string;
     secondLine?: string;
   }>(() => {
-    const roundStatus = teamBuildingInfo?.roundStatus ?? 'FIRST_ROUND';
     if (teamBuildingInfo?.roundStatus === 'COMPLETE')
       return { firstLine: '팀 빌딩 완료' };
     else if (selectDoneList?.includes(teamUuid) || activeStep > 3)
-      return { firstLine: ROUND_LABEL_MAP[roundStatus], secondLine: '대기중' };
+      return { firstLine: currentRoundLabel, secondLine: '대기중' };
     else
       return {
-        firstLine: ROUND_LABEL_MAP[roundStatus],
+        firstLine: currentRoundLabel,
         secondLine: '선택 완료하기',
       };
   }, [selectDoneList, teamUuid, activeStep, teamBuildingInfo?.roundStatus]);
@@ -446,12 +449,7 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
                   color: 'gray.5',
                 })}
               >
-                {
-                  ROUND_LABEL_MAP[
-                    teamBuildingInfo?.roundStatus ?? 'FIRST_ROUND'
-                  ]
-                }{' '}
-                리스트
+                {currentRoundLabel} 리스트
               </h2>
               <div className={css({ width: '123px', height: '44px' })}>
                 <Button
