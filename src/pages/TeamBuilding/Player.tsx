@@ -70,6 +70,10 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
 
   const [selectedUsers, setSelectedUsers] = useState<User['uuid'][]>([]); // 현재 라운드에 PM이 선택한 사람
 
+  const pmName = useMemo(() => {
+    return teamInfoList?.find((team) => team.uuid === teamUuid)?.pmName;
+  }, [teamInfoList, teamUuid]);
+
   const activeStep = useMemo(() => {
     return ROUND_INDEX_MAP[teamBuildingInfo?.roundStatus ?? 'FIRST_ROUND'];
   }, [teamBuildingInfo?.roundStatus]);
@@ -352,7 +356,7 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
           })}
         >
           <h2 className={css({ textStyle: 'h1', color: 'gray.5' })}>
-            팀 구성 현황
+            {pmName}님 팀 구성 현황
           </h2>
           <div
             className={grid({
