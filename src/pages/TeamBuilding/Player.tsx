@@ -495,7 +495,6 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
                 marginTop: '30px',
                 marginRight: '20px',
                 paddingRight: '10px',
-                paddingBottom: '56px',
                 gap: '16px',
                 overflow: 'auto',
                 _scrollbarThumb: {
@@ -528,6 +527,10 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
                   onClick={() => toggleCard(user)}
                 />
               ))}
+              {/* 하단 패딩 대체용 */}
+              {filteredUsersByRound?.length !== 0 && (
+                <div className={css({ width: '100%', height: '56px' })} />
+              )}
             </div>
             {filteredUsersByRound?.length === 0 && (
               <span
