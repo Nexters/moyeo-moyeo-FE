@@ -491,6 +491,7 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
                 marginTop: '30px',
                 marginRight: '20px',
                 paddingRight: '10px',
+                paddingBottom: '56px',
                 gap: '16px',
                 overflow: 'auto',
                 _scrollbarThumb: {
