@@ -256,7 +256,7 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
 
   const onClickOverallStatusModalClose = () => {
     // @note: 팀 빌딩이 끝났으면 못닫게 막기
-    if (data?.teamBuildingInfo?.roundStatus === 'COMPLETE') return;
+    if (teamBuildingInfo?.roundStatus === 'COMPLETE') return;
     playSound('버튼_클릭');
     overallModalProps.onClose();
   };
@@ -609,6 +609,7 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
       <OverallStatusModal
         isOpen={overallModalProps.isOpen}
         onClose={onClickOverallStatusModalClose}
+        hiddenCloseButton={teamBuildingInfo?.roundStatus === 'COMPLETE'}
         teamBuildingUuid={teamBuildingUuid}
       />
       <RoundStartModal

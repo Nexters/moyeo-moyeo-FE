@@ -13,12 +13,14 @@ import { Team, User } from '@/types';
 type OverallStatusModalProps = {
   isOpen: boolean;
   onClose: () => void;
+  hiddenCloseButton?: boolean;
   teamBuildingUuid: string;
 };
 
 export const OverallStatusModal = ({
   isOpen,
   onClose,
+  hiddenCloseButton = false,
   teamBuildingUuid,
 }: OverallStatusModalProps) => {
   const { data } = useGetTotalInfo(teamBuildingUuid);
@@ -129,10 +131,12 @@ export const OverallStatusModal = ({
           >
             팀 빌딩 현황
           </h2>
-          <CloseIcon
-            onClick={onClose}
-            className={css({ width: '40px', cursor: 'pointer' })}
-          />
+          {!hiddenCloseButton && (
+            <CloseIcon
+              onClick={onClose}
+              className={css({ width: '40px', cursor: 'pointer' })}
+            />
+          )}
         </div>
 
         <div
