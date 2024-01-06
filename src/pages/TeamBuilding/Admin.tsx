@@ -350,14 +350,14 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
                 <div
                   title="이번 라운드 팀원 선택을 완료했습니다."
                   className={center({
-                    width: '28px',
-                    height: '28px',
+                    width: '20px',
+                    height: '20px',
                     borderRadius: '50%',
                     flexShrink: 0,
                     backgroundColor: 'green.70',
                     '& svg': {
-                      width: '20px',
-                      height: '20px',
+                      width: '16px',
+                      height: '16px',
                     },
                   })}
                 >

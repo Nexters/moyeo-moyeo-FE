@@ -70,6 +70,10 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
 
   const [selectedUsers, setSelectedUsers] = useState<User['uuid'][]>([]); // 현재 라운드에 PM이 선택한 사람
 
+  const pmName = useMemo(() => {
+    return teamInfoList?.find((team) => team.uuid === teamUuid)?.pmName;
+  }, [teamInfoList, teamUuid]);
+
   const activeStep = useMemo(() => {
     return ROUND_INDEX_MAP[teamBuildingInfo?.roundStatus ?? 'FIRST_ROUND'];
   }, [teamBuildingInfo?.roundStatus]);
@@ -252,7 +256,7 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
 
   const onClickOverallStatusModalClose = () => {
     // @note: 팀 빌딩이 끝났으면 못닫게 막기
-    if (data?.teamBuildingInfo?.roundStatus === 'COMPLETE') return;
+    if (teamBuildingInfo?.roundStatus === 'COMPLETE') return;
     playSound('버튼_클릭');
     overallModalProps.onClose();
   };
@@ -352,7 +356,7 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
           })}
         >
           <h2 className={css({ textStyle: 'h1', color: 'gray.5' })}>
-            팀 구성 현황
+            {pmName}님 팀 구성 현황
           </h2>
           <div
             className={grid({
@@ -491,7 +495,6 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
                 marginTop: '30px',
                 marginRight: '20px',
                 paddingRight: '10px',
-                paddingBottom: '56px',
                 gap: '16px',
                 overflow: 'auto',
                 _scrollbarThumb: {
@@ -524,6 +527,10 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
                   onClick={() => toggleCard(user)}
                 />
               ))}
+              {/* 하단 패딩 대체용 */}
+              {filteredUsersByRound?.length !== 0 && (
+                <div className={css({ width: '100%', height: '56px' })} />
+              )}
             </div>
             {filteredUsersByRound?.length === 0 && (
               <span
@@ -605,6 +612,7 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
       <OverallStatusModal
         isOpen={overallModalProps.isOpen}
         onClose={onClickOverallStatusModalClose}
+        hiddenCloseButton={teamBuildingInfo?.roundStatus === 'COMPLETE'}
         teamBuildingUuid={teamBuildingUuid}
       />
       <RoundStartModal
