@@ -2,7 +2,7 @@ import * as Sentry from '@sentry/react';
 
 export const initSentry = () => {
   Sentry.init({
-    dsn: import.meta.env.VITE_SENTRY_DSN,
+    dsn: import.meta.env.PROD ? import.meta.env.VITE_SENTRY_DSN : undefined,
     integrations: [new Sentry.BrowserTracing(), new Sentry.Replay()],
     // Performance Monitoring
     tracesSampleRate: 1.0, // Capture 100% of the transactions, reduce in production!

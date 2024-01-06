@@ -6,6 +6,7 @@ import { useParams, useSearchParams } from 'react-router-dom';
 import { BASE_URL } from '@/apis/http';
 import { useGetTotalInfo } from '@/apis/team-building/queries';
 import Spinner from '@/components/Spinner';
+import { useBeforeUnload } from '@/hooks/useBeforeUnload';
 import { eventSourceAtom } from '@/store/atoms';
 import { Team } from '@/types';
 import { resolveUrl } from '@/utils/url';
@@ -43,6 +44,8 @@ const TeamBuilding = () => {
     setEventSource(eventSource);
     return () => eventSource.close();
   }, [setEventSource, teamBuildingUuid]);
+
+  useBeforeUnload(role !== null);
 
   if (isLoading) return <Spinner />;
   if (!teamBuildingUuid || !totalInfo) return <NotFound />;

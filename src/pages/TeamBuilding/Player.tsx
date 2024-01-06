@@ -60,7 +60,10 @@ const ROUNDS = [
 ];
 
 export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
-  const { data, refetch, setTotalInfo } = useGetTotalInfo(teamBuildingUuid);
+  const { data, refetch, setTotalInfo } = useGetTotalInfo(
+    teamBuildingUuid,
+    true,
+  );
   const { teamBuildingInfo, teamInfoList, userInfoList } = data ?? {};
   const { mutateAsync: selectUsers } = useSelectUsers();
   const eventSource = useAtomValue(eventSourceAtom);
@@ -69,6 +72,10 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
 
   const activeStep = useMemo(() => {
     return ROUND_INDEX_MAP[teamBuildingInfo?.roundStatus ?? 'FIRST_ROUND'];
+  }, [teamBuildingInfo?.roundStatus]);
+
+  const currentRoundLabel = useMemo(() => {
+    return ROUND_LABEL_MAP[teamBuildingInfo?.roundStatus ?? 'FIRST_ROUND'];
   }, [teamBuildingInfo?.roundStatus]);
 
   const selectDoneList = useMemo(() => {
@@ -81,14 +88,13 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
     firstLine: string;
     secondLine?: string;
   }>(() => {
-    const roundStatus = teamBuildingInfo?.roundStatus ?? 'FIRST_ROUND';
     if (teamBuildingInfo?.roundStatus === 'COMPLETE')
       return { firstLine: '팀 빌딩 완료' };
     else if (selectDoneList?.includes(teamUuid) || activeStep > 3)
-      return { firstLine: ROUND_LABEL_MAP[roundStatus], secondLine: '대기중' };
+      return { firstLine: currentRoundLabel, secondLine: '대기중' };
     else
       return {
-        firstLine: ROUND_LABEL_MAP[roundStatus],
+        firstLine: currentRoundLabel,
         secondLine: '선택 완료하기',
       };
   }, [selectDoneList, teamUuid, activeStep, teamBuildingInfo?.roundStatus]);
@@ -284,7 +290,7 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
                 color: 'gray.5',
               })}
             >
-              Nexters23기 팀빌딩입니다
+              {teamBuildingInfo?.teamBuildingName}
             </h1>
             <button
               className={css({
@@ -401,6 +407,7 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
           className={css({
             width: '1280px',
             height: '200px',
+            position: 'relative',
             _after: {
               content: '""',
               position: 'fixed',
@@ -420,35 +427,37 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
           <div
             className={stack({
               width: '1030px',
-              height: selectListModalProps.isOpen ? '650px' : '200px',
+              height: '650px',
               background: selectListModalProps.isOpen
                 ? 'rgba(255, 255, 255, 0.07)'
                 : 'rgba(0, 0, 0, 0.07)',
               backdropFilter: 'blur(50px)',
-              padding: '30px 30px 0 30px',
+              padding: '30px 0 0 30px',
               border: '1px solid rgba(255, 255, 255, 0.11)',
               borderRadius: '20px 20px 0 0',
               overflow: 'auto',
               position: 'absolute',
-              bottom: '0',
+              top: selectListModalProps.isOpen ? '-450px' : '0', // -450px = 650px(전체 높이) - 200px(부모 높이)
+              left: '0',
               gap: '0',
-              transition: 'height 0.3s ease-in-out',
+              transition: 'top 0.3s ease-in-out',
+              willChange: 'top',
               zIndex: '1',
             })}
           >
-            <div className={hstack({ justifyContent: 'space-between' })}>
+            <div
+              className={hstack({
+                justifyContent: 'space-between',
+                paddingRight: '30px',
+              })}
+            >
               <h2
                 className={css({
                   textStyle: 'h1',
                   color: 'gray.5',
                 })}
               >
-                {
-                  ROUND_LABEL_MAP[
-                    teamBuildingInfo?.roundStatus ?? 'FIRST_ROUND'
-                  ]
-                }{' '}
-                리스트
+                {currentRoundLabel} 리스트
               </h2>
               <div className={css({ width: '123px', height: '44px' })}>
                 <Button
@@ -480,6 +489,9 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
               className={grid({
                 columns: 4,
                 marginTop: '30px',
+                marginRight: '20px',
+                paddingRight: '10px',
+                paddingBottom: '56px',
                 gap: '16px',
                 overflow: 'auto',
                 _scrollbarThumb: {
@@ -532,6 +544,19 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
                   ? '남은 인원이 없습니다'
                   : '이번 라운드에는 지망자가 없습니다'}
               </span>
+            )}
+            {!selectListModalProps.isOpen && (
+              <div
+                className={css({
+                  position: 'absolute',
+                  top: '0',
+                  left: '0',
+                  width: '100%',
+                  height: '100%',
+                  cursor: 'pointer',
+                })}
+                onClick={() => selectListModalProps.onOpen()}
+              />
             )}
           </div>
           <div

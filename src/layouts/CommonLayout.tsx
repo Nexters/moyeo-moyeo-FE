@@ -142,6 +142,7 @@ const CommonLayout = () => {
           justifyContent: 'center',
           alignItems: 'center',
           position: 'relative',
+          overflow: 'hidden',
         })}
       >
         <Outlet />

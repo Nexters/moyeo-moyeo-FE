@@ -6,6 +6,7 @@ import { useCreateUser } from '@/apis/survey/mutations';
 import { useGetTotalInfoForSurvey } from '@/apis/survey/queries';
 import { Button } from '@/components/Button';
 import { Select } from '@/components/Select';
+import { useBeforeUnload } from '@/hooks/useBeforeUnload';
 import { css } from '@/styled-system/css';
 import { stack } from '@/styled-system/patterns';
 import { Position, SurveyFormInputs, SurveyFormResult, Team } from '@/types';
@@ -15,6 +16,7 @@ import {
   MAX_ROUND,
   POSITION_LIST,
 } from '@/utils/const';
+import { isTrulyEmptyString } from '@/utils/string';
 
 const ROUND_ARRAY = Array.from({ length: MAX_ROUND }, (_, i) => i);
 
@@ -45,6 +47,10 @@ export const SurveyForm = ({
       isEmptyPosition: inputs.position === '',
       hasEmptyChoices: inputs.choices.includes(''),
       isDuplicatedChoices: new Set(inputs.choices).size !== MAX_ROUND,
+      isEmptyFormInputs: Object.values(inputs).every((value) => {
+        if (typeof value === 'string') return isTrulyEmptyString(value);
+        return value.every(isTrulyEmptyString);
+      }),
     };
   }, [inputs]);
 
@@ -114,6 +120,8 @@ export const SurveyForm = ({
   const getLabelByTeam = useCallback((team: Team) => {
     return `${team.pmName} - ${team.teamName}`;
   }, []);
+
+  useBeforeUnload(!validation.isEmptyFormInputs);
 
   return (
     <form
@@ -220,6 +228,7 @@ export const SurveyForm = ({
             isError={isClickedSubmit && validation.isEmptyPosition}
             placeholder="포지션을 선택해주세요"
             options={POSITION_LIST}
+            value={POSITION_LIST.find((v) => v.value === inputs.position)}
             onChange={(e) => {
               setInputs({ ...inputs, position: e?.value || '' });
             }}
@@ -227,6 +236,14 @@ export const SurveyForm = ({
         </FormControl>
 
         {ROUND_ARRAY.map((round) => {
+          const options = totalInfoForSurvey?.teamInfoList.map((team) => ({
+            value: team.uuid,
+            label: `${team.pmName} - ${team.teamName}`,
+          }));
+          const value = options?.find(
+            (option) => option.value === inputs.choices[round],
+          );
+
           return (
             <FormControl label={`${round + 1}지망`} key={round}>
               <Select
@@ -235,10 +252,8 @@ export const SurveyForm = ({
                   validation.hasEmptyChoices &&
                   inputs.choices[round] === ''
                 }
-                options={totalInfoForSurvey?.teamInfoList.map((team) => ({
-                  value: team.uuid,
-                  label: `${team.pmName} - ${team.teamName}`,
-                }))}
+                options={options}
+                value={value}
                 placeholder={`${round + 1}지망을 선택해주세요`}
                 onChange={(e) => {
                   if (!e) return;
