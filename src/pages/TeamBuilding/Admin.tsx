@@ -550,13 +550,16 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
               gap: '24px',
             })}
           >
-            <div className={hstack({ gap: '16px' })}>
+            <div className={hstack({ width: '100%', gap: '16px' })}>
               <Chip visual="first" label="1 지망" />
               <Chip visual="second" label="2 지망" />
               <Chip visual="third" label="3 지망" />
               <Chip visual="fourth" label="4 지망" />
               <Chip visual="adjust" label="임의배정" />
               <Chip visual="pm" label="PM" />
+              <div className={css({ flex: 1, textAlign: 'right' })}>
+                설문 제출 수 {userInfoList?.length} 명
+              </div>
             </div>
 
             <div
