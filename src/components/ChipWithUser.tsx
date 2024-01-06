@@ -32,6 +32,7 @@ export const ChipWithUser = ({
 
   return (
     <div
+      title={`uuid: ${user.uuid}`}
       className={css({
         position: 'relative',
         width: '128px',
