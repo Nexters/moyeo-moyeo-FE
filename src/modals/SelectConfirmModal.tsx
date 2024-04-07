@@ -53,6 +53,8 @@ const SelectConfirmModal = ({
           <p className={css({ textStyle: 'p1', color: 'gray.10' })}>
             본인 아이디어에 필요한 팀원인지 확인해주세요.
             <br />
+            그리고 선택할 팀원을 <b>모두 고른 뒤</b>에 선택 완료해주세요.
+            <br />
             1~4지망 라운드에서 선택 확정하면 취소할 수 없어요.
           </p>
           <div
