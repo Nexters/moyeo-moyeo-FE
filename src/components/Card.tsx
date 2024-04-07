@@ -55,7 +55,6 @@ const cardRecipe = cva({
     background: 'rgba(255, 255, 255, 0.11)',
     color: 'gray.5',
     borderRadius: '20px',
-    backdropFilter: 'blur(50px)',
     gap: '12px',
     transition: 'border 0.3s ease-in-out',
     position: 'relative',

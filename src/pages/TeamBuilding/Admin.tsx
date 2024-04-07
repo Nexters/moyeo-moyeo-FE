@@ -621,7 +621,6 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
                 width: '100%',
                 padding: '12px',
                 backgroundColor: 'rgba(12, 13, 14, 0.50)',
-                backdropFilter: 'blur(50px)',
                 borderRadius: '20px',
               })}
             >

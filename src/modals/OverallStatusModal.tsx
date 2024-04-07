@@ -161,7 +161,6 @@ export const OverallStatusModal = ({
               width: '100%',
               backgroundColor: 'rgba(12, 13, 14, 0.50)',
               borderRadius: '20px',
-              backdropFilter: 'blur(50px)',
               padding: '12px',
               overflow: 'auto',
             })}
