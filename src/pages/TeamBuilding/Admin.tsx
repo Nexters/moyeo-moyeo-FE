@@ -32,7 +32,8 @@ import {
   Team,
   User,
 } from '@/types';
-import { ROUND_INDEX_MAP, ROUND_LABEL_MAP } from '@/utils/const';
+import { POSITION, ROUND_INDEX_MAP, ROUND_LABEL_MAP } from '@/utils/const';
+import { downloadTsv } from '@/utils/file';
 import { playSound } from '@/utils/sound';
 import { toastWithSound } from '@/utils/toast';
 
@@ -119,6 +120,46 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
 
     return Object.entries(allMemberByTeam);
   }, [teamInfoList, userInfoList]);
+
+  const handleClickDownload = () => {
+    const teamNameMap = (teamInfoList ?? []).reduce(
+      (teamNameMap, team) => {
+        // @note: 팀 아이디어 이름과 pm 이름을 합쳐서 알기 쉽게 한다
+        teamNameMap[team.uuid] = `${team.pmName}팀: ${team.teamName}`;
+        return teamNameMap;
+      },
+      {} as Record<Team['uuid'], string>,
+    );
+
+    // @note: 현재 정보를 tsv 파일로 다운로드
+    const fileName = `${teamBuildingInfo?.teamBuildingName}-${teamBuildingUuid}.csv`;
+    const fileContent = [
+      [
+        'uuid',
+        '이름',
+        '직군',
+        '선택된 팀',
+        '선택된 라운드',
+        '1지망',
+        '2지망',
+        '3지망',
+        '4지망',
+      ],
+      // @note: allMemberByTeam를 사용하면 pm 정보도 자연스럽게 같이 들어가게 된다
+      ...allMemberByTeam.flatMap(([teamUuid, members]) => {
+        return members.map((member) => [
+          member.uuid,
+          member.userName,
+          POSITION[member.position],
+          teamNameMap[teamUuid] || '-',
+          member.selectedRound || '-',
+          ...member.choices.map((choice) => teamNameMap[choice] || '-'),
+        ]);
+      }),
+    ];
+
+    downloadTsv(fileName, fileContent);
+  };
 
   const handleCloseModal = () => {
     setSelectedUser(null);
@@ -456,6 +497,19 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
               {teamBuildingInfo?.teamBuildingName}
             </h1>
             <div className={hstack({ gap: '12px' })}>
+              <button
+                className={css({
+                  padding: '10px 12px',
+                  borderRadius: '10px',
+                  backgroundColor: 'rgba(255, 255, 255, 0.13)',
+                  textStyle: 'h4',
+                  color: 'gray.20',
+                  cursor: 'pointer',
+                })}
+                onClick={handleClickDownload}
+              >
+                TSV 파일 다운로드
+              </button>
               <button
                 className={css({
                   padding: '10px 12px',
