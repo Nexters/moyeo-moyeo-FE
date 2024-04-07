@@ -132,7 +132,7 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
     );
 
     // @note: 현재 정보를 tsv 파일로 다운로드
-    const fileName = `${teamBuildingInfo?.teamBuildingName}-${teamBuildingUuid}.csv`;
+    const fileName = `${teamBuildingInfo?.teamBuildingName}-${teamBuildingUuid}`;
     const fileContent = [
       [
         'uuid',
