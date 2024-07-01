@@ -464,7 +464,7 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
                   left: '0',
                   width: '100%',
                   height: '100%',
-                  background: 'rgba(0, 0, 0, 0.2)',
+                  background: 'rgba(255, 255, 255, 0.07)',
                   zIndex: '1',
                 },
                 // 위로 살짝 올라가는 효과
@@ -486,19 +486,22 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
               >
                 {currentRoundLabel} 리스트
               </h2>
-              <div className={css({ width: '123px', height: '44px' })}>
+              <div
+                className={css({
+                  width: '123px',
+                  height: '44px',
+                })}
+              >
                 <button
                   className={hstack({
-                    width: '124px',
+                    width: '130px',
                     padding: '10px 26px',
-                    textStyle: 'h4',
+                    textStyle: 'h3',
                     color: 'gray.5',
-                    borderRadius: '10px',
-                    background: 'rgba(255, 255, 255, 0.13)',
                     cursor: 'pointer',
                     justifyContent: 'center',
                     alignItems: 'center',
-                    gap: '15px',
+                    gap: '10px',
                     whiteSpace: 'nowrap',
                   })}
                   onClick={() => {
@@ -509,6 +512,7 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
                   {selectListModalProps.isOpen ? '접기' : '펼치기'}
                   <ArrowUpIcon
                     className={css({
+                      transition: 'transform 0.4s ease-in-out',
                       transform: selectListModalProps.isOpen
                         ? 'rotate(180deg)'
                         : 'rotate(0deg)',
