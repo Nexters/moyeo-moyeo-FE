@@ -429,6 +429,11 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
           }}
         >
           <div
+            onClick={() => {
+              if (!selectListModalProps.isOpen) {
+                selectListModalProps.onOpen();
+              }
+            }}
             className={stack({
               width: '1030px',
               height: '650px',
@@ -447,6 +452,24 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
               transition: 'top 0.3s ease-in-out',
               willChange: 'top',
               zIndex: '1',
+
+              _hover: {
+                _before: {
+                  content: selectListModalProps.isOpen ? undefined : '""',
+                  cursor: selectConfirmModalProps.isOpen
+                    ? 'default'
+                    : 'pointer',
+                  position: 'fixed',
+                  top: '0',
+                  left: '0',
+                  width: '100%',
+                  height: '100%',
+                  background: 'rgba(0, 0, 0, 0.2)',
+                  zIndex: '1',
+                },
+                // 위로 살짝 올라가는 효과
+                top: selectListModalProps.isOpen ? '-450px' : '-70px',
+              },
             })}
           >
             <div
@@ -464,14 +487,19 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
                 {currentRoundLabel} 리스트
               </h2>
               <div className={css({ width: '123px', height: '44px' })}>
-                <Button
-                  size="small"
-                  color="secondary"
+                <button
                   className={hstack({
+                    width: '124px',
+                    padding: '10px 26px',
+                    textStyle: 'h4',
+                    color: 'gray.5',
+                    borderRadius: '10px',
+                    background: 'rgba(255, 255, 255, 0.13)',
+                    cursor: 'pointer',
                     justifyContent: 'center',
                     alignItems: 'center',
-                    boxShadow: 'none',
                     gap: '15px',
+                    whiteSpace: 'nowrap',
                   })}
                   onClick={() => {
                     playSound('버튼_클릭');
@@ -486,7 +514,7 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
                         : 'rotate(0deg)',
                     })}
                   />
-                </Button>
+                </button>
               </div>
             </div>
             <div
@@ -551,19 +579,6 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
                   ? '남은 인원이 없습니다'
                   : '이번 라운드에는 지망자가 없습니다'}
               </span>
-            )}
-            {!selectListModalProps.isOpen && (
-              <div
-                className={css({
-                  position: 'absolute',
-                  top: '0',
-                  left: '0',
-                  width: '100%',
-                  height: '100%',
-                  cursor: 'pointer',
-                })}
-                onClick={() => selectListModalProps.onOpen()}
-              />
             )}
           </div>
           <div
