@@ -12,6 +12,7 @@ import { useGetTotalInfo } from '@/apis/team-building/queries';
 import CheckWithoutCircleIcon from '@/assets/icons/checkWithoutCircle.svg?react';
 import Face from '@/assets/icons/face.svg?react';
 import Group from '@/assets/icons/group.svg?react';
+import InfoOutline from '@/assets/icons/infoOutline.svg?react';
 import { Button } from '@/components/Button';
 import { Chip } from '@/components/Chip';
 import { ChipWithUser } from '@/components/ChipWithUser';
@@ -496,46 +497,58 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
             <h1 className={css({ flex: '1', textStyle: 'h1' })}>
               {teamBuildingInfo?.teamBuildingName}
             </h1>
-            <div className={hstack({ gap: '12px' })}>
-              <button
-                className={css({
-                  padding: '10px 12px',
-                  borderRadius: '10px',
-                  backgroundColor: 'rgba(255, 255, 255, 0.13)',
-                  textStyle: 'h4',
-                  color: 'gray.20',
-                  cursor: 'pointer',
-                })}
-                onClick={handleClickDownload}
-              >
-                TSV 파일 다운로드
-              </button>
-              <button
-                className={css({
-                  padding: '10px 12px',
-                  borderRadius: '10px',
-                  backgroundColor: 'rgba(255, 255, 255, 0.13)',
-                  textStyle: 'h4',
-                  color: 'gray.20',
-                  cursor: 'pointer',
-                })}
-                onClick={handleClickShareSurvey}
-              >
-                설문 링크 복사하기
-              </button>
-              <button
-                className={css({
-                  padding: '10px 12px',
-                  borderRadius: '10px',
-                  backgroundColor: 'rgba(255, 255, 255, 0.13)',
-                  textStyle: 'h4',
-                  color: 'gray.20',
-                  cursor: 'pointer',
-                })}
-                onClick={handleClickShareLink}
-              >
-                참여 링크 복사하기
-              </button>
+            <div className={hstack({ gap: '36px' })}>
+              <div className={hstack({ gap: '12px' })}>
+                <h4 className={hstack({ gap: '4px', textStyle: 'h4' })}>
+                  현황 저장
+                  <InfoOutline />
+                </h4>
+                <button
+                  className={css({
+                    width: '116px',
+                    padding: '10px 12px',
+                    borderRadius: '10px',
+                    backgroundColor: 'rgba(255, 255, 255, 0.13)',
+                    textStyle: 'h4',
+                    color: 'gray.20',
+                    cursor: 'pointer',
+                  })}
+                  onClick={handleClickDownload}
+                >
+                  TSV 다운로드
+                </button>
+              </div>
+              <div className={hstack({ gap: '12px' })}>
+                <h4 className={css({ textStyle: 'h4' })}>링크 공유</h4>
+                <button
+                  className={css({
+                    width: '116px',
+                    padding: '10px 12px',
+                    borderRadius: '10px',
+                    backgroundColor: 'rgba(255, 255, 255, 0.13)',
+                    textStyle: 'h4',
+                    color: 'gray.20',
+                    cursor: 'pointer',
+                  })}
+                  onClick={handleClickShareSurvey}
+                >
+                  설문
+                </button>
+                <button
+                  className={css({
+                    width: '116px',
+                    padding: '10px 12px',
+                    borderRadius: '10px',
+                    backgroundColor: 'rgba(255, 255, 255, 0.13)',
+                    textStyle: 'h4',
+                    color: 'gray.20',
+                    cursor: 'pointer',
+                  })}
+                  onClick={handleClickShareLink}
+                >
+                  PM 입장
+                </button>
+              </div>
             </div>
           </header>
 
