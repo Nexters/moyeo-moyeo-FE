@@ -2,6 +2,7 @@ import { useEffect, useLayoutEffect, useMemo, useState } from 'react';
 
 import { useAtomValue } from 'jotai';
 import toast from 'react-hot-toast';
+import { Tooltip } from 'react-tooltip';
 
 import {
   useAdjustUser,
@@ -501,7 +502,12 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
               <div className={hstack({ gap: '12px' })}>
                 <h4 className={hstack({ gap: '4px', textStyle: 'h4' })}>
                   현황 저장
-                  <InfoOutline />
+                  <div
+                    data-tooltip-id="download-helper"
+                    className={css({ cursor: 'pointer' })}
+                  >
+                    <InfoOutline />
+                  </div>
                 </h4>
                 <button
                   className={css({
@@ -790,6 +796,20 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
         teamBuildingUuid={teamBuildingUuid}
         isOpen={shareSurveyModalProps.isOpen}
         onClose={shareSurveyModalProps.onClose}
+      />
+      <Tooltip
+        id="download-helper"
+        place="bottom"
+        content="현재까지 현황을 엑셀로 저장할 수 있어요"
+        style={{
+          zIndex: 9999,
+          padding: '10px',
+          fontSize: '16px',
+          fontWeight: 600,
+          color: '#fff',
+          backgroundColor: '#0C0C0E',
+          borderRadius: '10px',
+        }}
       />
     </>
   );
