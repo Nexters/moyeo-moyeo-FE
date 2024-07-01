@@ -24,6 +24,7 @@ import { AdjustUserEvent, DeleteUserEvent, Round, Team, User } from '@/types';
 import { ROUND_INDEX_MAP, ROUND_LABEL_MAP } from '@/utils/const';
 import { playSound } from '@/utils/sound';
 import { toastWithSound } from '@/utils/toast';
+import { comparePosition } from '@/utils/user';
 
 type PlayerProps = {
   teamUuid: Team['uuid'];
@@ -180,17 +181,24 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
     };
   }, [eventSource, refetch, setTotalInfo]);
 
+  // @note: 포지션 순서대로 정렬된 유저 리스트
+  const sortedUserInfoList = useMemo(() => {
+    return userInfoList?.sort((a, b) =>
+      comparePosition(a.position, b.position),
+    );
+  }, [userInfoList]);
+
   const filteredSelectedUsers = useMemo(() => {
     // @note: 현재 PM 팀에 속해 있는 사람들과 이번 라운드에서 선택된 사람들을 보여준다.
-    return userInfoList?.filter(
+    return sortedUserInfoList?.filter(
       (user) =>
         user.joinedTeamUuid === teamUuid || selectedUsers.includes(user.uuid),
     );
-  }, [userInfoList, teamUuid, selectedUsers]);
+  }, [sortedUserInfoList, teamUuid, selectedUsers]);
 
   const filteredUsersByRound = useMemo(() => {
     // @note: 이번 라운드에서 선택할 수 있거나 이번 라운드에 선택된 사람들을 보여준다.
-    return userInfoList?.filter((user) => {
+    return sortedUserInfoList?.filter((user) => {
       // @note: 조정 라운드라면 선택되지 못한 사람들을 전부 보여준다.
       if (teamBuildingInfo?.roundStatus === 'ADJUSTED_ROUND')
         return user.joinedTeamUuid === null;
@@ -204,7 +212,7 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
             user.joinedTeamUuid === teamUuid)
         );
     });
-  }, [activeStep, teamBuildingInfo?.roundStatus, teamUuid, userInfoList]);
+  }, [activeStep, teamBuildingInfo?.roundStatus, teamUuid, sortedUserInfoList]);
 
   const toggleCard = (selectUser: User) => {
     // @note: 이미 선택 완료 버튼을 눌렀다면 선택할 수 없다.

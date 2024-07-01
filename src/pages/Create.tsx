@@ -239,7 +239,6 @@ const Create = () => {
               padding: '16px',
               backgroundColor: 'rgba(12, 13, 14, 0.40)',
               borderRadius: '20px',
-              backdropFilter: 'blur(50px)',
               gap: '40px',
             })}
           >

@@ -2,6 +2,7 @@ import { useEffect, useLayoutEffect, useMemo, useState } from 'react';
 
 import { useAtomValue } from 'jotai';
 import toast from 'react-hot-toast';
+import { Tooltip } from 'react-tooltip';
 
 import {
   useAdjustUser,
@@ -12,6 +13,7 @@ import { useGetTotalInfo } from '@/apis/team-building/queries';
 import CheckWithoutCircleIcon from '@/assets/icons/checkWithoutCircle.svg?react';
 import Face from '@/assets/icons/face.svg?react';
 import Group from '@/assets/icons/group.svg?react';
+import InfoOutline from '@/assets/icons/infoOutline.svg?react';
 import { Button } from '@/components/Button';
 import { Chip } from '@/components/Chip';
 import { ChipWithUser } from '@/components/ChipWithUser';
@@ -32,7 +34,8 @@ import {
   Team,
   User,
 } from '@/types';
-import { ROUND_INDEX_MAP, ROUND_LABEL_MAP } from '@/utils/const';
+import { POSITION, ROUND_INDEX_MAP, ROUND_LABEL_MAP } from '@/utils/const';
+import { downloadTsv } from '@/utils/file';
 import { playSound } from '@/utils/sound';
 import { toastWithSound } from '@/utils/toast';
 
@@ -119,6 +122,46 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
 
     return Object.entries(allMemberByTeam);
   }, [teamInfoList, userInfoList]);
+
+  const handleClickDownload = () => {
+    const teamNameMap = (teamInfoList ?? []).reduce(
+      (teamNameMap, team) => {
+        // @note: 팀 아이디어 이름과 pm 이름을 합쳐서 알기 쉽게 한다
+        teamNameMap[team.uuid] = `${team.pmName}팀: ${team.teamName}`;
+        return teamNameMap;
+      },
+      {} as Record<Team['uuid'], string>,
+    );
+
+    // @note: 현재 정보를 tsv 파일로 다운로드
+    const fileName = `${teamBuildingInfo?.teamBuildingName}-${teamBuildingUuid}`;
+    const fileContent = [
+      [
+        'uuid',
+        '이름',
+        '직군',
+        '선택된 팀',
+        '선택된 라운드',
+        '1지망',
+        '2지망',
+        '3지망',
+        '4지망',
+      ],
+      // @note: allMemberByTeam를 사용하면 pm 정보도 자연스럽게 같이 들어가게 된다
+      ...allMemberByTeam.flatMap(([teamUuid, members]) => {
+        return members.map((member) => [
+          member.uuid,
+          member.userName,
+          POSITION[member.position],
+          teamNameMap[teamUuid] || '-',
+          member.selectedRound || '-',
+          ...member.choices.map((choice) => teamNameMap[choice] || '-'),
+        ]);
+      }),
+    ];
+
+    downloadTsv(fileName, fileContent);
+  };
 
   const handleCloseModal = () => {
     setSelectedUser(null);
@@ -455,33 +498,63 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
             <h1 className={css({ flex: '1', textStyle: 'h1' })}>
               {teamBuildingInfo?.teamBuildingName}
             </h1>
-            <div className={hstack({ gap: '12px' })}>
-              <button
-                className={css({
-                  padding: '10px 12px',
-                  borderRadius: '10px',
-                  backgroundColor: 'rgba(255, 255, 255, 0.13)',
-                  textStyle: 'h4',
-                  color: 'gray.20',
-                  cursor: 'pointer',
-                })}
-                onClick={handleClickShareSurvey}
-              >
-                설문 링크 복사하기
-              </button>
-              <button
-                className={css({
-                  padding: '10px 12px',
-                  borderRadius: '10px',
-                  backgroundColor: 'rgba(255, 255, 255, 0.13)',
-                  textStyle: 'h4',
-                  color: 'gray.20',
-                  cursor: 'pointer',
-                })}
-                onClick={handleClickShareLink}
-              >
-                참여 링크 복사하기
-              </button>
+            <div className={hstack({ gap: '36px' })}>
+              <div className={hstack({ gap: '12px' })}>
+                <h4 className={hstack({ gap: '4px', textStyle: 'h4' })}>
+                  현황 저장
+                  <div
+                    data-tooltip-id="download-helper"
+                    className={css({ cursor: 'pointer' })}
+                  >
+                    <InfoOutline />
+                  </div>
+                </h4>
+                <button
+                  className={css({
+                    width: '116px',
+                    padding: '10px 12px',
+                    borderRadius: '10px',
+                    backgroundColor: 'rgba(255, 255, 255, 0.13)',
+                    textStyle: 'h4',
+                    color: 'gray.20',
+                    cursor: 'pointer',
+                  })}
+                  onClick={handleClickDownload}
+                >
+                  TSV 다운로드
+                </button>
+              </div>
+              <div className={hstack({ gap: '12px' })}>
+                <h4 className={css({ textStyle: 'h4' })}>링크 공유</h4>
+                <button
+                  className={css({
+                    width: '116px',
+                    padding: '10px 12px',
+                    borderRadius: '10px',
+                    backgroundColor: 'rgba(255, 255, 255, 0.13)',
+                    textStyle: 'h4',
+                    color: 'gray.20',
+                    cursor: 'pointer',
+                  })}
+                  onClick={handleClickShareSurvey}
+                >
+                  설문
+                </button>
+                <button
+                  className={css({
+                    width: '116px',
+                    padding: '10px 12px',
+                    borderRadius: '10px',
+                    backgroundColor: 'rgba(255, 255, 255, 0.13)',
+                    textStyle: 'h4',
+                    color: 'gray.20',
+                    cursor: 'pointer',
+                  })}
+                  onClick={handleClickShareLink}
+                >
+                  PM 입장
+                </button>
+              </div>
             </div>
           </header>
 
@@ -567,7 +640,6 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
                 width: '100%',
                 padding: '12px',
                 backgroundColor: 'rgba(12, 13, 14, 0.50)',
-                backdropFilter: 'blur(50px)',
                 borderRadius: '20px',
               })}
             >
@@ -724,6 +796,20 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
         teamBuildingUuid={teamBuildingUuid}
         isOpen={shareSurveyModalProps.isOpen}
         onClose={shareSurveyModalProps.onClose}
+      />
+      <Tooltip
+        id="download-helper"
+        place="bottom"
+        content="현재까지 현황을 엑셀로 저장할 수 있어요"
+        style={{
+          zIndex: 9999,
+          padding: '10px',
+          fontSize: '16px',
+          fontWeight: 600,
+          color: '#fff',
+          backgroundColor: '#0C0C0E',
+          borderRadius: '10px',
+        }}
       />
     </>
   );

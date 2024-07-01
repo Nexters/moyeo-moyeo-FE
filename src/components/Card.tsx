@@ -9,7 +9,7 @@ import NoLinkIcon from '@/assets/icons/noLink.svg?react';
 import { css, cva, cx } from '@/styled-system/css';
 import { center, hstack, vstack } from '@/styled-system/patterns';
 import { Position, Round } from '@/types';
-import { ROUND_LABEL_MAP } from '@/utils/const';
+import { POSITION, ROUND_LABEL_MAP } from '@/utils/const';
 import { playSound } from '@/utils/sound';
 
 export type CardProps = {
@@ -55,7 +55,6 @@ const cardRecipe = cva({
     background: 'rgba(255, 255, 255, 0.11)',
     color: 'gray.5',
     borderRadius: '20px',
-    backdropFilter: 'blur(50px)',
     gap: '12px',
     transition: 'border 0.3s ease-in-out',
     position: 'relative',
@@ -96,6 +95,8 @@ export const Card = ({
   onClick,
   className,
 }: CardProps) => {
+  const positionName = POSITION[position];
+
   return (
     <button className={cx(cardRecipe({ border }), className)} onClick={onClick}>
       <div className={vstack({ alignItems: 'flex-start' })}>
@@ -143,7 +144,7 @@ export const Card = ({
               color: 'rgba(255, 255, 255, 0.64)',
             })}
           >
-            {position}
+            {positionName}
           </p>
         </div>
       </div>
