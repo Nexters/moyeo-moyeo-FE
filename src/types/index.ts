@@ -35,6 +35,7 @@ export type User = {
   joinedTeamUuid: string | null;
   profileLink: string;
   selectedRound: Round | null;
+  createdDate: string;
 };
 
 export type TotalInfo = {
