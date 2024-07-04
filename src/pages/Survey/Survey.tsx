@@ -25,7 +25,7 @@ const Survey = () => {
 
   if (isLoading) return <Spinner />;
   if (!teamBuildingUuid || !totalInfoForSurvey) return <NotFound />;
-  if (totalInfoForSurvey.teamBuildingInfo.roundStatus !== 'FIRST_ROUND')
+  if (totalInfoForSurvey.teamBuildingInfo.roundStatus !== 'START')
     return <SurveyNotAvailable />;
   return !isSubmitted ? (
     <SurveyForm
