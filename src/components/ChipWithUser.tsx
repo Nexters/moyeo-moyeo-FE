@@ -111,7 +111,7 @@ const roundVisualMap: Record<Round, ChipVisual> = {
   FIRST_ROUND: 'first',
   SECOND_ROUND: 'second',
   THIRD_ROUND: 'third',
-  FORTH_ROUND: 'fourth',
+  FOURTH_ROUND: 'fourth',
   ADJUSTED_ROUND: 'adjust',
   COMPLETE: 'none',
 };

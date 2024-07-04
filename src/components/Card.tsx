@@ -39,7 +39,7 @@ const choiceRecipe = cva({
       FIRST_ROUND: { background: 'purple.40' },
       SECOND_ROUND: { background: 'purple.50' },
       THIRD_ROUND: { background: 'purple.60' },
-      FORTH_ROUND: { background: 'purple.70' },
+      FOURTH_ROUND: { background: 'purple.70' },
       ADJUSTED_ROUND: { background: 'gray.60' },
       COMPLETE: {},
     },

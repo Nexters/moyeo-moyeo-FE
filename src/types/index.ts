@@ -2,7 +2,7 @@ export type Round =
   | 'FIRST_ROUND'
   | 'SECOND_ROUND'
   | 'THIRD_ROUND'
-  | 'FORTH_ROUND'
+  | 'FOURTH_ROUND'
   | 'ADJUSTED_ROUND'
   | 'COMPLETE';
 
