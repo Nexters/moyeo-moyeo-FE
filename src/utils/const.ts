@@ -16,6 +16,7 @@ export const POSITION_LIST = Object.entries(POSITION).map(([key, value]) => ({
 }));
 
 export const ROUND_INDEX_MAP: Record<Round, number> = {
+  START: -1,
   FIRST_ROUND: 0,
   SECOND_ROUND: 1,
   THIRD_ROUND: 2,
@@ -25,6 +26,7 @@ export const ROUND_INDEX_MAP: Record<Round, number> = {
 };
 
 export const ROUND_LABEL_MAP: Record<Round, string> = {
+  START: '시작',
   FIRST_ROUND: '1지망',
   SECOND_ROUND: '2지망',
   THIRD_ROUND: '3지망',

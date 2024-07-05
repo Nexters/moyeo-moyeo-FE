@@ -93,6 +93,8 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
     firstLine: string;
     secondLine?: string;
   }>(() => {
+    if (teamBuildingInfo?.roundStatus === 'START')
+      return { firstLine: '팀 빌딩', secondLine: '시작 대기 중' };
     if (teamBuildingInfo?.roundStatus === 'COMPLETE')
       return { firstLine: '팀 빌딩 완료' };
     else if (selectDoneList?.includes(teamUuid) || activeStep > 3)
@@ -102,7 +104,19 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
         firstLine: currentRoundLabel,
         secondLine: '선택 완료하기',
       };
-  }, [selectDoneList, teamUuid, activeStep, teamBuildingInfo?.roundStatus]);
+  }, [
+    teamBuildingInfo?.roundStatus,
+    selectDoneList,
+    teamUuid,
+    activeStep,
+    currentRoundLabel,
+  ]);
+
+  const isDisabledSelectionCompleteButton = useMemo(() => {
+    // @note: 시작 라운드에는 버튼 클릭 불가능
+    if (teamBuildingInfo?.roundStatus === 'START') return true;
+    return selectDoneList?.includes(teamUuid) || activeStep > 3;
+  }, [teamBuildingInfo?.roundStatus, selectDoneList, teamUuid, activeStep]);
 
   const selectListModalProps = useDisclosure();
   const roundStartModalProps = useDisclosure(); // 라운드 시작 모달
@@ -111,14 +125,16 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
   const overallModalProps = useDisclosure(); // 전체 현황보기 모달
 
   useEffect(() => {
-    if (localStorage.getItem('agreement') === 'true') return;
+    // @note: 각 팀빌딩마다 동의를 하도록 한다
+    if (localStorage.getItem('agreement') === teamBuildingUuid) return;
     agreementModalProps.onOpen();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
     // @note: 라운드 변경에 대한 이벤트 감지가 안되는 경우, 토스트가 안뜰 수 있어
     // 별도의 effect 훅으로 토스트를 띄운다.
-    if (!localStorage.getItem('agreement')) return;
+    if (localStorage.getItem('agreement') !== teamBuildingUuid) return;
 
     // @note: 조정라운드와 완료라운드는 전체 현황보기 모달이 자동으로 열린다.
     // 첫번째 라운드에서는 선택 리스트 모달이 자동으로 열린다.
@@ -136,6 +152,7 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
     }
 
     roundStartModalProps.onOpen();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [teamBuildingInfo?.roundStatus]);
 
   useEffect(() => {
@@ -179,6 +196,7 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
       eventSource?.removeEventListener('delete-user', handleDeleteUser);
       eventSource?.removeEventListener('adjust-user', handleAdjustUser);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [eventSource, refetch, setTotalInfo]);
 
   // @note: 포지션 순서대로 정렬된 유저 리스트
@@ -258,7 +276,7 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
   };
 
   const onClickAgreement = () => {
-    localStorage.setItem('agreement', 'true');
+    localStorage.setItem('agreement', teamBuildingUuid);
     roundStartModalProps.onOpen();
   };
 
@@ -492,7 +510,10 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
                   color: 'gray.5',
                 })}
               >
-                {currentRoundLabel} 리스트
+                {teamBuildingInfo?.roundStatus === 'START'
+                  ? // @note: 팀 빌딩 시작 전에는 1지망 리스트라고 표시함
+                    '1지망 리스트'
+                  : `${currentRoundLabel} 리스트`}
               </h2>
               <div
                 className={css({
@@ -610,7 +631,7 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
                 alignItems: 'center',
                 justifyContent: 'center',
               })}
-              disabled={selectDoneList?.includes(teamUuid) || activeStep > 3}
+              disabled={isDisabledSelectionCompleteButton}
               onClick={() => {
                 playSound('버튼_클릭');
                 selectConfirmModalProps.onOpen();
@@ -645,7 +666,7 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
       <RoundStartModal
         isOpen={roundStartModalProps.isOpen}
         onClose={roundStartModalProps.onClose}
-        round={activeStep}
+        round={teamBuildingInfo?.roundStatus ?? 'START'}
       />
     </>
   );

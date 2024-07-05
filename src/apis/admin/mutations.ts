@@ -17,6 +17,21 @@ export const useCreateTeamBuilding = () => {
   });
 };
 
+export const useStartTeamBuilding = () => {
+  type Response = API['startTeamBuilding']['response'];
+
+  return useMutation({
+    mutationFn: async ({
+      teamBuildingUuid,
+    }: API['startTeamBuilding']['request']) => {
+      return await httpClient.put<Response, void>(
+        `/api/admin/team-building/${teamBuildingUuid}/start`,
+        undefined,
+      );
+    },
+  });
+};
+
 export const useAdjustUser = () => {
   type Response = API['adjustUser']['response'];
   type RequestBody = API['adjustUser']['request']['body'];

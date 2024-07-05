@@ -26,7 +26,7 @@ const AgreementModal = ({ isOpen, onClose, onAgree }: AgreementModalProps) => {
         <div className={hstack({ width: '100%' })}>
           <InfoIcon />
           <p className={css({ color: 'gray.5', textStyle: 'h1' })}>
-            다음 안내와 유의사항을 확인한 후 동의해주세요
+            시작 전, 다음 안내와 유의사항을 확인한 후 동의해주세요
           </p>
         </div>
         <div

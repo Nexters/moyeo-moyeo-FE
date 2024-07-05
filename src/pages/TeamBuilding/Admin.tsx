@@ -8,6 +8,7 @@ import {
   useAdjustUser,
   useDeleteUser,
   useFinishTeamBuilding,
+  useStartTeamBuilding,
 } from '@/apis/admin/mutations';
 import { useGetTotalInfo } from '@/apis/team-building/queries';
 import CheckWithoutCircleIcon from '@/assets/icons/checkWithoutCircle.svg?react';
@@ -22,6 +23,7 @@ import { Step, Stepper } from '@/components/stepper';
 import { useDisclosure } from '@/hooks/useDisclosure';
 import { SelectTeamModal } from '@/modals/SelectTeamModal';
 import { ShareSurveyModal } from '@/modals/ShareSurveyModal';
+import { ConfirmModal } from '@/modals/common/ConfirmModal';
 import { eventSourceAtom } from '@/store/atoms';
 import { css } from '@/styled-system/css';
 import { center, hstack, stack, vstack } from '@/styled-system/patterns';
@@ -71,6 +73,8 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const selectTeamModalProps = useDisclosure();
   const shareSurveyModalProps = useDisclosure();
+  const startConfirmModalProps = useDisclosure();
+  const finishConfirmModalProps = useDisclosure();
   const eventSource = useAtomValue(eventSourceAtom);
 
   const {
@@ -82,6 +86,8 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
 
   const { mutate: adjustUser } = useAdjustUser();
   const { mutate: deleteUser } = useDeleteUser();
+  const { mutate: startTeamBuilding, isPending: isLoadingToStart } =
+    useStartTeamBuilding();
   const { mutate: finishTeamBuilding, isPending: isLoadingToFinish } =
     useFinishTeamBuilding();
 
@@ -268,6 +274,33 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
     toastWithSound.success('참여 링크가 복사되었습니다');
   };
 
+  const handleClickStartTeamBuilding = () => {
+    startTeamBuilding(
+      { teamBuildingUuid },
+      {
+        onSuccess: () => {
+          // @note: refetch 되기 전까지 선반영
+          setTotalInfo((prev) => {
+            if (!prev) return prev;
+            return {
+              ...prev,
+              teamBuildingInfo: {
+                ...prev.teamBuildingInfo,
+                roundStatus: 'FIRST_ROUND',
+              },
+            };
+          });
+          refetchTotalInfo();
+        },
+        onError: () => {
+          toastWithSound.error(
+            '팀 빌딩을 시작하는데 실패했습니다. 잠시 후 다시 시도해주세요.',
+          );
+        },
+      },
+    );
+  };
+
   const handleClickFinishTeamBuilding = () => {
     finishTeamBuilding(
       {
@@ -309,7 +342,10 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
     // 별도의 effect 훅으로 토스트를 띄운다.
     const roundStatus = teamBuildingInfo?.roundStatus ?? 'FIRST_ROUND';
 
-    if (roundStatus === 'COMPLETE') {
+    if (roundStatus === 'START') {
+      playSound('라운드_변경');
+      toast.success('모든 준비가 완료되면 팀 빌딩을 시작해주세요.');
+    } else if (roundStatus === 'COMPLETE') {
       playSound('팀빌딩_완료');
       toast.success('팀 빌딩이 완료되었습니다.');
     } else {
@@ -768,24 +804,41 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
           </section>
 
           <section className={css({ width: '100%', textAlign: 'right' })}>
-            <Button
-              size="medium"
-              color="primary"
-              title={
-                !isFinishedTeamBuilding && isDisabledFinishTeamBuildingButton
-                  ? '팀 구성 조정 라운드에서 모든 팀에 인원 배정이 완료되어야 종료할 수 있습니다.'
-                  : undefined
-              }
-              disabled={isLoadingToFinish || isDisabledFinishTeamBuildingButton}
-              onClick={handleClickFinishTeamBuilding}
-              className={css({
-                width: '320px !important',
-              })}
-            >
-              {isFinishedTeamBuilding
-                ? '팀 빌딩이 완료되었습니다'
-                : '팀 빌딩 마치기'}
-            </Button>
+            {teamBuildingInfo?.roundStatus === 'START' && (
+              <Button
+                size="medium"
+                color="primary"
+                disabled={isLoadingToStart}
+                onClick={startConfirmModalProps.onOpen}
+                className={css({
+                  width: '320px !important',
+                })}
+              >
+                {isLoadingToStart ? '시작하고 있습니다...' : '팀 빌딩 시작하기'}
+              </Button>
+            )}
+            {teamBuildingInfo?.roundStatus !== 'START' && (
+              <Button
+                size="medium"
+                color="primary"
+                title={
+                  !isFinishedTeamBuilding && isDisabledFinishTeamBuildingButton
+                    ? '팀 구성 조정 라운드에서 모든 팀에 인원 배정이 완료되어야 종료할 수 있습니다.'
+                    : undefined
+                }
+                disabled={
+                  isLoadingToFinish || isDisabledFinishTeamBuildingButton
+                }
+                onClick={finishConfirmModalProps.onOpen}
+                className={css({
+                  width: '320px !important',
+                })}
+              >
+                {isFinishedTeamBuilding
+                  ? '팀 빌딩이 완료되었습니다'
+                  : '팀 빌딩 마치기'}
+              </Button>
+            )}
           </section>
         </section>
       </section>
@@ -800,6 +853,42 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
         teamBuildingUuid={teamBuildingUuid}
         isOpen={shareSurveyModalProps.isOpen}
         onClose={shareSurveyModalProps.onClose}
+      />
+      {/* 팀 빌딩 시작 확인 모달 */}
+      <ConfirmModal
+        title="팀 빌딩을 시작할까요?"
+        content={
+          <>
+            <p>
+              시작하면 설문 제출이 불가능해요.
+              <br />
+              아래 항목을 확인한 후 팀 빌딩을 시작해주세요.
+            </p>
+            <p className={css({ marginTop: '20px' })}>
+              1. 모든 인원이 설문을 제출했는지 한번 더 확인해주세요.
+              <br />
+              2. PM 전원이 팀 빌딩을 시작할 준비가 되었는지 확인해주세요.
+            </p>
+          </>
+        }
+        confirmButtonText="시작하기"
+        isOpen={startConfirmModalProps.isOpen}
+        onConfirm={handleClickStartTeamBuilding}
+        onClose={startConfirmModalProps.onClose}
+      />
+      {/* 팀 빌딩 종료 확인 모달 */}
+      <ConfirmModal
+        title="팀 빌딩을 마칠까요?"
+        content={
+          <>
+            모든 팀에 인원이 적절히 배정되었는지 확인해주세요.
+            <br />팀 빌딩을 마치면 이 화면으로 다시 돌아올 수 없어요.
+          </>
+        }
+        confirmButtonText="팀 빌딩 마치기"
+        isOpen={finishConfirmModalProps.isOpen}
+        onConfirm={handleClickFinishTeamBuilding}
+        onClose={finishConfirmModalProps.onClose}
       />
       <Tooltip
         id="download-helper"

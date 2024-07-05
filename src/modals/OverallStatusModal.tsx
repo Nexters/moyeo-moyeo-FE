@@ -39,6 +39,7 @@ export const OverallStatusModal = ({
           joinedTeamUuid: team.uuid,
           profileLink: '',
           selectedRound: 'FIRST_ROUND',
+          createdDate: '',
         } as User,
         ...(userInfoList ?? []).filter(
           (user) => user.joinedTeamUuid === team.uuid,
