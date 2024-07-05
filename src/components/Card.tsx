@@ -1,8 +1,8 @@
-import AndroidIcon from '@/assets/icons/character/android.svg';
-import BackEndIcon from '@/assets/icons/character/backend.svg';
-import DesignerIcon from '@/assets/icons/character/designer.svg';
-import FrontEndIcon from '@/assets/icons/character/frontend.svg';
-import IosIcon from '@/assets/icons/character/ios.svg';
+import androidImg from '@/assets/icons/character/android-128.png';
+import backendImg from '@/assets/icons/character/backend-128.png';
+import designerImg from '@/assets/icons/character/designer-128.png';
+import frontendImg from '@/assets/icons/character/frontend-128.png';
+import iosImg from '@/assets/icons/character/ios-128.png';
 import checkIcon from '@/assets/icons/check.svg';
 import LinkIcon from '@/assets/icons/link.svg?react';
 import NoLinkIcon from '@/assets/icons/noLink.svg?react';
@@ -39,7 +39,7 @@ const choiceRecipe = cva({
       FIRST_ROUND: { background: 'purple.40' },
       SECOND_ROUND: { background: 'purple.50' },
       THIRD_ROUND: { background: 'purple.60' },
-      FORTH_ROUND: { background: 'purple.70' },
+      FOURTH_ROUND: { background: 'purple.70' },
       ADJUSTED_ROUND: { background: 'gray.60' },
       COMPLETE: {},
     },
@@ -78,11 +78,11 @@ const cardRecipe = cva({
 });
 
 const imageUrl = {
-  FRONT_END: FrontEndIcon,
-  BACK_END: BackEndIcon,
-  DESIGNER: DesignerIcon,
-  ANDROID: AndroidIcon,
-  IOS: IosIcon,
+  FRONT_END: frontendImg,
+  BACK_END: backendImg,
+  DESIGNER: designerImg,
+  ANDROID: androidImg,
+  IOS: iosImg,
 };
 
 export const Card = ({

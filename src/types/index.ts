@@ -2,7 +2,7 @@ export type Round =
   | 'FIRST_ROUND'
   | 'SECOND_ROUND'
   | 'THIRD_ROUND'
-  | 'FORTH_ROUND'
+  | 'FOURTH_ROUND'
   | 'ADJUSTED_ROUND'
   | 'COMPLETE';
 
@@ -35,6 +35,7 @@ export type User = {
   joinedTeamUuid: string | null;
   profileLink: string;
   selectedRound: Round | null;
+  createdDate: string;
 };
 
 export type TotalInfo = {

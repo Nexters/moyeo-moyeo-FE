@@ -19,7 +19,7 @@ export const ROUND_INDEX_MAP: Record<Round, number> = {
   FIRST_ROUND: 0,
   SECOND_ROUND: 1,
   THIRD_ROUND: 2,
-  FORTH_ROUND: 3,
+  FOURTH_ROUND: 3,
   ADJUSTED_ROUND: 4,
   COMPLETE: 5, // @note: 해당 값으로 넘어가면 stepper는 선택된게 없다.
 };
@@ -28,7 +28,7 @@ export const ROUND_LABEL_MAP: Record<Round, string> = {
   FIRST_ROUND: '1지망',
   SECOND_ROUND: '2지망',
   THIRD_ROUND: '3지망',
-  FORTH_ROUND: '4지망',
+  FOURTH_ROUND: '4지망',
   ADJUSTED_ROUND: '팀 구성 조정',
   COMPLETE: '팀 빌딩 완료',
 };

@@ -36,6 +36,7 @@ import {
 } from '@/types';
 import { POSITION, ROUND_INDEX_MAP, ROUND_LABEL_MAP } from '@/utils/const';
 import { downloadTsv } from '@/utils/file';
+import { toLocaleString } from '@/utils/format';
 import { playSound } from '@/utils/sound';
 import { toastWithSound } from '@/utils/toast';
 
@@ -109,6 +110,7 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
           joinedTeamUuid: team.uuid,
           profileLink: '',
           selectedRound: 'FIRST_ROUND',
+          createdDate: '',
         } as User,
         ...(userInfoList ?? []).filter(
           (user) => user.joinedTeamUuid === team.uuid,
@@ -146,6 +148,7 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
         '2지망',
         '3지망',
         '4지망',
+        '설문제출시간',
       ],
       // @note: allMemberByTeam를 사용하면 pm 정보도 자연스럽게 같이 들어가게 된다
       ...allMemberByTeam.flatMap(([teamUuid, members]) => {
@@ -156,6 +159,7 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
           teamNameMap[teamUuid] || '-',
           member.selectedRound || '-',
           ...member.choices.map((choice) => teamNameMap[choice] || '-'),
+          toLocaleString(member.createdDate),
         ]);
       }),
     ];
