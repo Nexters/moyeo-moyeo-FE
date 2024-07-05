@@ -93,6 +93,8 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
     firstLine: string;
     secondLine?: string;
   }>(() => {
+    if (teamBuildingInfo?.roundStatus === 'START')
+      return { firstLine: '팀 빌딩', secondLine: '시작 대기 중' };
     if (teamBuildingInfo?.roundStatus === 'COMPLETE')
       return { firstLine: '팀 빌딩 완료' };
     else if (selectDoneList?.includes(teamUuid) || activeStep > 3)
@@ -103,6 +105,12 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
         secondLine: '선택 완료하기',
       };
   }, [selectDoneList, teamUuid, activeStep, teamBuildingInfo?.roundStatus]);
+
+  const isDisabledSelectionCompleteButton = useMemo(() => {
+    // @note: 시작 라운드에는 버튼 클릭 불가능
+    if (teamBuildingInfo?.roundStatus === 'START') return true;
+    return selectDoneList?.includes(teamUuid) || activeStep > 3;
+  }, []);
 
   const selectListModalProps = useDisclosure();
   const roundStartModalProps = useDisclosure(); // 라운드 시작 모달
@@ -492,7 +500,10 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
                   color: 'gray.5',
                 })}
               >
-                {currentRoundLabel} 리스트
+                {teamBuildingInfo?.roundStatus === 'START'
+                  ? // @note: 팀 빌딩 시작 전에는 1지망 리스트라고 표시함
+                    '1지망 리스트'
+                  : `${currentRoundLabel} 리스트`}
               </h2>
               <div
                 className={css({
@@ -610,7 +621,7 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
                 alignItems: 'center',
                 justifyContent: 'center',
               })}
-              disabled={selectDoneList?.includes(teamUuid) || activeStep > 3}
+              disabled={isDisabledSelectionCompleteButton}
               onClick={() => {
                 playSound('버튼_클릭');
                 selectConfirmModalProps.onOpen();

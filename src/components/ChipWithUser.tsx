@@ -113,5 +113,6 @@ const roundVisualMap: Record<Round, ChipVisual> = {
   THIRD_ROUND: 'third',
   FOURTH_ROUND: 'fourth',
   ADJUSTED_ROUND: 'adjust',
+  START: 'none',
   COMPLETE: 'none',
 };

@@ -309,7 +309,10 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
     // 별도의 effect 훅으로 토스트를 띄운다.
     const roundStatus = teamBuildingInfo?.roundStatus ?? 'FIRST_ROUND';
 
-    if (roundStatus === 'COMPLETE') {
+    if (roundStatus === 'START') {
+      playSound('라운드_변경');
+      toast.success('모든 준비가 완료되면 팀 빌딩을 시작해주세요.');
+    } else if (roundStatus === 'COMPLETE') {
       playSound('팀빌딩_완료');
       toast.success('팀 빌딩이 완료되었습니다.');
     } else {

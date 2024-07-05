@@ -9,7 +9,7 @@ import NoLinkIcon from '@/assets/icons/noLink.svg?react';
 import { css, cva, cx } from '@/styled-system/css';
 import { center, hstack, vstack } from '@/styled-system/patterns';
 import { Position, Round } from '@/types';
-import { POSITION, ROUND_LABEL_MAP } from '@/utils/const';
+import { POSITION } from '@/utils/const';
 import { playSound } from '@/utils/sound';
 
 export type CardProps = {
@@ -41,6 +41,7 @@ const choiceRecipe = cva({
       THIRD_ROUND: { background: 'purple.60' },
       FOURTH_ROUND: { background: 'purple.70' },
       ADJUSTED_ROUND: { background: 'gray.60' },
+      START: {},
       COMPLETE: {},
     },
   },
@@ -85,6 +86,16 @@ const imageUrl = {
   IOS: iosImg,
 };
 
+const choiceLabelMap: Record<Round, string> = {
+  FIRST_ROUND: '1지망',
+  SECOND_ROUND: '2지망',
+  THIRD_ROUND: '3지망',
+  FOURTH_ROUND: '4지망',
+  ADJUSTED_ROUND: 'E',
+  START: '-',
+  COMPLETE: '-',
+};
+
 export const Card = ({
   name,
   position,
@@ -102,7 +113,7 @@ export const Card = ({
       <div className={vstack({ alignItems: 'flex-start' })}>
         <div className={hstack({ gap: '6px', height: '28px' })}>
           <span className={choiceRecipe({ choice })}>
-            {choice === 'ADJUSTED_ROUND' ? 'E' : ROUND_LABEL_MAP[choice]}
+            {choiceLabelMap[choice]}
           </span>
           <a
             className={center({

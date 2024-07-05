@@ -1,4 +1,5 @@
 export type Round =
+  | 'START'
   | 'FIRST_ROUND'
   | 'SECOND_ROUND'
   | 'THIRD_ROUND'

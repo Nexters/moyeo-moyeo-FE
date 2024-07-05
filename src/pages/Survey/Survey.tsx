@@ -25,8 +25,6 @@ const Survey = () => {
 
   if (isLoading) return <Spinner />;
   if (!teamBuildingUuid || !totalInfoForSurvey) return <NotFound />;
-  // FIXME:
-  // @ts-expect-error Round 타입에 START를 아직 추가하지 않아서 ts 에러가 발생해서 일단 막음
   if (totalInfoForSurvey.teamBuildingInfo.roundStatus !== 'START')
     return <SurveyNotAvailable />;
   return !isSubmitted ? (
