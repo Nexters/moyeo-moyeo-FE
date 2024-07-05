@@ -131,6 +131,23 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
     return Object.entries(allMemberByTeam);
   }, [teamInfoList, userInfoList]);
 
+  const guideText = useMemo(() => {
+    switch (teamBuildingInfo?.roundStatus) {
+      case 'START':
+        return {
+          title: '설문 제출 현황',
+          description:
+            '아래는 제출된 설문 결과 현황입니다. 설문을 모두 제출하면 팀 빌딩을 시작해주세요.',
+        };
+      default:
+        return {
+          title: '팀 빌딩 현황',
+          description:
+            '팀원 이름을 마우스로 호버하면 팀 재배정하거나, 해당 인원을 팀에서 제거할 수 있습니다.',
+        };
+    }
+  }, [teamBuildingInfo?.roundStatus]);
+
   const handleClickDownload = () => {
     const teamNameMap = (teamInfoList ?? []).reduce(
       (teamNameMap, team) => {
@@ -642,7 +659,7 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
                 textStyle: 'h1',
               })}
             >
-              팀 빌딩 현황
+              {guideText.title}
             </h2>
 
             <p
@@ -651,8 +668,7 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
                 color: 'gray.10',
               })}
             >
-              팀원 이름을 마우스로 호버하면 팀 재배정하거나, 해당 인원을 팀에서
-              제거할 수 있습니다.
+              {guideText.description}
             </p>
           </div>
 
