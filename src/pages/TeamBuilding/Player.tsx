@@ -119,14 +119,15 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
   const overallModalProps = useDisclosure(); // 전체 현황보기 모달
 
   useEffect(() => {
-    if (localStorage.getItem('agreement') === 'true') return;
+    // @note: 각 팀빌딩마다 동의를 하도록 한다
+    if (localStorage.getItem('agreement') === teamBuildingUuid) return;
     agreementModalProps.onOpen();
   }, []);
 
   useEffect(() => {
     // @note: 라운드 변경에 대한 이벤트 감지가 안되는 경우, 토스트가 안뜰 수 있어
     // 별도의 effect 훅으로 토스트를 띄운다.
-    if (!localStorage.getItem('agreement')) return;
+    if (localStorage.getItem('agreement') !== teamBuildingUuid) return;
 
     // @note: 조정라운드와 완료라운드는 전체 현황보기 모달이 자동으로 열린다.
     // 첫번째 라운드에서는 선택 리스트 모달이 자동으로 열린다.
@@ -266,7 +267,7 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
   };
 
   const onClickAgreement = () => {
-    localStorage.setItem('agreement', 'true');
+    localStorage.setItem('agreement', teamBuildingUuid);
     roundStartModalProps.onOpen();
   };
 
@@ -656,7 +657,7 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
       <RoundStartModal
         isOpen={roundStartModalProps.isOpen}
         onClose={roundStartModalProps.onClose}
-        round={teamBuildingInfo?.roundStatus}
+        round={teamBuildingInfo?.roundStatus ?? 'START'}
       />
     </>
   );
