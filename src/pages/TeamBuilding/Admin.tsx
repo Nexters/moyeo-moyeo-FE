@@ -81,11 +81,10 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
   } = useGetTotalInfo(teamBuildingUuid, true);
   const { teamBuildingInfo, teamInfoList, userInfoList } = totalInfo ?? {};
 
-  // @note: 라운드 변경을 늦게 감지해서 아예 시작 버튼 클릭한 걸 별도 상태로 관리
-  const [isClickedStartButton, setIsClickedStartButton] = useState(false);
-  const { mutate: startTeamBuilding } = useStartTeamBuilding();
   const { mutate: adjustUser } = useAdjustUser();
   const { mutate: deleteUser } = useDeleteUser();
+  const { mutate: startTeamBuilding, isPending: isLoadingToStart } =
+    useStartTeamBuilding();
   const { mutate: finishTeamBuilding, isPending: isLoadingToFinish } =
     useFinishTeamBuilding();
 
@@ -273,15 +272,27 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
   };
 
   const handleClickStartTeamBuilding = () => {
-    setIsClickedStartButton(true);
     startTeamBuilding(
       { teamBuildingUuid },
       {
         onSuccess: () => {
-          toastWithSound.success('팀 빌딩을 시작합니다.');
+          // @note: refetch 되기 전까지 선반영
+          setTotalInfo((prev) => {
+            if (!prev) return prev;
+            return {
+              ...prev,
+              teamBuildingInfo: {
+                ...prev.teamBuildingInfo,
+                roundStatus: 'FIRST_ROUND',
+              },
+            };
+          });
+          refetchTotalInfo();
         },
         onError: () => {
-          setIsClickedStartButton(false);
+          toastWithSound.error(
+            '팀 빌딩을 시작하는데 실패했습니다. 잠시 후 다시 시도해주세요.',
+          );
         },
       },
     );
@@ -794,15 +805,13 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
               <Button
                 size="medium"
                 color="primary"
-                disabled={isClickedStartButton}
+                disabled={isLoadingToStart}
                 onClick={handleClickStartTeamBuilding}
                 className={css({
                   width: '320px !important',
                 })}
               >
-                {isClickedStartButton
-                  ? '시작하고 있습니다...'
-                  : '팀 빌딩 시작하기'}
+                {isLoadingToStart ? '시작하고 있습니다...' : '팀 빌딩 시작하기'}
               </Button>
             )}
             {teamBuildingInfo?.roundStatus !== 'START' && (
