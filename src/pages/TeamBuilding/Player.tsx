@@ -14,6 +14,7 @@ import { LinearProgress } from '@/components/LinearProgress';
 import { Step, Stepper } from '@/components/stepper';
 import { useDisclosure } from '@/hooks/useDisclosure';
 import AgreementModal from '@/modals/AgreementModal';
+import OnlyStartRoundModal from '@/modals/OnlyStartRoundModal';
 import { OverallStatusModal } from '@/modals/OverallStatusModal';
 import RoundStartModal from '@/modals/RoundStartModal';
 import SelectConfirmModal from '@/modals/SelectConfirmModal';
@@ -120,6 +121,7 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
 
   const selectListModalProps = useDisclosure();
   const roundStartModalProps = useDisclosure(); // 라운드 시작 모달
+  const onlyStartRoundModalProps = useDisclosure(); // 오직 시작 라운드만 보여주는 모달
   const selectConfirmModalProps = useDisclosure(); // 선택 확인용 모달
   const agreementModalProps = useDisclosure(); // 동의서 모달
   const overallModalProps = useDisclosure(); // 전체 현황보기 모달
@@ -277,7 +279,11 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
 
   const onClickAgreement = () => {
     localStorage.setItem('agreement', teamBuildingUuid);
-    roundStartModalProps.onOpen();
+    if (teamBuildingInfo?.roundStatus === 'START') {
+      onlyStartRoundModalProps.onOpen();
+    } else {
+      roundStartModalProps.onOpen();
+    }
   };
 
   const onClickOverallStatusModalClose = () => {
@@ -667,6 +673,10 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
         isOpen={roundStartModalProps.isOpen}
         onClose={roundStartModalProps.onClose}
         round={teamBuildingInfo?.roundStatus ?? 'START'}
+      />
+      <OnlyStartRoundModal
+        isOpen={onlyStartRoundModalProps.isOpen}
+        onClose={onlyStartRoundModalProps.onClose}
       />
     </>
   );
