@@ -60,6 +60,13 @@ export type API = {
     };
     response: TotalInfo;
   };
+  // 팀 빌딩 시작
+  startTeamBuilding: {
+    request: {
+      teamBuildingUuid: string;
+    };
+    response: unknown;
+  };
   deleteUser: {
     request: {
       teamBuildingUuid: string;

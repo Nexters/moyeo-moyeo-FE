@@ -8,6 +8,7 @@ import {
   useAdjustUser,
   useDeleteUser,
   useFinishTeamBuilding,
+  useStartTeamBuilding,
 } from '@/apis/admin/mutations';
 import { useGetTotalInfo } from '@/apis/team-building/queries';
 import CheckWithoutCircleIcon from '@/assets/icons/checkWithoutCircle.svg?react';
@@ -80,6 +81,9 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
   } = useGetTotalInfo(teamBuildingUuid, true);
   const { teamBuildingInfo, teamInfoList, userInfoList } = totalInfo ?? {};
 
+  // @note: 라운드 변경을 늦게 감지해서 아예 시작 버튼 클릭한 걸 별도 상태로 관리
+  const [isClickedStartButton, setIsClickedStartButton] = useState(false);
+  const { mutate: startTeamBuilding } = useStartTeamBuilding();
   const { mutate: adjustUser } = useAdjustUser();
   const { mutate: deleteUser } = useDeleteUser();
   const { mutate: finishTeamBuilding, isPending: isLoadingToFinish } =
@@ -266,6 +270,21 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
   const handleClickShareLink = () => {
     navigator.clipboard.writeText(location.href);
     toastWithSound.success('참여 링크가 복사되었습니다');
+  };
+
+  const handleClickStartTeamBuilding = () => {
+    setIsClickedStartButton(true);
+    startTeamBuilding(
+      { teamBuildingUuid },
+      {
+        onSuccess: () => {
+          toastWithSound.success('팀 빌딩을 시작합니다.');
+        },
+        onError: () => {
+          setIsClickedStartButton(false);
+        },
+      },
+    );
   };
 
   const handleClickFinishTeamBuilding = () => {
@@ -771,24 +790,43 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
           </section>
 
           <section className={css({ width: '100%', textAlign: 'right' })}>
-            <Button
-              size="medium"
-              color="primary"
-              title={
-                !isFinishedTeamBuilding && isDisabledFinishTeamBuildingButton
-                  ? '팀 구성 조정 라운드에서 모든 팀에 인원 배정이 완료되어야 종료할 수 있습니다.'
-                  : undefined
-              }
-              disabled={isLoadingToFinish || isDisabledFinishTeamBuildingButton}
-              onClick={handleClickFinishTeamBuilding}
-              className={css({
-                width: '320px !important',
-              })}
-            >
-              {isFinishedTeamBuilding
-                ? '팀 빌딩이 완료되었습니다'
-                : '팀 빌딩 마치기'}
-            </Button>
+            {teamBuildingInfo?.roundStatus === 'START' && (
+              <Button
+                size="medium"
+                color="primary"
+                disabled={isClickedStartButton}
+                onClick={handleClickStartTeamBuilding}
+                className={css({
+                  width: '320px !important',
+                })}
+              >
+                {isClickedStartButton
+                  ? '시작하고 있습니다...'
+                  : '팀 빌딩 시작하기'}
+              </Button>
+            )}
+            {teamBuildingInfo?.roundStatus !== 'START' && (
+              <Button
+                size="medium"
+                color="primary"
+                title={
+                  !isFinishedTeamBuilding && isDisabledFinishTeamBuildingButton
+                    ? '팀 구성 조정 라운드에서 모든 팀에 인원 배정이 완료되어야 종료할 수 있습니다.'
+                    : undefined
+                }
+                disabled={
+                  isLoadingToFinish || isDisabledFinishTeamBuildingButton
+                }
+                onClick={handleClickFinishTeamBuilding}
+                className={css({
+                  width: '320px !important',
+                })}
+              >
+                {isFinishedTeamBuilding
+                  ? '팀 빌딩이 완료되었습니다'
+                  : '팀 빌딩 마치기'}
+              </Button>
+            )}
           </section>
         </section>
       </section>
