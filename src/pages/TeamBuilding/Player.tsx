@@ -104,13 +104,19 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
         firstLine: currentRoundLabel,
         secondLine: '선택 완료하기',
       };
-  }, [selectDoneList, teamUuid, activeStep, teamBuildingInfo?.roundStatus]);
+  }, [
+    teamBuildingInfo?.roundStatus,
+    selectDoneList,
+    teamUuid,
+    activeStep,
+    currentRoundLabel,
+  ]);
 
   const isDisabledSelectionCompleteButton = useMemo(() => {
     // @note: 시작 라운드에는 버튼 클릭 불가능
     if (teamBuildingInfo?.roundStatus === 'START') return true;
     return selectDoneList?.includes(teamUuid) || activeStep > 3;
-  }, []);
+  }, [teamBuildingInfo?.roundStatus, selectDoneList, teamUuid, activeStep]);
 
   const selectListModalProps = useDisclosure();
   const roundStartModalProps = useDisclosure(); // 라운드 시작 모달
@@ -122,6 +128,7 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
     // @note: 각 팀빌딩마다 동의를 하도록 한다
     if (localStorage.getItem('agreement') === teamBuildingUuid) return;
     agreementModalProps.onOpen();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -145,6 +152,7 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
     }
 
     roundStartModalProps.onOpen();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [teamBuildingInfo?.roundStatus]);
 
   useEffect(() => {
@@ -188,6 +196,7 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
       eventSource?.removeEventListener('delete-user', handleDeleteUser);
       eventSource?.removeEventListener('adjust-user', handleAdjustUser);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [eventSource, refetch, setTotalInfo]);
 
   // @note: 포지션 순서대로 정렬된 유저 리스트
