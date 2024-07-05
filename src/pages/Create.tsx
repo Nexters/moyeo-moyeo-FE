@@ -403,7 +403,7 @@ const Create = () => {
               width: '320px !important',
             })}
           >
-            {mutation.isPending ? '팀 빌딩 생성 중...' : '팀 빌딩 시작하기'}
+            {mutation.isPending ? '팀 빌딩 생성 중...' : '팀 빌딩 생성하기'}
           </Button>
         </section>
       </form>

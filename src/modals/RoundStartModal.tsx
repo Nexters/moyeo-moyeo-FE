@@ -29,16 +29,25 @@ const modalLogoMap = {
 };
 
 const RoundStartModal = ({ isOpen, onClose, round }: RoundFinishModalProps) => {
+  const isModalClosable = round !== 'START';
+
   useEffect(() => {
     if (!isOpen) return;
     const delay = setTimeout(() => {
-      onClose();
+      if (isModalClosable) {
+        onClose();
+      }
     }, DURATION);
     return () => clearTimeout(delay);
-  }, [isOpen, onClose]);
+  }, [isOpen, onClose, isModalClosable]);
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      shouldCloseOnOverlayClick={isModalClosable}
+      shouldCloseOnEsc={isModalClosable}
+    >
       {round && modalLogoMap[round]}
     </Modal>
   );

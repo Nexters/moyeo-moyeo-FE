@@ -131,6 +131,23 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
     return Object.entries(allMemberByTeam);
   }, [teamInfoList, userInfoList]);
 
+  const guideText = useMemo(() => {
+    switch (teamBuildingInfo?.roundStatus) {
+      case 'START':
+        return {
+          title: '설문 제출 현황',
+          description:
+            '아래는 제출된 설문 결과 현황입니다. [설문 제출 완료 > PM 입장 > PM 팀 빌딩 동의] 이후 팀 빌딩 시작하기를 눌러주세요',
+        };
+      default:
+        return {
+          title: '팀 빌딩 현황',
+          description:
+            '팀원 이름을 마우스로 호버하면 팀 재배정하거나, 해당 인원을 팀에서 제거할 수 있습니다.',
+        };
+    }
+  }, [teamBuildingInfo?.roundStatus]);
+
   const handleClickDownload = () => {
     const teamNameMap = (teamInfoList ?? []).reduce(
       (teamNameMap, team) => {
@@ -522,7 +539,7 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
         <nav
           className={stack({
             width: '100%',
-            gap: '12px',
+            gap: '16px',
             justifyContent: 'space-between',
             padding: '30px',
             border: '1px solid rgba(255, 255, 255, 0.11)',
@@ -642,7 +659,7 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
                 textStyle: 'h1',
               })}
             >
-              팀 빌딩 현황
+              {guideText.title}
             </h2>
 
             <p
@@ -651,8 +668,7 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
                 color: 'gray.10',
               })}
             >
-              팀원 이름을 마우스로 호버하면 팀 재배정하거나, 해당 인원을 팀에서
-              제거할 수 있습니다.
+              {guideText.description}
             </p>
           </div>
 
@@ -867,7 +883,7 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
             <p className={css({ marginTop: '20px' })}>
               1. 모든 인원이 설문을 제출했는지 한번 더 확인해주세요.
               <br />
-              2. PM 전원이 팀 빌딩을 시작할 준비가 되었는지 확인해주세요.
+              2. PM 전원이 링크 입장 후 팀 빌딩 동의를 완료했는지 확인해주세요.
             </p>
           </>
         }

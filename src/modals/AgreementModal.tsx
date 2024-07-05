@@ -13,7 +13,12 @@ type AgreementModalProps = {
 
 const AgreementModal = ({ isOpen, onClose, onAgree }: AgreementModalProps) => {
   return (
-    <Modal isOpen={isOpen} onClose={onClose} shouldCloseOnOverlayClick={false}>
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      shouldCloseOnOverlayClick={false}
+      shouldCloseOnEsc={false}
+    >
       <section
         className={vstack({
           padding: '30px',
