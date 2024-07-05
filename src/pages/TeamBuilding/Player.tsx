@@ -301,7 +301,7 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
             width: '1280px',
             background: 'rgba(0, 0, 0, 0.07)',
             backdropFilter: 'blur(50px)',
-            gap: '12px',
+            gap: '16px',
             padding: '30px',
             borderRadius: '0 0 20px 20px',
             border: '1px solid rgba(255, 255, 255, 0.11)',

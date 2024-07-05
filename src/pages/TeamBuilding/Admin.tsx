@@ -522,7 +522,7 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
         <nav
           className={stack({
             width: '100%',
-            gap: '12px',
+            gap: '16px',
             justifyContent: 'space-between',
             padding: '30px',
             border: '1px solid rgba(255, 255, 255, 0.11)',
