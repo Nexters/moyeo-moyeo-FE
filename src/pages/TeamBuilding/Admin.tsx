@@ -23,6 +23,7 @@ import { Step, Stepper } from '@/components/stepper';
 import { useDisclosure } from '@/hooks/useDisclosure';
 import { SelectTeamModal } from '@/modals/SelectTeamModal';
 import { ShareSurveyModal } from '@/modals/ShareSurveyModal';
+import { ConfirmModal } from '@/modals/common/ConfirmModal';
 import { eventSourceAtom } from '@/store/atoms';
 import { css } from '@/styled-system/css';
 import { center, hstack, stack, vstack } from '@/styled-system/patterns';
@@ -72,6 +73,8 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const selectTeamModalProps = useDisclosure();
   const shareSurveyModalProps = useDisclosure();
+  const startConfirmModalProps = useDisclosure();
+  const finishConfirmModalProps = useDisclosure();
   const eventSource = useAtomValue(eventSourceAtom);
 
   const {
@@ -806,7 +809,7 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
                 size="medium"
                 color="primary"
                 disabled={isLoadingToStart}
-                onClick={handleClickStartTeamBuilding}
+                onClick={startConfirmModalProps.onOpen}
                 className={css({
                   width: '320px !important',
                 })}
@@ -826,7 +829,7 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
                 disabled={
                   isLoadingToFinish || isDisabledFinishTeamBuildingButton
                 }
-                onClick={handleClickFinishTeamBuilding}
+                onClick={finishConfirmModalProps.onOpen}
                 className={css({
                   width: '320px !important',
                 })}
@@ -850,6 +853,42 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
         teamBuildingUuid={teamBuildingUuid}
         isOpen={shareSurveyModalProps.isOpen}
         onClose={shareSurveyModalProps.onClose}
+      />
+      {/* 팀 빌딩 시작 확인 모달 */}
+      <ConfirmModal
+        title="팀 빌딩을 시작할까요?"
+        content={
+          <>
+            <p>
+              시작하면 설문 제출이 불가능해요.
+              <br />
+              아래 항목을 확인한 후 팀 빌딩을 시작해주세요.
+            </p>
+            <p className={css({ marginTop: '20px' })}>
+              1. 모든 인원이 설문을 제출했는지 한번 더 확인해주세요.
+              <br />
+              2. PM 전원이 팀 빌딩을 시작할 준비가 되었는지 확인해주세요.
+            </p>
+          </>
+        }
+        confirmButtonText="시작하기"
+        isOpen={startConfirmModalProps.isOpen}
+        onConfirm={handleClickStartTeamBuilding}
+        onClose={startConfirmModalProps.onClose}
+      />
+      {/* 팀 빌딩 종료 확인 모달 */}
+      <ConfirmModal
+        title="팀 빌딩을 마칠까요?"
+        content={
+          <>
+            모든 팀에 인원이 적절히 배정되었는지 확인해주세요.
+            <br />팀 빌딩을 마치면 이 화면으로 다시 돌아올 수 없어요.
+          </>
+        }
+        confirmButtonText="팀 빌딩 마치기"
+        isOpen={finishConfirmModalProps.isOpen}
+        onConfirm={handleClickFinishTeamBuilding}
+        onClose={finishConfirmModalProps.onClose}
       />
       <Tooltip
         id="download-helper"
