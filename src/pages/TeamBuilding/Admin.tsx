@@ -137,7 +137,7 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
         return {
           title: '설문 제출 현황',
           description:
-            '아래는 제출된 설문 결과 현황입니다. 설문을 모두 제출하면 팀 빌딩을 시작해주세요.',
+            '아래는 제출된 설문 결과 현황입니다. [설문 제출 완료 > PM 입장 > PM 팀 빌딩 동의] 이후 팀 빌딩 시작하기를 눌러주세요',
         };
       default:
         return {
