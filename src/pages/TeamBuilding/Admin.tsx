@@ -883,7 +883,7 @@ export const Admin = ({ teamBuildingUuid }: AdminProps) => {
             <p className={css({ marginTop: '20px' })}>
               1. 모든 인원이 설문을 제출했는지 한번 더 확인해주세요.
               <br />
-              2. PM 전원이 팀 빌딩을 시작할 준비가 되었는지 확인해주세요.
+              2. PM 전원이 링크 입장 후 팀 빌딩 동의를 완료했는지 확인해주세요.
             </p>
           </>
         }
