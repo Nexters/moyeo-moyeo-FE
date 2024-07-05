@@ -656,7 +656,7 @@ export const Player = ({ teamUuid, teamBuildingUuid }: PlayerProps) => {
       <RoundStartModal
         isOpen={roundStartModalProps.isOpen}
         onClose={roundStartModalProps.onClose}
-        round={activeStep}
+        round={teamBuildingInfo?.roundStatus}
       />
     </>
   );
